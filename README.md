@@ -1,7 +1,7 @@
 PIRSdocs
 ========
 
-PIRS documentation in html generated with Sphinx-doc. This repository contains only auto-generated files; the source for documentation is located at another place.
+PIRS documentation in html generated with Sphinx-doc. This repository contains only auto-generated files; the source for documentation is located at another place. Documentation itself can be viewed at http://travleev.github.io/PIRSdocs/ 
 
 To update files here: 
 
