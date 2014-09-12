@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.scf2 subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="next" title="pirs.hli.mcnp subpackage" href="pirs.hmcnp.html" />
+    <link rel="prev" title="pirs.mcnp subpackage" href="pirs.mcnp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.hmcnp.html" title="pirs.hli.mcnp subpackage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pirs.mcnp.html" title="pirs.mcnp subpackage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-scf2-subpackage">
+<span id="scf"></span><h1>pirs.scf2 subpackage<a class="headerlink" href="#pirs-scf2-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>This package provides a low-level interface to the SCF code.</p>
+<div class="section" id="docstrings">
+<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pirs.scf2.Input">
+<em class="property">class </em><tt class="descclassname">pirs.scf2.</tt><tt class="descname">Input</tt><big>(</big><em>version='2.5'</em><big>)</big><a class="headerlink" href="#pirs.scf2.Input" title="Permalink to this definition">¶</a></dt>
+<dd><p>O-O representation of all keywords, tables and switches of the SCF input file.</p>
+<p>Input is a list, but string indexes are accepted as well.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">scf</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Particular elements can be found using indexes or the find method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">scf</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;relative_heat&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">file = this_file</span>
+<span class="go">relative_axial_location   relative_heat_flux</span>
+<span class="go">!</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">scf</span><span class="p">[</span><span class="s">&#39;relative_heat&#39;</span><span class="p">]</span>
+<span class="go">file = this_file</span>
+<span class="go">relative_axial_location   relative_heat_flux</span>
+<span class="go">!</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pirs.scf2.Input.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.scf2.Input.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears all data from variables, switchs, tables.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.scf2.Input.find">
+<tt class="descname">find</tt><big>(</big><em>*names</em><big>)</big><a class="headerlink" href="#pirs.scf2.Input.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of all groups and group elements (i.e. switches, tables,
+variables) whose names contain name as a substring.</p>
+<p>The first argument controls what is searched.</p>
+<blockquote>
+<div>&#8216;a&#8217; &#8211; (default) search all: group names, variables, switches and tables.
+&#8216;g&#8217; &#8211; search group names only
+&#8216;v&#8217;, &#8216;s&#8217; or &#8216;t&#8217; &#8211; search only among instances of the ScfVarible, ScfSwitch or ScfTable class, respectively.</div></blockquote>
+<p>If the first argument has another value, &#8216;a&#8217; is assumed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.scf2.Input.run">
+<tt class="descname">run</tt><big>(</big><em>mode='r'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.scf2.Input.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares content of the input file and starts an SCF job.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.scf2.Input.wp">
+<tt class="descname">wp</tt><a class="headerlink" href="#pirs.scf2.Input.wp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the ScfWorkPlace() class.</p>
+<p>Prepares working directory for SCF and starts the code.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.scf2.OutputTable">
+<em class="property">class </em><tt class="descclassname">pirs.scf2.</tt><tt class="descname">OutputTable</tt><big>(</big><em>columns</em>, <em>cnames</em>, <em>N=0</em><big>)</big><a class="headerlink" href="#pirs.scf2.OutputTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>O-O representation of tables in the output.txt. It provides access to data
+and column names.  Usualy, instances of this class are created by the
+function read_output(), see below.</p>
+<dl class="method">
+<dt id="pirs.scf2.OutputTable.column">
+<tt class="descname">column</tt><big>(</big><em>name_upper</em>, <em>name_lower=None</em><big>)</big><a class="headerlink" href="#pirs.scf2.OutputTable.column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the data column whose heading&#8217;s upper part is
+name_upper.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.scf2.OutputTable.column_names">
+<tt class="descname">column_names</tt><a class="headerlink" href="#pirs.scf2.OutputTable.column_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of column names. Each element of the list is a tuple specifying
+the upper and lower part of the column&#8217;s heading. Usually, it is 
+the column data name and dimension.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.scf2.OutputTable.columns">
+<tt class="descname">columns</tt><a class="headerlink" href="#pirs.scf2.OutputTable.columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of data columns.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.scf2.OutputTable.fmt">
+<tt class="descname">fmt</tt><a class="headerlink" href="#pirs.scf2.OutputTable.fmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format string used to convert table to a strinng (when e.g. printing
+the table).</p>
+<p>Can be a string or a list of strings, representing valid format
+specifications, as understood by the str.format() method.</p>
+<p>If a string is given, it is used for all columns. If a list of strings
+is given, its length must coincide with the number of columns in the
+table. In this case, each column gets its own format string.</p>
+<p>not implemented: If fmt is None, each column&#8217;s width is defined by its header&#8217;s length.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.scf2.OutputTable.row">
+<tt class="descname">row</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#pirs.scf2.OutputTable.row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of i-th row.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.scf2.RodMaterial">
+<em class="property">class </em><tt class="descclassname">pirs.scf2.</tt><tt class="descname">RodMaterial</tt><a class="headerlink" href="#pirs.scf2.RodMaterial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for data necessary for the tables describing rod material properties.</p>
+<p>Physical units are those used in SCF.</p>
+<dl class="method">
+<dt id="pirs.scf2.RodMaterial.update">
+<tt class="descname">update</tt><big>(</big><em>othr</em>, <em>part='all'</em><big>)</big><a class="headerlink" href="#pirs.scf2.RodMaterial.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update properties of the RodMaterial instance by the values stored in othr.</p>
+<dl class="docutils">
+<dt>part: &#8216;all&#8217; &#8211; all properties will be updated</dt>
+<dd>&#8216;fuel&#8217; &#8211; only fuel-related properties will be updated
+&#8216;clad&#8217; &#8211; only clad-related properties will be updated
+&#8216;gap&#8217; &#8211; only gap-related properties will be updated.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.scf2.RodMaterialCollection">
+<em class="property">class </em><tt class="descclassname">pirs.scf2.</tt><tt class="descname">RodMaterialCollection</tt><big>(</big><em>iv=1</em>, <em>step=1</em><big>)</big><a class="headerlink" href="#pirs.scf2.RodMaterialCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collection of rod materials.</p>
+<p>Initializes new collection.</p>
+<p>iv: initial value, the first elements index.
+step: step for indices.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirs.scf2 subpackage</a><ul>
+<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pirs.mcnp.html"
+                        title="previous chapter">pirs.mcnp subpackage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.hmcnp.html"
+                        title="next chapter">pirs.hli.mcnp subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.scf.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.hmcnp.html" title="pirs.hli.mcnp subpackage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pirs.mcnp.html" title="pirs.mcnp subpackage"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

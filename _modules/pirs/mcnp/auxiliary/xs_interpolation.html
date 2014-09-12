@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.mcnp.auxiliary.xs_interpolation &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="../../../../index.html" />
+    <link rel="up" title="pirs.mcnp" href="../../mcnp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../mcnp.html" accesskey="U">pirs.mcnp</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pirs.mcnp.auxiliary.xs_interpolation</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Function(s) to represent doppler broading temperature by mixing two other temperatures.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c">#at</span>
+<span class="c"># Author: Anton Travleev, anton.travleev@kit.edu</span>
+<span class="c"># Developed at INR, Karlsruhe Institute of Technology</span>
+<span class="c">#at</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="sqrT"><a class="viewcode-back" href="../../../../pirs.mcnp.html#pirs.mcnp.auxiliary.xs_interpolation.sqrT">[docs]</a><span class="k">def</span> <span class="nf">sqrT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns fractions of XS at temperatures T1 and T2 to represent temperature T.</span>
+
+<span class="sd">    Computes fractions of cross-sections at T1 and T2 to represent temperature</span>
+<span class="sd">    T using the square-root temperature interpolation. T, T1 and T2 must be</span>
+<span class="sd">    given in absolute units (Kelvin or MeV, for example). </span>
+
+<span class="sd">    Returns a tuple (f1, f2), where f1 and f2 are fractions of cross-sections</span>
+<span class="sd">    at T1 and T2, respectively.</span>
+
+<span class="sd">    Optional argument ``rtol`` is used to specify distance from T1 or T2, at which</span>
+<span class="sd">    interpolation takes place.  For example, if T is close to T1, i.e. when ::</span>
+<span class="sd">    </span>
+<span class="sd">        |T-T1| &lt; |T1-T2|*rtol,</span>
+<span class="sd">        </span>
+<span class="sd">    interpolation is not done, tuple (1.0, 0.0) is returned. In</span>
+<span class="sd">    this way one can exclude interpolation, when T differs from existing</span>
+<span class="sd">    temperatures T1 or T2 only negligibly.</span>
+
+
+<span class="sd">    &gt;&gt;&gt; sqrT(350, 300, 400)   #doctest: +ELLIPSIS</span>
+<span class="sd">    (0.48207..., 0.5179...)</span>
+<span class="sd">    &gt;&gt;&gt; sqrT(350, 400, 300)   #doctest: +ELLIPSIS</span>
+<span class="sd">    (0.5179..., 0.48207...)</span>
+<span class="sd">    &gt;&gt;&gt; sqrT(300, 300, 400)   #doctest: +ELLIPSIS</span>
+<span class="sd">    (1.0, 0.0)</span>
+<span class="sd">    &gt;&gt;&gt; sqrT(400, 300, 400)   #doctest: +ELLIPSIS</span>
+<span class="sd">    (0.0, 1.0)</span>
+
+<span class="sd">    Fractions f1 and f2 are defined from the following equations::</span>
+
+<span class="sd">        (1)  sigma(T) = sigma(T1)*f1  +  sigma(T2)*f2     # this is how cross-sections can be mixed in MCNP </span>
+<span class="sd">        (2)  sigma(T) is proportional to T^1/2            # see van der Marck, Meulekamp, Hogenbirk, M&amp;C2005</span>
+<span class="sd">        (3)  f1 + f2 = 1                                  # this is how nuclide fractions normed in MCNP material. </span>
+
+<span class="sd">    from this equaitons, given T, T1 and T2, one can express f1 and f2::</span>
+
+<span class="sd">        (4)   f1 = (T^1/2 - T2^1/2) / (T1^1/2 - T2^1/2)</span>
+<span class="sd">        (5)   f2 = 1. - f1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># explicitly go to float</span>
+    <span class="c"># t = float(T)</span>
+    <span class="c"># t1 = float(T1)</span>
+    <span class="c"># t2 = float(T2)</span>
+    <span class="c">#! float cannot be upplied to uncertainties.Variable class</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">T1</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">T2</span>
+
+    <span class="c"># if T is close to T1 or T2, treat in special way:</span>
+    <span class="n">dTmin</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t1</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span> <span class="o">*</span> <span class="n">rtol</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dTmin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dTmin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="c"># if T is somewhere in between T1 and T2:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">t1</span> <span class="o">&lt;</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">t2</span> <span class="o">&lt;</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">t1</span><span class="p">):</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">t2</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">s2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t1</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">s2</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">f1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># if T is outside the interval (T1, T2), issue a warning and use the</span>
+        <span class="c"># closest T, without interpolation</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="linT"><a class="viewcode-back" href="../../../../pirs.mcnp.html#pirs.mcnp.auxiliary.xs_interpolation.linT">[docs]</a><span class="k">def</span> <span class="nf">linT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to sqrT(), but uses linear interpolation.</span>
+
+<span class="sd">    &gt;&gt;&gt; linT(310, 300, 400)   #doctest: +ELLIPSIS</span>
+<span class="sd">    (0.9, 0.0999...)</span>
+<span class="sd">    &gt;&gt;&gt; linT(300, 300, 400)</span>
+<span class="sd">    (1.0, 0.0)</span>
+<span class="sd">    &gt;&gt;&gt; linT(400, 300, 400)</span>
+<span class="sd">    (0.0, 1.0)</span>
+<span class="sd">    &gt;&gt;&gt; linT(310, 400, 300)</span>
+<span class="sd">    (0.1, 0.9)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># explicitly go to float</span>
+    <span class="c"># t = float(T)</span>
+    <span class="c"># t1 = float(T1)</span>
+    <span class="c"># t2 = float(T2)</span>
+    <span class="c">#! float cannot be upplied to uncertainties.Variable class</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">T</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">T1</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">T2</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">t1</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">t2</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">t1</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t2</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">f1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># if T is outside the interval (T1, T2), issue a warning and use the</span>
+        <span class="c"># closest T, without interpolation</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../mcnp.html" >pirs.mcnp</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

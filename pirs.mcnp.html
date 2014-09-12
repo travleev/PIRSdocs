@@ -1,0 +1,1441 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.mcnp subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="next" title="pirs.scf2 subpackage" href="pirs.scf.html" />
+    <link rel="prev" title="pirs.solids subpackage" href="pirs.solids.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.scf.html" title="pirs.scf2 subpackage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pirs.solids.html" title="pirs.solids subpackage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-mcnp-subpackage">
+<span id="mcnp"></span><h1>pirs.mcnp subpackage<a class="headerlink" href="#pirs-mcnp-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>This package provides a low-level interface to the MCNP5 code.</p>
+<p>It defines classes to represent cells, surfaces, materials and tallies. There is also
+a class representing the MCNP model as a collection of cells, surfaces,
+materials, etc; this class takes the task of setting cell, surface and
+material numbers (IDs) and has methods to generate valid MCNP input file. Moreover,
+there is a class that describes a workplace &#8211; a directory that contains all
+files necessary to start MCNP job and there is a method to start MCNP
+executable. Also, functions to read MCNP-generated files, are defined in this
+package.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In contrast to the low-level interface, the high-level interface translates the code-independent
+geometry described with the help of the <tt class="xref py py-mod docutils literal"><span class="pre">pirs.solids</span></tt> package into the
+low-interface MCNP model instance, and puts back results of MCNP run, read
+by the low-level interface methods, back to the code-independent geometry.</p>
+</div>
+<p>An MCNP model is represented by the <a class="reference internal" href="#pirs.mcnp.Model" title="pirs.mcnp.Model"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Model</span></tt></a> class. It consists
+of instances of the <a class="reference internal" href="#pirs.mcnp.Cell" title="pirs.mcnp.Cell"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Cell</span></tt></a> class, each reffering to a material
+represented by the <a class="reference internal" href="#pirs.mcnp.Material" title="pirs.mcnp.Material"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Material</span></tt></a> and with geometry defined by
+instances of the <a class="reference internal" href="#pirs.mcnp.Surface" title="pirs.mcnp.Surface"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Surface</span></tt></a> and <a class="reference internal" href="#pirs.mcnp.Volume" title="pirs.mcnp.Volume"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Volume</span></tt></a>
+classes.</p>
+<div class="section" id="materials">
+<h2>Materials<a class="headerlink" href="#materials" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#pirs.mcnp.Material" title="pirs.mcnp.Material"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Material</span></tt></a> class is used to represent material
+composition, temperature and optional use of thermal data.  It inherits the
+<a class="reference internal" href="pirs.core.tramat.html#pirs.core.tramat.Mixture" title="pirs.core.tramat.Mixture"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.tramat.Mixture</span></tt></a>, described in details in <a class="reference internal" href="pirs.core.tramat.html#tramat"><em>pirs.core.tramat subpackage</em></a>. Here
+we overview only MCNP-related features, added to the
+<a class="reference internal" href="#pirs.mcnp.Material" title="pirs.mcnp.Material"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Material</span></tt></a> class.</p>
+<p>Frist of all, this class can take information about available cross-sections
+from an xsdir file.  The <a class="reference internal" href="#pirs.mcnp.Material.xsdir" title="pirs.mcnp.Material.xsdir"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Material.xsdir</span></tt></a> attribute is an
+instance of the <a class="reference internal" href="#pirs.mcnp.Xsdir" title="pirs.mcnp.Xsdir"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Xsdir</span></tt></a> class able to read xsdir file
+and to store information. By default, each material instance is supplied with
+an xsdir containing data from <tt class="docutils literal"><span class="pre">$DATAPATH/xsdir</span></tt> file.</p>
+<p>The <a class="reference internal" href="#pirs.mcnp.Material.card" title="pirs.mcnp.Material.card"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Material.card()</span></tt></a> method generates a multi-line string
+containing the material card describing the material in the MCNP input file.
+When the <tt class="docutils literal"><span class="pre">card()</span></tt> method is called, cross-sectin data sets are searched in
+the specified xsdir object for each nuclide and for the temperature specified
+in the <a class="reference internal" href="#pirs.mcnp.Material.T" title="pirs.mcnp.Material.T"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Material.T</span></tt></a> attribute. If a cross-section data set for
+particular nuclide and particular temeprature is found, its suffix is used in
+the card. If there is no cross-section data exactly at the temperature <tt class="docutils literal"><span class="pre">T</span></tt>,
+two cross-sections are found with temepratures above and below <tt class="docutils literal"><span class="pre">T</span></tt>, and both
+suffices enter the material card.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Material</span>
+
+<span class="n">fe</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s">&#39;Fe&#39;</span><span class="p">)</span> <span class="c"># Fe chemical element with nat. occuring isotopes</span>
+
+<span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">350</span> <span class="p">,</span><span class="mi">400</span><span class="p">]:</span>
+    <span class="n">fe</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+    <span class="k">print</span> <span class="n">fe</span><span class="o">.</span><span class="n">card</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>m{0:&lt;}                                                                            $  Fe at 300 K 
+     26054.31c  5.84500e-02
+     26056.31c  9.17540e-01
+     26057.31c  2.11900e-02
+     26058.31c  2.82000e-03
+m{0:&lt;}                                                                            $  Fe at 350 K  as mix 0.482 300.00 K,  0.518 400.01 K
+     26054.31c  2.81792e-02   26054.32c  3.02708e-02
+     26056.31c  4.42353e-01   26056.32c  4.75187e-01
+     26057.31c  1.02159e-02   26057.32c  1.09741e-02
+     26058.31c  1.35954e-03   26058.32c  1.46046e-03
+m{0:&lt;}                                                                            $  Fe at 400 K 
+     26054.32c  5.84500e-02
+     26056.32c  9.17540e-01
+     26057.32c  2.11900e-02
+     26058.32c  2.82000e-03
+</pre></div>
+</div>
+<p>In this example, a material representing Iron with natural isotopic abundancies
+is created and material card corresponding to temepratures 300, 350 and 400 K
+is printed. Default xsdir, read from <tt class="docutils literal"><span class="pre">$DATAPATH/xsdir</span></tt> file is used to find
+cross-section suffices. As one can note, cards cannot be used directly in the
+MCNP input file, since material numbers are not given explicitly, there are
+format placeholders instead.</p>
+<p>For temperatures 300 and 400 K data for all Fe isotopes exist in the xsdir and
+denoted by suffices <tt class="docutils literal"><span class="pre">31c</span></tt> and <tt class="docutils literal"><span class="pre">32c</span></tt> (this example uses xsdir file from the
+multi-temperautre data set <a class="reference external" href="https://www.oecd-nea.org/dbprog/Njoy/Cabellos-report_mcjeff31-v36.pdf">JEFF-3.1</a>).</p>
+<p>For the material at 350 K, both suffices are used in proportions defined by the
+material temeprature and temeratures of available cross-sections. How these
+proportions are computed, depends on the <a class="reference internal" href="#pirs.mcnp.Material.Tif" title="pirs.mcnp.Material.Tif"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Material.Tif</span></tt></a>
+attribute that by default set to the
+<a class="reference internal" href="#pirs.mcnp.auxiliary.xs_interpolation.sqrT" title="pirs.mcnp.auxiliary.xs_interpolation.sqrT"><tt class="xref py py-func docutils literal"><span class="pre">pirs.mcnp.auxiliary.xs_interpolation.sqrT()</span></tt></a> function that implements the
+square-root temperature interpolation, but can be changed by the user to
+anything else.</p>
+<p>Use of thermal data is controlled by the <a class="reference internal" href="#pirs.mcnp.Material.thermal" title="pirs.mcnp.Material.thermal"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Material.thermal</span></tt></a> attribute. By default it is <tt class="docutils literal"><span class="pre">None</span></tt>
+and no thermal data is used. When this attribute is set to a string, thermal data with names containing this string
+will be searched in the xsdir file and, if found, will be mentioned in the <tt class="docutils literal"><span class="pre">mt</span></tt> card corresponding to the material.
+If there are more than one thermal data set, the set with the closest temeprature will be chosen.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Material</span>
+
+<span class="n">h</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">)</span>
+<span class="n">o</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">)</span>
+
+<span class="n">h2o</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">h</span> <span class="o">+</span> <span class="n">o</span>
+
+<span class="c"># thermal data</span>
+<span class="n">h2o</span><span class="o">.</span><span class="n">thermal</span> <span class="o">=</span> <span class="s">&#39;lwtr&#39;</span>
+
+<span class="c"># nuclide substitution</span>
+<span class="n">h2o</span><span class="o">.</span><span class="n">sdict</span><span class="p">[</span><span class="mi">8018</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8016</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">350</span><span class="p">,</span> <span class="mi">400</span><span class="p">]:</span>
+    <span class="n">h2o</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">t</span>
+    <span class="k">print</span> <span class="n">h2o</span><span class="o">.</span><span class="n">card</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>m{0:&lt;}                                                                            $  H-O at 300 K 
+     1001.31c  1.99977e+00
+     1002.31c  2.30000e-04
+     8016.31c  9.97570e-01
+     8017.31c  3.80000e-04
+     8016.31c  2.05000e-03
+mt{0:&lt;} lwtr01.31t                                                                $  thermal data at 293.606K
+m{0:&lt;}                                                                            $  H-O at 350 K  as mix 0.482 300.00 K,  0.518 400.01 K
+     1001.31c  9.64104e-01   1001.32c  1.03567e+00
+     1002.31c  1.10885e-04   1002.32c  1.19115e-04
+     8016.31c  4.80936e-01   8016.32c  5.16634e-01
+     8017.31c  1.83201e-04   8017.32c  1.96799e-04
+     8016.31c  9.88320e-04   8016.32c  1.06168e-03
+mt{0:&lt;} lwtr03.31t                                                                $  thermal data at 373.607K
+m{0:&lt;}                                                                            $  H-O at 400 K 
+     1001.32c  1.99977e+00
+     1002.32c  2.30000e-04
+     8016.32c  9.97570e-01
+     8017.32c  3.80000e-04
+     8016.32c  2.05000e-03
+mt{0:&lt;} lwtr04.31t                                                                $  thermal data at 423.599K
+</pre></div>
+</div>
+<p>In this example, the material <tt class="docutils literal"><span class="pre">h2o</span></tt> is created. Thremal data for hydrogen
+bound in water are all named <tt class="docutils literal"><span class="pre">lwtr??.31t</span></tt> in the default xsdir file. To use
+them, we set the <tt class="docutils literal"><span class="pre">thremal</span></tt> attribute to the common part of the names, which
+is <tt class="docutils literal"><span class="pre">'lwtr'</span></tt>. Depending on the material temperature, particular data set is
+chosen. Note that thermal cross-sections are not interpolated. Note also that
+both <tt class="docutils literal"><span class="pre">m</span></tt> and <tt class="docutils literal"><span class="pre">mt</span></tt> cards followed by the format placeholder with the same
+index, to ensure that both cards will correspond to the same material.</p>
+<p>Another feature shown in this example is the <a class="reference internal" href="#pirs.mcnp.Material.sdict" title="pirs.mcnp.Material.sdict"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Material.sdict</span></tt></a>
+attribute.  This dictionary specifies substitution rules for cases when
+particular nuclide cannot be found in the xsdir file. Particularly, the default
+xsdir file contains no cross-section data for nuclide 8018, which however,
+enters to the <tt class="docutils literal"><span class="pre">h2o</span></tt> material since it was defined using natural isotopic
+composition of oxygen. Without specifying the substitution rule, the call to
+the <tt class="docutils literal"><span class="pre">card</span></tt> method would result in error. With the help of <tt class="docutils literal"><span class="pre">sdict</span></tt> we can
+avoid this error.</p>
+</div>
+<div class="section" id="surfaces-and-volumes">
+<h2>Surfaces and volumes<a class="headerlink" href="#surfaces-and-volumes" title="Permalink to this headline">¶</a></h2>
+<p>There are two classes to describe geometry of an MCNP model.</p>
+<p>The <a class="reference internal" href="#pirs.mcnp.Surface" title="pirs.mcnp.Surface"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Surface</span></tt></a> class is a container for data to describe an
+MCNP surface. It can hold data for both simple surfaces and macrobodies,
+&#8216;knows&#8217; about the order of facets for macrobodies, can generate the surface
+card for the MCNP input file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+<span class="n">s1</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="s">&#39;px 1.0 $ a plane&#39;</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="s">&#39;* pz 5.1&#39;</span><span class="p">)</span>
+
+<span class="n">s3</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;c/z&#39;</span><span class="p">,</span> <span class="n">plst</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">cmnt</span><span class="o">=</span><span class="s">&#39;cylinder at z axis&#39;</span><span class="p">)</span>
+<span class="n">s4</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="s">&#39;rcc 0 0 0  0 0 5  3&#39;</span><span class="p">)</span>
+
+<span class="c">#surface cards</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">s3</span><span class="p">,</span> <span class="n">s4</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">card</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>{0} px  1.0                                                                       $   a plane
+*{0} pz  5.1
+{0} cz  6.0                                                                       $  cylinder at z axis
+{0} rcc  0.0  0.0  0.0  0.0  0.0  5.0  3.0
+</pre></div>
+</div>
+<p>Surface parameters can be specified in two ways: the surface class constructor
+accepts surface cards (so it can be used as a parser), or surface type, list of
+parameters, reflection etc. can be specified as keyword arguments. At the
+initialization surfaces are simplified, when possible, as shown for surface <tt class="docutils literal"><span class="pre">s3</span></tt>.
+The surface card generated by the <a class="reference internal" href="#pirs.mcnp.Surface.card" title="pirs.mcnp.Surface.card"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Surface.card()</span></tt></a> method
+is a formatting string with placeholder for the surface ID number.</p>
+<p>A surface separates the space into two volumes, &#8216;above&#8217; and &#8216;below&#8217;.
+Representation these volumes and operations of union and intersections are
+implemented in the <a class="reference internal" href="#pirs.mcnp.Volume" title="pirs.mcnp.Volume"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Volume</span></tt></a> class. The constructor of this
+class takes two arguments: the first argument specifies part of the space (1
+means &#8216;above&#8217; and -1 &#8211; &#8216;below&#8217;), the second argument defines the surface. The
+main functionality of the volume class is to provide operations of union and
+intersection and to represent these operations in terms used in the MCNP input
+file; it should be noted however, that result of these operations is not
+evaluated. Thus, the second argument must not necesserily be an instance of the
+<a class="reference internal" href="#pirs.mcnp.Surface" title="pirs.mcnp.Surface"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Surface</span></tt></a> class, one can use abstract string names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Volume</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>  
+<span class="n">v2</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">v3</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+
+<span class="c"># new volume as intersection and union</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">&amp;</span> <span class="n">v2</span> <span class="o">|</span> <span class="n">v3</span>
+
+<span class="c"># string representation of volume</span>
+<span class="k">print</span> <span class="s">&#39; r: &#39;</span><span class="p">,</span> <span class="n">r</span>
+<span class="k">print</span> <span class="s">&#39;-r:&#39;</span><span class="p">,</span> <span class="o">-</span><span class="n">r</span>
+
+<span class="c"># surface definition substitution</span>
+<span class="n">s</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">s</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">s</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">s</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">print</span> <span class="s">&#39; r: &#39;</span><span class="p">,</span>  <span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;-r: &#39;</span><span class="p">,</span> <span class="o">-</span><span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre> r:  (a b):-c
+-r: (-a:-b) c
+ r:  (1 2):-3
+-r:  (-1:-2) 3
+</pre></div>
+</div>
+<p>String representation of a volume uses the space for intersection and the colon
+for union, and can therefore be used in the description of cell geometry in the
+MCNP input file, if surface ID numbers are used as abstract surface
+definitions. One can also use volumes with arbitrary (not necesserily integer)
+surface definitions together with the <a class="reference internal" href="#pirs.mcnp.Volume.copy" title="pirs.mcnp.Volume.copy"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Volume.copy()</span></tt></a> method.
+Optional argument of this method must be a mapping (function or dictionary)
+that will replace original surface defition in the returned copy.</p>
+<p>This, for the first glance over-engineering approach
+allows to use macrobodies to define geometry and then, if necessary (for example, when
+different boundary conditions must be set to facets of a macrobody), to represent
+this geometry in the MCNP input file using simple surfaces. The following example
+illustrates this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="s">&#39;rcc 0 0 0   0 0 10  4&#39;</span><span class="p">)</span>
+
+<span class="c"># mapping surface -&gt; ID</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">facets</span><span class="p">():</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c"># macrobody exterior defined by simple surfaces</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">volume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39; c cells&#39;</span>
+<span class="k">print</span> <span class="s">&#39;1 0 &#39;</span><span class="p">,</span>  <span class="n">v</span><span class="p">,</span> <span class="s">&#39; $ cylinder exterior&#39;</span>
+<span class="k">print</span> <span class="s">&#39;2 0 &#39;</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39; $ cylinder interior&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;&#39;</span>
+<span class="k">print</span> <span class="s">&#39;c surfaces:&#39;</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre> c cells
+1 0  1:2:-3  $ cylinder exterior
+2 0  -1 -2 3  $ cylinder interior
+
+c surfaces:
+1 cz  4.0
+2 pz  10.0
+3 pz  0.0
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">c</span></tt> surface is a cylinder macrobody. Its <a class="reference internal" href="#pirs.mcnp.Surface.facets" title="pirs.mcnp.Surface.facets"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Surface.facets()</span></tt></a>
+method returns a list of volumes &#8216;above&#8217; each macrobody&#8217;s facet. The
+<a class="reference internal" href="#pirs.mcnp.Volume.a1" title="pirs.mcnp.Volume.a1"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Volume.a1</span></tt></a> attribute of a simple volume (i.e. defined directly
+by the class constructor, not as union or intersection) returns the constructor
+arguments, thus the second element of this attribute is the surface definition.
+In the loop all surfaces are collected into the list <tt class="docutils literal"><span class="pre">l</span></tt> that is used to map
+each surface instance to an integer number, see function <tt class="docutils literal"><span class="pre">m</span></tt>.  The
+<a class="reference internal" href="#pirs.mcnp.Surface.volume" title="pirs.mcnp.Surface.volume"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Surface.volume()</span></tt></a> method returns a volume representing the
+macrobody&#8217;s exterior in terms of simple surfaces. It is used in the example to
+generate geometry description of cells representing both interior and exterior
+of the macrobody.  Using the same mapping, we generate the surface cards, thus
+ensuring that surface IDs in the surface cards block is consistent with
+description of cells.</p>
+<p>In this example, we defined explicitly the mapping to set surface IDs. This was
+done as illustration, there are other means to set automatically surface, cell
+and material numbers, see below.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The low-level interface was developed keeping in mind rather simple
+geometries that can be described by vertical cylinders and boxes with facets
+perpendicular to the coordinate axes. Therefore, only vertical cylinder
+macrobodies (i.e. parallel to the 3-rd coordinate axis) will be handled
+properly, although no parameters check is done at the initialization time.</p>
+</div>
+</div>
+<div class="section" id="cells-and-models">
+<h2>Cells and models<a class="headerlink" href="#cells-and-models" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#pirs.mcnp.Cell" title="pirs.mcnp.Cell"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Cell</span></tt></a> class represents a container that stores
+cell-related information: material, geometry and cell options. Cell geometry
+must be specified using the <a class="reference internal" href="#pirs.mcnp.Volume" title="pirs.mcnp.Volume"><tt class="xref py py-class docutils literal"><span class="pre">Volume</span></tt></a> and
+<a class="reference internal" href="#pirs.mcnp.Surface" title="pirs.mcnp.Surface"><tt class="xref py py-class docutils literal"><span class="pre">Surface</span></tt></a> classes, and material &#8211; useing the
+<a class="reference internal" href="#pirs.mcnp.Material" title="pirs.mcnp.Material"><tt class="xref py py-class docutils literal"><span class="pre">Material</span></tt></a> class. Cell options (e.g <tt class="docutils literal"><span class="pre">lat</span></tt>, <tt class="docutils literal"><span class="pre">fill</span></tt>,
+<tt class="docutils literal"><span class="pre">imp:n</span></tt> etc.) are specified using the <a class="reference internal" href="#pirs.mcnp.Cell.opt" title="pirs.mcnp.Cell.opt"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Cell.opt</span></tt></a> attribute,
+which is a dictionary with only particular keys allowable (see
+<a class="reference internal" href="#pirs.mcnp.cells.CellOpts" title="pirs.mcnp.cells.CellOpts"><tt class="xref py py-class docutils literal"><span class="pre">CellOpts</span></tt></a> class).  Although there is a method to
+generate cell cards for the MCNP input, <a class="reference internal" href="#pirs.mcnp.Cell.card" title="pirs.mcnp.Cell.card"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Cell.card()</span></tt></a>, its direct
+use makes no sense, sinse one still needs to specify durface, cell and material
+IDs.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.mcnp</span> <span class="kn">import</span> <span class="n">Material</span><span class="p">,</span> <span class="n">Surface</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">Model</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+
+<span class="c"># Cell 1 </span>
+<span class="n">c1</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="s">&#39;Fe&#39;</span><span class="p">)</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">(</span><span class="s">&#39;so 8.0&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">volume</span><span class="p">()</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s">&#39;imp:n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c"># Cell 2</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="o">-</span><span class="n">c1</span><span class="o">.</span><span class="n">vol</span>
+
+<span class="c"># direct use of cells</span>
+<span class="k">print</span> <span class="n">c1</span><span class="o">.</span><span class="n">card</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">c2</span><span class="o">.</span><span class="n">card</span><span class="p">()</span>
+
+<span class="c"># cells in a model</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="n">m</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">cards</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">c</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>{ID} {mat} {rho} {geom} imp:n=1                                                   $  comment
+{ID} 0  {geom} imp:n=0                                                            $  comment
+MESSAGE:  datapath=/home/local/KIT/rx8040/data/mcnp/all_jeff
+
+c title
+1 1 -10.0 1 imp:n=1                                                               $  comment
+2 0  -1 imp:n=0                                                                   $  comment
+
+c surfaces
+1 so  8.0
+
+c data cards
+c materials
+m1                                                                                $  Fe at 300.0 K 
+     26054.31c  5.84500e-02
+     26056.31c  9.17540e-01
+     26057.31c  2.11900e-02
+     26058.31c  2.82000e-03
+c tallies
+c kcode 500  1.0  20  100  j  j  100000  j 
+prdmp j j 1                                                                       $  write mctal file
+</pre></div>
+</div>
+<p>In this example, neither material nor geometry is resolved when cells <tt class="docutils literal"><span class="pre">c1</span></tt>
+and <tt class="docutils literal"><span class="pre">c2</span></tt> are printed directly, sinse there is no rule to set material and
+surface IDs. This task is accomplished by the <a class="reference internal" href="#pirs.mcnp.Model" title="pirs.mcnp.Model"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Model</span></tt></a> class
+that is basically a list of cells. Cells describing the model are added to the
+<a class="reference internal" href="#pirs.mcnp.Model.cells" title="pirs.mcnp.Model.cells"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.mcnp.Model.cells</span></tt></a> list attribute. When converting to a string, or
+as in the example, when calling the <a class="reference internal" href="#pirs.mcnp.Model.cells" title="pirs.mcnp.Model.cells"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.mcnp.Model.cells()</span></tt></a> method, all
+cells in the model are analysed: IDs are set to unique materials and surfaces
+thus providing information for the cell, surface and material cards.</p>
+<p>Setting of IDs for surfaces and materials is done with the help of the
+<a class="reference internal" href="#pirs.mcnp.SurfaceCollection" title="pirs.mcnp.SurfaceCollection"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.SurfaceCollection</span></tt></a> and <a class="reference internal" href="#pirs.mcnp.MaterialCollection" title="pirs.mcnp.MaterialCollection"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.MaterialCollection</span></tt></a>
+classes. They both have the <a class="reference internal" href="#pirs.mcnp.SurfaceCollection.index" title="pirs.mcnp.SurfaceCollection.index"><tt class="xref py py-meth docutils literal"><span class="pre">index()</span></tt></a> method,
+which takes as argument a surface or material instance, adds it to the
+collection if it is not already there, and returns its index, which was
+attached to this particular instance when it was added to the collection.</p>
+</div>
+<div class="section" id="start-mcnp">
+<h2>Start MCNP<a class="headerlink" href="#start-mcnp" title="Permalink to this headline">¶</a></h2>
+<p>To manually add cards to the automatically generated input files, there are
+<a class="reference internal" href="#pirs.mcnp.Model.amc" title="pirs.mcnp.Model.amc"><tt class="xref py py-attr docutils literal"><span class="pre">Model.amc</span></tt></a>, <a class="reference internal" href="#pirs.mcnp.Model.acc" title="pirs.mcnp.Model.acc"><tt class="xref py py-attr docutils literal"><span class="pre">Model.acc</span></tt></a>, <a class="reference internal" href="#pirs.mcnp.Model.asc" title="pirs.mcnp.Model.asc"><tt class="xref py py-attr docutils literal"><span class="pre">Model.asc</span></tt></a> and <a class="reference internal" href="#pirs.mcnp.Model.adc" title="pirs.mcnp.Model.adc"><tt class="xref py py-attr docutils literal"><span class="pre">Model.adc</span></tt></a>
+list attributes containing strings that will be added to the message, cell,
+surface or data blocks. In this way one can define the source distribution or
+add manually cells.</p>
+<p>The MCNP code can be started on the input file. The <a class="reference internal" href="#pirs.mcnp.Model.wp" title="pirs.mcnp.Model.wp"><tt class="xref py py-attr docutils literal"><span class="pre">Model.wp</span></tt></a> attribute is
+an instance of the <tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.McnpWorkPlace</span></tt> that can be used to specify
+directory names where the input file will be written and MCNP code started. The <a class="reference internal" href="#pirs.mcnp.Model.run" title="pirs.mcnp.Model.run"><tt class="xref py py-meth docutils literal"><span class="pre">Model.run()</span></tt></a> method
+prepares all necessary files and can be used to start MCNP in different modes (neutron transport, plot geometry).</p>
+<p>TODO: example showing work with Model.wp and Model.run().</p>
+</div>
+<div class="section" id="docstrings">
+<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pirs.mcnp.Xsdir">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Xsdir</tt><big>(</big><em>path=None</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for data from xsdir file.</p>
+<p>Data can be added manually or read from existing file.</p>
+<dl class="attribute">
+<dt id="pirs.mcnp.Xsdir.awr">
+<tt class="descname">awr</tt><a class="headerlink" href="#pirs.mcnp.Xsdir.awr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property represents the &#8216;atomic weight ratios&#8217; section of xsdir
+file. This is a dictionary: keys are ZAIDs, values are nuclide
+masses in terms of awr.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Xsdir.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes data from awr, dir and path.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Xsdir.datapath">
+<tt class="descname">datapath</tt><a class="headerlink" href="#pirs.mcnp.Xsdir.datapath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns path to the xsdir file, if the data in the xsdir intance was
+read from a file.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.mcnp.Xsdir.default">
+<em class="property">classmethod </em><tt class="descname">default</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default system xsdir file.</p>
+<p>Returns an instance of the <tt class="docutils literal"><span class="pre">Xsdir</span></tt> class containing data from the <tt class="docutils literal"><span class="pre">$DATAPATH/xsdir</span></tt> file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Xsdir.dir">
+<tt class="descname">dir</tt><a class="headerlink" href="#pirs.mcnp.Xsdir.dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list whose elements represent lines from the directory section of the
+xsdir file. Elements are instances of the DirEntry() class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Xsdir.filename">
+<tt class="descname">filename</tt><a class="headerlink" href="#pirs.mcnp.Xsdir.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the xsdir file, if the data in the xsdir instance
+were read from a file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Xsdir.find_thermal">
+<tt class="descname">find_thermal</tt><big>(</big><em>namepart</em>, <em>T</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir.find_thermal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of thermal data containing string namepart, closest to
+temperature T (in K).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Xsdir.read">
+<tt class="descname">read</tt><big>(</big><em>path</em>, <em>append=False</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read existing xsdir file.</p>
+<p>The path argument specifies relative or absolute path to the 
+xsdir file.</p>
+<p>If the optional argument append is True, data read from the xsdir file are
+appended to the data allready stored in the instance of Xsdir().
+Otherwise, the clear() method is called before reading the file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Xsdir.suffix">
+<tt class="descname">suffix</tt><big>(</big><em>ZAID</em>, <em>T=None</em>, <em>xstype='c'</em>, <em>smin=None</em>, <em>smax=None</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Xsdir.suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find suffices of the cross-section data of type xstype describing ZAID
+at temperature T. T must be specified in Kelvin.</p>
+<p>Two suffices are returned, for cross-sections at temperatures closest
+to T, below and above T.</p>
+<p>If smin or smax are specified, they define interval of suffixes that
+are searched for the closest temperature.</p>
+<p>The returned value is always a list of two tuples, in the form [(T1,
+S1), (T2, S2)], where T1 and T2 are cross-section temperatures below
+and above T, and S1 and S2 are the correspondent suffices.</p>
+<p>If T is not specified, T1 and S1 are parameters of the first
+cross-section data found in the directory section for nuclide defined
+by ZAID. In this case, T2 and S2 are the same as T1 and S1.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.Material">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Material</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object-oriented representation of material composition for MCNP.</p>
+<p>Constructor arguments are passed to the constructor of the parent class, see description of
+available arguments there.</p>
+<p>One can setup material composition, temperature and specify xsdir file, which is used to find 
+cross-section data suffixes.</p>
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.T">
+<tt class="descname">T</tt><a class="headerlink" href="#pirs.mcnp.Material.T" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temperature of material, K</p>
+<p>Material temperature is used to find proper suffix (or the pair of
+suffices) in xsdir file.</p>
+<p>It is also used to find the most close thermal data, if the
+<cite>self.thermal</cite> attribute is specified.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.Tif">
+<tt class="descname">Tif</tt><a class="headerlink" href="#pirs.mcnp.Material.Tif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tempareture interpolating function.</p>
+<p>A function that takes as arguments temperatures T, T1 and T2, and
+returns fractions f1 and f2 of cross-sections evaluated at temperatures
+T1 and T2 used to represent a material at temperature T.  It must have
+the following signature:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function is used when the temperature of material is set to a
+value than cannot be found in the xsdir file. In this case, each
+isotope of the material at temperature T is represented as a mixture of
+two, at temperatures T1 and T2. The temperatures T1 and T2 are found in
+xsdir automatically, being the closest to T from below and above.</p>
+<p>Note that values T1 and T2 are usually defined from the xsdir file,
+where temperature is given originally in MeV (as kT), and the material
+temperature T is given in Kelvin. Thus, even if one specifies T as &#8220;a
+temperature from xsdir&#8221;, it will not much T1 or T2 exactly. To avoid
+unnecessary cross-section data in the material specification, the user
+is responsible to provide the logic inside func to set f1 or f2 exactly to
+1.0 or to 0.0 even if T does not match exactly, but is close to T1 or T2.</p>
+<p>Cross sections at temperature T1 and T2 appear in the material
+specification only if the correspondent fraction, f1 or f2, is nonzero.</p>
+<p>By default, the <cite>auxiliary.xs_interpolation.sqrT()</cite> function is used, which
+describes the sqrt(T) interpolation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Material.card">
+<tt class="descname">card</tt><big>(</big><em>formatted=True</em>, <em>suffixes=True</em>, <em>smin=None</em>, <em>smax=None</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Material.card" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a multi-line string with the material cards for MCNP input.</p>
+<p>The returned string generally represents two cards, m and mt.</p>
+<p>The <cite>formatted</cite> optional argument defines if the lines in the string
+are wrapped to fit to 80 characters.</p>
+<p>The <cite>suffixes</cite> optional argument defines if suffixes for particular
+cross-section sets are printed or not.</p>
+<p>Optional parameters smin and smax can take integer values. If they are
+specified, only cross-sections with suffix numbers satisfying smin &lt;=
+XX &lt;= smax are returned.</p>
+<p>The material number is NOT defined explicitly, there is just a
+placeholder for it. Use the format() method of the returned string to put particular 
+material ID:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span class="c"># put 1 as material number</span>
+<span class="go">m1 $ mixture  H-001 at 300.0 K </span>
+<span class="go">       1001.31c 1.0000000e+00</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.fmt">
+<tt class="descname">fmt</tt><a class="headerlink" href="#pirs.mcnp.Material.fmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of format strings used to generate card representation of the material.</p>
+<p>The following keys have sense:</p>
+<p>&#8216;zaid&#8217;: format string for ZAIDs
+&#8216;fraction&#8217;: format string for fraction.</p>
+<p>If explicit field index is used (for Python versions &lt; 2.6), it should be set to 0.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.sdict">
+<tt class="descname">sdict</tt><a class="headerlink" href="#pirs.mcnp.Material.sdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitution dictionary.</p>
+<p>A dictionary of the form {ZA1:za1, ZA2:za2, ...}, where
+ZAi and zai are integer numbers representing ZAIDs.</p>
+<p>If a nuclide with ZAID ZAi is not found in xsdir, it is substituted
+with cross-sections for nuclide zai.</p>
+<p>By default, there is no substitutions, the dictionary
+is empty.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.thermal">
+<tt class="descname">thermal</tt><a class="headerlink" href="#pirs.mcnp.Material.thermal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Part of the cross-section data set name for thermal scattering.</p>
+<p>When this property is given, the string representing material in the
+MCNP input file, contains additionaly to <tt class="docutils literal"><span class="pre">m</span></tt> card also <tt class="docutils literal"><span class="pre">mt</span></tt> card.
+The xsdir file is searched for thermal data with names containing
+<cite>thermal</cite> as a substring. If several data sets are found, the one with
+the closest temperature is chosen.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Material.xsdir">
+<tt class="descname">xsdir</tt><a class="headerlink" href="#pirs.mcnp.Material.xsdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of Xsdir() class.</p>
+<p>Suffices to represent material in the MCNP input are defined based on
+the content of this xsdir file and value of attribute T.</p>
+<p>This property can be set to a string, in which case this string should represent path 
+to existing xsdir file, or to an instance of the Xsdir() class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.Surface">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Surface</tt><big>(</big><em>card=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>MCNP surface.</p>
+<p>Instances are immutable.</p>
+<p>The constructor takes a string with usual definition of a surface as
+appears in an input file, except the surface ID. Alternatively, parameters
+of a surface can be specified as keyword arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>card</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; is a string representing the surface card of the MCNP input,
+except the surface number should not be specified, for example
+<tt class="docutils literal"><span class="pre">'+</span> <span class="pre">px</span> <span class="pre">1.0'</span></tt>.</li>
+<li><strong>type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; a string representing the surface type, for example &#8216;px&#8217;.</li>
+<li><strong>refl</strong> (<em>char</em>) &#8211; a character representing the reflection of the surface, for example &#8216;*&#8217;.</li>
+<li><strong>plst</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; a list or tuple  of parameters of the surface.</li>
+<li><strong>cmnt</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; a string representing the surface comment.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.MBTYPES">
+<tt class="descname">MBTYPES</tt><em class="property"> = ['rpp', 'rcc']</em><a class="headerlink" href="#pirs.mcnp.Surface.MBTYPES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Known macrobody surfaces</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.PRECISION">
+<tt class="descname">PRECISION</tt><em class="property"> = 9</em><a class="headerlink" href="#pirs.mcnp.Surface.PRECISION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Precision of surface parameters. Parameters rounded to this number of digits
+when printed to the card or when two surfaces are compared.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.SSTYPES">
+<tt class="descname">SSTYPES</tt><em class="property"> = ['px', 'py', 'pz', 'cz', 'c/z', 'so', 's']</em><a class="headerlink" href="#pirs.mcnp.Surface.SSTYPES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Known simple surfaces</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Surface.card">
+<tt class="descname">card</tt><big>(</big><em>formatted=True</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Surface.card" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns string representing the surface, valid for an MCNP
+input file, except the surface ID.</p>
+<p>If optional argument formatted set to True (default), the
+returned string can contain new-line characters, so that
+the lines fit to 80-characters limit required by the MCNP
+input file syntax.</p>
+<p>This method is used to transform an instance of the <tt class="docutils literal"><span class="pre">Surface()</span></tt> class to a string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Surface.facets">
+<tt class="descname">facets</tt><big>(</big><em>mapp=&lt;function &lt;lambda&gt; at 0x2add5e5f4398&gt;</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Surface.facets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of volumes for each facet of the surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mapp</strong> (<em>func</em>) &#8211; a mapping applied to the facets before passing to the
+<tt class="docutils literal"><span class="pre">Volume()</span></tt> constructor.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of volumes.</td>
+</tr>
+</tbody>
+</table>
+<p>If the surface is a simple surface, the returned list contains single
+element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Surface.is_macrobody">
+<tt class="descname">is_macrobody</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Surface.is_macrobody" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the surface is a macrobody.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.prm">
+<tt class="descname">prm</tt><a class="headerlink" href="#pirs.mcnp.Surface.prm" title="Permalink to this definition">¶</a></dt>
+<dd><p>The tuple of surface parameters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.rfl">
+<tt class="descname">rfl</tt><a class="headerlink" href="#pirs.mcnp.Surface.rfl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reflection of the surface. Can be <tt class="docutils literal"><span class="pre">''</span></tt> (empty string), <tt class="docutils literal"><span class="pre">'*'</span></tt> or <tt class="docutils literal"><span class="pre">'+'</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Surface.tpe">
+<tt class="descname">tpe</tt><a class="headerlink" href="#pirs.mcnp.Surface.tpe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the surface, for expample, <tt class="docutils literal"><span class="pre">'px'</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Surface.volume">
+<tt class="descname">volume</tt><big>(</big><em>mapp=&lt;function &lt;lambda&gt; at 0x2add5e5f4230&gt;</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Surface.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Volume &#8216;above&#8217; the surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mapp</strong> (<em>func</em>) &#8211; a mapping applied to the surface facets before passing to the
+<tt class="docutils literal"><span class="pre">Volume()</span></tt> constructor.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">an instance of the <tt class="docutils literal"><span class="pre">Volume</span></tt> class. The Volume() class defines
+operations of union, intersect and nagation.</td>
+</tr>
+</tbody>
+</table>
+<p>Instances of the Volume() class returned by this method are always
+defined via simple (not macrobody) surfaces.  To get an instance of the
+Volume() class defined via a macrobody surface, use the constructor
+Volume() directly.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.Volume">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Volume</tt><big>(</big><em>sign=1</em>, <em>surface=None</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of the cell geometry using signed surfaces and
+union, intersection and negation operations.</p>
+<p>A new volume instance is created by specifying the sign and the surface
+description. The surface description can be of any type (although in real
+MCNP applications, an instance of the Surface class must be used):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>  <span class="c"># &#39;a&#39; here is an abstract surface definition </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v1</span>
+<span class="go">a</span>
+</pre></div>
+</div>
+<p>There are two special volumes representing by tuples (1,) and (-1,). The first 
+means &#8216;empty set&#8217;, the second is &#8216;whole space&#8217;. To create the emtpy set, multiply
+usual volume by 0. To create whole space, multiply empty set by -1:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">()</span><span class="o">*</span><span class="mi">0</span>   <span class="c"># empty set</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">e</span>
+<span class="go">Empty Set</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="o">-</span><span class="n">e</span>           <span class="c"># whole space</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">w</span>
+<span class="go">Whole space</span>
+</pre></div>
+</div>
+<p>Instances of the Volume() class support operations of union &#8216;|&#8217;, intersection &#8216;&amp;&#8217; and negation &#8216;-&#8216;.</p>
+<dl class="attribute">
+<dt id="pirs.mcnp.Volume.a">
+<tt class="descname">a</tt><a class="headerlink" href="#pirs.mcnp.Volume.a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of operands, [self.a1, self.a2].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Volume.a1">
+<tt class="descname">a1</tt><a class="headerlink" href="#pirs.mcnp.Volume.a1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first operand of the volume, if the volume was defined
+using intersection or union operators. For a simple volume, i.e.
+defined directly by the Volume() constructor, this is a tuple (sign,
+surface).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">a1</span>
+<span class="go">(1, &#39;a&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">a1</span>                               
+<span class="go">&lt;__main__.Volume object at ...&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Volume.a2">
+<tt class="descname">a2</tt><a class="headerlink" href="#pirs.mcnp.Volume.a2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the second operand of the Volume class, if the volume was
+defined using union or intersection. For a simple Volume returns 0.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">a2</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">a2</span>    
+<span class="go">&lt;__main__.Volume object at ...&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.copy">
+<tt class="descname">copy</tt><big>(</big><em>mapp=&lt;function &lt;lambda&gt; at 0x2add5e5f4d70&gt;</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a (deep) copy of the volume.</p>
+<p>The returned volume has the same structure as the original one. The
+surface definitions are defined using the  mapping mapp applied to the
+original surface definitions.</p>
+<p>UPD: mapp can be a dictionary.</p>
+<p>Lets create a complex volume:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">]:</span>
+<span class="gp">... </span>    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">&amp;</span> <span class="n">Volume</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">|</span> <span class="n">v</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">(((a -b):(a -b)) -c):(((a -b):(a -b)) -c)</span>
+</pre></div>
+</div>
+<p>A copy of v with the upper() method of a string upplied:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">(((A -B):(A -B)) -C):(((A -B):(A -B)) -C)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.intersection_operands">
+<tt class="descname">intersection_operands</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.intersection_operands" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a volume is an intersection of simple or compound volumes, returns two lists.</p>
+<p>The first contains simple volumes, the second &#8211; compound volumes that defined as a union.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_empty">
+<tt class="descname">is_empty</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the volume is the specifal empty volume.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_intersection">
+<tt class="descname">is_intersection</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if self was obtained only by intersection operations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_simple">
+<tt class="descname">is_simple</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the volume is simple, i.e. not a result of operation on another volumes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_special">
+<tt class="descname">is_special</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_special" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the volume is the whole or empty volume.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_union">
+<tt class="descname">is_union</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_union" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if self was obtained only by union operations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.is_universal">
+<tt class="descname">is_universal</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.is_universal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the volume is the whole volume (universal set).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Volume.op">
+<tt class="descname">op</tt><a class="headerlink" href="#pirs.mcnp.Volume.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the operator used to create the volume. For a simple volume
+returns None.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">op</span>
+<span class="go">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">op</span>
+<span class="go">&#39;and&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">op</span>
+<span class="go">&#39;or&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pirs.mcnp.Volume.sort_operands">
+<em class="property">static </em><tt class="descname">sort_operands</tt><big>(</big><em>op1</em>, <em>op2</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.sort_operands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts operands for the &amp; and | operations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.surfaces">
+<tt class="descname">surfaces</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of surface definitions used to define the volume.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">&amp;</span> <span class="n">v2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">surfaces</span><span class="p">()</span>
+<span class="go">[&#39;a&#39;, &#39;b&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">v</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">surfaces</span><span class="p">()</span>
+<span class="go">[&#39;c&#39;, &#39;a&#39;, &#39;b&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Volume.volumes">
+<tt class="descname">volumes</tt><big>(</big><em>reference=None</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Volume.volumes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of simple volumes used to define the volume.</p>
+<p>TODO: describe the <cite>reference</cite> optional argument.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.Cell">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Cell</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of the MCNP cell card.</p>
+<p>This is a container for cell material, density, geometry description and options,
+that can generate string representation of the cell for the MCNP input file.</p>
+<p>Constructor can take optional keyword arguments to specify cell paramters and options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rho</span><span class="o">=-</span><span class="mf">10.</span><span class="p">,</span> <span class="n">vol</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">cmt</span><span class="o">=</span><span class="s">&#39;comment&#39;</span><span class="p">,</span> <span class="n">ID</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="s">&#39;imp:n&#39;</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">c</span>
+<span class="go">10 1 -10.0 -1 imp:n=2.5  $ comment</span>
+</pre></div>
+</div>
+<p>Cell parameters can be changed after initialization by setting the correspondent attributes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s">&#39;imp:n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">c</span>
+<span class="go">5 4 -1.0 -a imp:n=0  $ comment</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.ID">
+<tt class="descname">ID</tt><a class="headerlink" href="#pirs.mcnp.Cell.ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell ID.</p>
+<p>At initialization set to the string &#8216;{ID}&#8217;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Cell.card">
+<tt class="descname">card</tt><big>(</big><em>formatted=True</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Cell.card" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string representing the cell in the MCNP input file.</p>
+<p>If optional argument formatted set to True (default), the returned
+string can contain new-line characters delimiting the string to lines
+that fit to 80-characters limit imposed by the MCNP input file syntax.</p>
+<p>Representation of cell ID, material and volume depends on the type of
+correspondent attributes.</p>
+<p>If cell ID is a positive integer or a string, it is printed as is.
+Otherwise, placeholder {ID} is printed.</p>
+<p>If mat is an nonnegative integer or a string, it is printed
+together with density rho.  Otherwise, placeholder {mat} {rho} is
+printed.</p>
+<p>If vol is an instance of the Volume() class containing definitions that
+utilize the Surface() class, or if it is an instance of the Surface()
+class, placeholder {geom} is printed. Otherwise, the string
+representation of vol is printed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.cmt">
+<tt class="descname">cmt</tt><a class="headerlink" href="#pirs.mcnp.Cell.cmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell comment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.mat">
+<tt class="descname">mat</tt><a class="headerlink" href="#pirs.mcnp.Cell.mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Material of the cell.</p>
+<p>Can be an integer or an instance of the Material() class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.opt">
+<tt class="descname">opt</tt><a class="headerlink" href="#pirs.mcnp.Cell.opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of cell options.</p>
+<p>An instance of the CellOpt() class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.rho">
+<tt class="descname">rho</tt><a class="headerlink" href="#pirs.mcnp.Cell.rho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell density.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Cell.vol">
+<tt class="descname">vol</tt><a class="headerlink" href="#pirs.mcnp.Cell.vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cell geometry (cell volume).</p>
+<p>Can be set to an integer, string, or to an instance of the Volume()
+class.</p>
+<p>The setter method accepts also a tuple of the form (sign, def), which
+is transformed to an instance of the Volume() class.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;px&#39;</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;px&#39;</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">vol</span> <span class="o">==</span> <span class="n">c2</span><span class="o">.</span><span class="n">vol</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.cells.CellOpts">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.cells.</tt><tt class="descname">CellOpts</tt><a class="reference internal" href="_modules/pirs/mcnp/cells.html#CellOpts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.mcnp.cells.CellOpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictioary to store cell options.</p>
+<p>This is a dictionary that allows only particular string keys. Additionally,
+its string representation can be used directly in the input file within
+cell card.</p>
+<dl class="attribute">
+<dt id="pirs.mcnp.cells.CellOpts.VALIDKEYS">
+<tt class="descname">VALIDKEYS</tt><em class="property"> = ('imp:n', 'u', 'fill', 'tmp', 'lat')</em><a class="headerlink" href="#pirs.mcnp.cells.CellOpts.VALIDKEYS" title="Permalink to this definition">¶</a></dt>
+<dd><p>tuple of valid cell option names.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.cells.CellOpts.getvalue">
+<tt class="descname">getvalue</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="_modules/pirs/mcnp/cells.html#CellOpts.getvalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.mcnp.cells.CellOpts.getvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns meaningfull part of the value for options &#8216;fill&#8217;, &#8216;u&#8217; and &#8216;lat&#8217;.</p>
+<p>In general, &#8216;fill&#8217; is a (mulli-line) string that can optionally contain comments.
+This method returns a list of values of this cell option.</p>
+<p>If options were not defined, return 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.SurfaceCollection">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">SurfaceCollection</tt><big>(</big><em>iv=1</em>, <em>step=1</em><big>)</big><a class="headerlink" href="#pirs.mcnp.SurfaceCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to describe a collection of simple surfaces (SS) and macrobodies
+(MB).</p>
+<p>One can ask for a surface index using the <tt class="docutils literal"><span class="pre">index()</span></tt> method of the collection. If a surface
+passed to this method is not in the collecion yet, it is
+added with a unique index.</p>
+<p>The <tt class="docutils literal"><span class="pre">index()</span></tt> method adds only the surfaces (or facets of MB) that
+are not already in the collection.</p>
+<p>The <tt class="docutils literal"><span class="pre">index()</span></tt> method can take as argument an instance of the
+Surface class, or arguments valid for the <tt class="docutils literal"><span class="pre">Surface()</span></tt> constructor.</p>
+<p>When a SS is added to the collection, it is compared to the previously
+added surfaces, including MB facets. Only if it is not found, a new entry is
+added to the collection.</p>
+<p>When a MB is added to the collection, it is compared to the previously
+added SSs, MBs and MB facets. If all facets of MB are allready defined,
+nothing is added. If some of the facets are defined and some are not, the
+missing facets are added as simple surfaces.  If none of the MB facets are
+defined, the MB is added to the collection as MB.</p>
+<p>Initializes new collection.</p>
+<p>iv: initial value, the first elements index.
+step: step for indices.</p>
+<dl class="method">
+<dt id="pirs.mcnp.SurfaceCollection.cards">
+<tt class="descname">cards</tt><big>(</big><em>filter_=&lt;function &lt;lambda&gt; at 0x2add5e5f6410&gt;</em>, <em>formatted=True</em><big>)</big><a class="headerlink" href="#pirs.mcnp.SurfaceCollection.cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of surface cards to represent surfaces in the collection
+in an MCNP input file.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">filter_</span></tt> specifies a boolean-valued mapping, which
+defines whether to print surface with index ID passed to the mapping,
+or not.</p>
+<p>By default it filters out the facets of MBs.</p>
+<p>If the optional argument formatted set to True (default),
+the surface cards are splitted to several lines to fit to
+80 characters, allowed by the MCNP input file syntax.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.SurfaceCollection.index">
+<tt class="descname">index</tt><big>(</big><em>s</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.mcnp.SurfaceCollection.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ID of the surface s.</p>
+<p>If s or some of its facets are not in the collection, they are added with a unique ID.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.MaterialCollection">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">MaterialCollection</tt><big>(</big><em>xsdir=None</em>, <em>*args</em><big>)</big><a class="headerlink" href="#pirs.mcnp.MaterialCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collection of materials with common xsdir.</p>
+<p>Elementes of this collection are instances of the Material class augmented
+with a set of keyword arguments specifying additional attributes for this
+material.</p>
+<p>Giving attribute values separated from the material allows to use the same
+material instance to describe different temperatures, for example.</p>
+<p>One can pass an integer to the index() method. If the collection
+already contains a material with this index, its is just returned.
+Otherwise, an index error is raised. Index 0 is always in the collection.</p>
+<dl class="method">
+<dt id="pirs.mcnp.MaterialCollection.cards">
+<tt class="descname">cards</tt><big>(</big><em>formatted=True</em><big>)</big><a class="headerlink" href="#pirs.mcnp.MaterialCollection.cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of multi-line strings with material cards.</p>
+<p>If the optional argument formatted is True (default),
+the strings in the list are wrapped to fit to 
+80 characters of the MCNP input line maximal length.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.MaterialCollection.index">
+<tt class="descname">index</tt><big>(</big><em>mat</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.mcnp.MaterialCollection.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns index of material mat.</p>
+<p>Argument <cite>mat</cite> can be an instance of the Material() class, or an integer.</p>
+<p>When <cite>mat</cite> is an instance of the Material() class:</p>
+<blockquote>
+<div>If mat not yet in the collecion, it is added. Optional arguments specify material
+attributes to be changed, when material <cite>mat</cite> is processed. In this way, materials
+that differ only by temperature, can be represented with the same instance of the Material()
+class.</div></blockquote>
+<p>When <cite>mat</cite> is an integer:</p>
+<blockquote>
+<div>If a material with this index allready exists, this index is returned. If there is no
+element with this index, the IndexError is raised.</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.mcnp.Model">
+<em class="property">class </em><tt class="descclassname">pirs.mcnp.</tt><tt class="descname">Model</tt><big>(</big><em>SurfaceCollectionClass=&lt;class 'pirs.mcnp.surfaces.SurfaceCollection'&gt;</em>, <em>MaterialCollectionClass=&lt;class 'pirs.mcnp.material.MaterialCollection'&gt;</em>, <em>TallyCollectionClass=&lt;class 'pirs.mcnp.tallies.TallyCollection'&gt;</em>, <em>CellCounterClass=&lt;class 'pirs.mcnp.auxiliary.counters.Counter'&gt;</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model is a list of cells with common collection of
+materials, surfaces and tallies.</p>
+<p>One setups the model by adding instances of the Cell class to the model.cells
+list. When the model is processed (for example, when converted to a
+string), each cell from the list is analysed: cells are added to a
+collection of cells, materials and surfaces used in the definition of cells
+are added to the material and surface collections. Collections are used to
+assign unique numbers (IDs) to cells, materials, surfaces, etc. When IDs
+are defined, a multi-line string representing the content of MCNP input
+file, is generated.</p>
+<p>Cell, material, surface and tally IDs are assigned automatically.</p>
+<p>In this way, cell and surface blocks, as well as part of the data block
+containig material and tally description of MCNP input file are generated
+automatically. One has also possibility to add lines to each block
+manually.</p>
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.acc">
+<tt class="descname">acc</tt><a class="headerlink" href="#pirs.mcnp.Model.acc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of additional cell cards. Each list element must be a string
+representing one cell card.</p>
+<p>Strings from the list are added to the cell block after the cell cards generated automatically.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.adc">
+<tt class="descname">adc</tt><a class="headerlink" href="#pirs.mcnp.Model.adc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of additional data cards. Each list element must be a string
+representing one data card.</p>
+<p>Strings from this list are added to the data block after the material and tally cards generated automatically.</p>
+<p>Note, that the kcode card is treated specially, see the kcode attribute.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.amc">
+<tt class="descname">amc</tt><a class="headerlink" href="#pirs.mcnp.Model.amc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of additional message cards. Each list element must be a string
+representing one message line (do not forget to put 5 spaces at the begining)</p>
+<p>String from this list are added to the message block after the automatically generated cards.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">amc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;     runtpe=rtp1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">amc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;     srctp=__s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">m</span>                                
+<span class="go">MESSAGE:</span>
+<span class="go">     datapath=D:\MCNPDATA\jeff31</span>
+<span class="go">     runtpe=rtp1</span>
+<span class="go">     srctp=__s</span>
+
+<span class="go">c title</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.asc">
+<tt class="descname">asc</tt><a class="headerlink" href="#pirs.mcnp.Model.asc" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of additional surface cards. Each list element must be  a string
+representing one surface card.</p>
+<p>Strings from the list are added to the surface block after the surface cards generated automatically.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Model.cards">
+<tt class="descname">cards</tt><big>(</big><em>formatted=True</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Model.cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of strings representing  MCNP input file.</p>
+<p>If optional argument formatted set to True (default),
+strings can contain the new-line characters so that the 
+lines fit to the 80-characters limit imposed by the MCNP
+input file syntax.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.cellCounter">
+<tt class="descname">cellCounter</tt><a class="headerlink" href="#pirs.mcnp.Model.cellCounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>The instance of the auxiliary.Counter class to enumerate cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.cells">
+<tt class="descname">cells</tt><a class="headerlink" href="#pirs.mcnp.Model.cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of cells. The elements of the list must be instances of the Cell() class.</p>
+<p>Elements can be added to and removed from the list. The processing of
+the cells in the list, i.e. adding the materials and surfaces to the
+common model collections, is done inside the method _process_cells.
+This method is called each time the model is converted to a string.</p>
+<p>Note that the default value of the Cell.vol attribute is a string. This cannot
+be used directly in the MCNP model; geometry of cells that are used in the model
+must be defined with the help of the Volume() and Surface() classes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Model.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Model.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all cells, materials and surfaces from the correspondent collections. The lists of
+additional cards remain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.kcode">
+<tt class="descname">kcode</tt><a class="headerlink" href="#pirs.mcnp.Model.kcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>kcode card.</p>
+<p>An instance of the card_classes.KcodeCard class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Model.keff">
+<tt class="descname">keff</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.mcnp.Model.keff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads last mctal file and returns the combined Keff and its st.dev.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.materialCollection">
+<tt class="descname">materialCollection</tt><a class="headerlink" href="#pirs.mcnp.Model.materialCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the MaterialCollection class. Cell materials are collected
+in this object.</p>
+<p>The MaterialCollection is used to assign unique IDs to each material
+and to ensure that a material does not appear several times in the data
+block of MCNP input file.</p>
+<p>Run _process_model to ensure that the material collection corresponds
+to the actual list of cells.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.mcnp.Model.run">
+<tt class="descname">run</tt><big>(</big><em>mode='r'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.mcnp.Model.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares content of the input file and starts MCNP job.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.surfaceCollection">
+<tt class="descname">surfaceCollection</tt><a class="headerlink" href="#pirs.mcnp.Model.surfaceCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the SurfaceCollection class. Surfaces used to define
+geometry of cells are collected in this object.</p>
+<p>This collection is used to define unique surface IDs and to ensure that
+a surface does not appear in the surface block of MCNP input file
+several times.</p>
+<p>Run the _process_model() method to ensure that the surface collection
+corresponds to the actual list of cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.tallyCollection">
+<tt class="descname">tallyCollection</tt><a class="headerlink" href="#pirs.mcnp.Model.tallyCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the TallyCollection class. Tallies (currently, only mesh tallies)
+can be added to the model by adding them manually to the collection.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.title">
+<tt class="descname">title</tt><a class="headerlink" href="#pirs.mcnp.Model.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>String title of the problem. Goes to the title card in MCNP input file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.wp">
+<tt class="descname">wp</tt><a class="headerlink" href="#pirs.mcnp.Model.wp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the McnpWorkPlace() class.</p>
+<p>Prepares working directory for MCNP and starts the code.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.mcnp.Model.xsdir">
+<tt class="descname">xsdir</tt><a class="headerlink" href="#pirs.mcnp.Model.xsdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>xsdir of the material collection of the model. It is used to define
+suffices in the material cards. Note that instances of Material class
+used in the description of cells can have their own xsdir objects that
+differ from the collection xsdir; the collection xsdir is always used
+to generate string representation of materials of the model.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pirs.mcnp.auxiliary.xs_interpolation"></span><p>Function(s) to represent doppler broading temperature by mixing two other temperatures.</p>
+<dl class="function">
+<dt id="pirs.mcnp.auxiliary.xs_interpolation.linT">
+<tt class="descclassname">pirs.mcnp.auxiliary.xs_interpolation.</tt><tt class="descname">linT</tt><big>(</big><em>T</em>, <em>T1</em>, <em>T2</em><big>)</big><a class="reference internal" href="_modules/pirs/mcnp/auxiliary/xs_interpolation.html#linT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.mcnp.auxiliary.xs_interpolation.linT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to sqrT(), but uses linear interpolation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">linT</span><span class="p">(</span><span class="mi">310</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>   
+<span class="go">(0.9, 0.0999...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linT</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="go">(1.0, 0.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linT</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+<span class="go">(0.0, 1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linT</span><span class="p">(</span><span class="mi">310</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+<span class="go">(0.1, 0.9)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pirs.mcnp.auxiliary.xs_interpolation.sqrT">
+<tt class="descclassname">pirs.mcnp.auxiliary.xs_interpolation.</tt><tt class="descname">sqrT</tt><big>(</big><em>T</em>, <em>T1</em>, <em>T2</em>, <em>rtol=0.1</em><big>)</big><a class="reference internal" href="_modules/pirs/mcnp/auxiliary/xs_interpolation.html#sqrT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.mcnp.auxiliary.xs_interpolation.sqrT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns fractions of XS at temperatures T1 and T2 to represent temperature T.</p>
+<p>Computes fractions of cross-sections at T1 and T2 to represent temperature
+T using the square-root temperature interpolation. T, T1 and T2 must be
+given in absolute units (Kelvin or MeV, for example).</p>
+<p>Returns a tuple (f1, f2), where f1 and f2 are fractions of cross-sections
+at T1 and T2, respectively.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">rtol</span></tt> is used to specify distance from T1 or T2, at which
+interpolation takes place.  For example, if T is close to T1, i.e. when</p>
+<div class="highlight-python"><div class="highlight"><pre>|T-T1| &lt; |T1-T2|*rtol,
+</pre></div>
+</div>
+<p>interpolation is not done, tuple (1.0, 0.0) is returned. In
+this way one can exclude interpolation, when T differs from existing
+temperatures T1 or T2 only negligibly.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sqrT</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>   
+<span class="go">(0.48207..., 0.5179...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sqrT</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>   
+<span class="go">(0.5179..., 0.48207...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sqrT</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>   
+<span class="go">(1.0, 0.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sqrT</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>   
+<span class="go">(0.0, 1.0)</span>
+</pre></div>
+</div>
+<p>Fractions f1 and f2 are defined from the following equations:</p>
+<div class="highlight-python"><div class="highlight"><pre>(1)  sigma(T) = sigma(T1)*f1  +  sigma(T2)*f2     # this is how cross-sections can be mixed in MCNP 
+(2)  sigma(T) is proportional to T^1/2            # see van der Marck, Meulekamp, Hogenbirk, M&amp;C2005
+(3)  f1 + f2 = 1                                  # this is how nuclide fractions normed in MCNP material. 
+</pre></div>
+</div>
+<p>from this equaitons, given T, T1 and T2, one can express f1 and f2:</p>
+<div class="highlight-python"><div class="highlight"><pre>(4)   f1 = (T^1/2 - T2^1/2) / (T1^1/2 - T2^1/2)
+(5)   f2 = 1. - f1
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirs.mcnp subpackage</a><ul>
+<li><a class="reference internal" href="#materials">Materials</a></li>
+<li><a class="reference internal" href="#surfaces-and-volumes">Surfaces and volumes</a></li>
+<li><a class="reference internal" href="#cells-and-models">Cells and models</a></li>
+<li><a class="reference internal" href="#start-mcnp">Start MCNP</a></li>
+<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pirs.solids.html"
+                        title="previous chapter">pirs.solids subpackage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.scf.html"
+                        title="next chapter">pirs.scf2 subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.mcnp.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.scf.html" title="pirs.scf2 subpackage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pirs.solids.html" title="pirs.solids subpackage"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

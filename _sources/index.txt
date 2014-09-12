@@ -1,0 +1,77 @@
+.. PIRS manual documentation master file, created by
+   sphinx-quickstart on Tue May 20 12:16:01 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to PIRS documentation!
+=======================================
+
+PIRS (Python Interfaces for Reactor Simulations) simplifies work flow with reacor 
+simulation codes. It provides a geometry constructor that can be used to describe 
+a model geometry, and interfaces to computational codes.
+
+Currently implemented interfaces to the MCNP5 Monte-Carlo neturon transport code and 
+to the SCF sub-channel thermo-hydraulics code.
+
+The PIRS package consists of several sub-packages that can be classified by
+their functionality into four groups: geometry constructor, low-level code
+interfaces, high-level code interfaces, subpackages with base classes used by
+others and utilities. 
+
+The geometry constructor is used to describe model
+geometry in terms, independent on particular computational code: 
+
+.. toctree::
+   :maxdepth: 2
+
+   pirs.solids
+
+
+Low-level interfaces give possibility to set any
+paramters in the input file, start the code, read output:
+
+.. toctree::
+   :maxdepth: 2
+
+   pirs.mcnp
+   pirs.scf
+
+High-level level interfaces are
+used to convert a model constructed with geometry constructor to the input
+file, to start the code and to read its output (using the correspondent
+low-level interface) and to put calculation results back into the model:
+
+.. toctree::
+   :maxdepth: 2
+
+   pirs.hmcnp
+   pirs.hscf
+
+Classes providing basis functionality that are used in the other subpackages,
+are collected in the ``pirs.core`` subpackage:
+
+.. toctree::
+   :maxdepth: 2
+
+   pirs.core.scheduler
+   pirs.core.tramat
+   pirs.core.trageom
+
+
+..
+   doc_example
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+.. lksdjf 
+   pirs.core.tramat
+   pirs.core.trageom
+   pirs.mcnp 

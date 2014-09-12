@@ -1,0 +1,538 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.solids.positions &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="../../../index.html" />
+    <link rel="up" title="pirs.solids" href="../solids.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../solids.html" accesskey="U">pirs.solids</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pirs.solids.positions</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Add positioning to the Tree elements.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">copysign</span>
+<span class="kn">from</span> <span class="nn">..core.trageom</span> <span class="kn">import</span> <span class="n">Vector3</span>
+<span class="kn">from</span> <span class="nn">..core.trageom.vector</span> <span class="kn">import</span> <span class="n">_are_close</span>
+<span class="kn">from</span> <span class="nn">.tree</span> <span class="kn">import</span> <span class="n">Tree</span>
+
+<div class="viewcode-block" id="RGrid"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid">[docs]</a><span class="k">class</span> <span class="nc">RGrid</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__c</span> <span class="o">=</span> <span class="n">container</span>   <span class="c"># link to the solid containing the grid.</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">car</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grid pitch along x axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__x</span>
+
+    <span class="nd">@x.setter</span>
+<div class="viewcode-block" id="RGrid.x"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.x">[docs]</a>    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__x</span> <span class="o">=</span> <span class="n">val</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grid pitch along y axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__y</span>
+
+    <span class="nd">@y.setter</span>
+<div class="viewcode-block" id="RGrid.y"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.y">[docs]</a>    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__y</span> <span class="o">=</span> <span class="n">val</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grid pitch along z axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__z</span>
+
+    <span class="nd">@z.setter</span>
+<div class="viewcode-block" id="RGrid.z"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.z">[docs]</a>    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__z</span> <span class="o">=</span> <span class="n">val</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="RGrid.container"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.container">[docs]</a>    <span class="k">def</span> <span class="nf">container</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Link to the solid containing the grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span>
+</div>
+<div class="viewcode-block" id="RGrid.position"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.position">[docs]</a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coordinate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns position of element ijk with respect to the grid&#39;s container.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">coordinate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span> <span class="o">+</span> <span class="n">Vector3</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">*</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">*</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">*</span><span class="n">k</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;x&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">*</span><span class="n">i</span>
+            <span class="k">elif</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;y&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">*</span><span class="n">j</span>
+            <span class="k">elif</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;z&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">*</span><span class="n">k</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;coordinate {} not implemented&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coordinate</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="RGrid.index"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns index i,j,k of the element containing point p (with respect to the grid&#39;s container)</span>
+
+<span class="sd">        index(x=5, y=7, z=8) # returns tuple (i, j, k)</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ox</span><span class="p">,</span> <span class="n">oy</span><span class="p">,</span> <span class="n">oz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">car</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">o</span> <span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="n">ox</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="n">oy</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">oz</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)):</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">o</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">copysign</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">/</span><span class="n">d</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">l</span><span class="p">)</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">res</span> 
+
+        <span class="c"># return NotImplementedError</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Position of the grid&#39;s central element (0,0,0) with respect to the container.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span>
+
+    <span class="nd">@origin.setter</span>
+<div class="viewcode-block" id="RGrid.origin"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.origin">[docs]</a>    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span> <span class="o">=</span> <span class="n">value</span> <span class="c"># TODO: check type of value.</span>
+</div>
+<div class="viewcode-block" id="RGrid.set_origin"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.set_origin">[docs]</a>    <span class="k">def</span> <span class="nf">set_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the grid origin so that the grid element (i,j,k) has position (x, y, z) </span>
+<span class="sd">        with respect to the grid&#39;s container.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">i</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">j</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="n">k</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+</div>
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">othr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">othr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">othr</span><span class="o">.</span><span class="n">x</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">othr</span><span class="o">.</span><span class="n">y</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">==</span> <span class="n">othr</span><span class="o">.</span><span class="n">z</span> <span class="ow">and</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__o</span> <span class="o">==</span> <span class="n">othr</span><span class="o">.</span><span class="n">__o</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">othr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">othr</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;grid x={0} y={1} z={2} origin={3}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">car</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns grid dimension along axis specifyed by the character attribute &#39;index&#39;.</span>
+<span class="sd">            </span>
+<span class="sd">        This syntax is similar to Vector3 class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s">&#39;x&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="s">&#39;y&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="s">&#39;z&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&#39;Unsupported index &#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RGrid.extension"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.extension">[docs]</a>    <span class="k">def</span> <span class="nf">extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns tuple (Imin, Imax) of minimal and maximal grid element indices</span>
+<span class="sd">        in the direction along axis a.</span>
+
+<span class="sd">        The argument a can be &#39;x&#39;, &#39;y&#39; or &#39;z&#39;.</span>
+
+<span class="sd">        UPD: the default a is None; in this case the tuple (Imin,</span>
+<span class="sd">        Imax, Jmin, Jmax, Kmin, Kmax) is returned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">)</span>
+            <span class="n">kk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ii</span> <span class="o">+</span> <span class="n">jj</span> <span class="o">+</span> <span class="n">kk</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+            <span class="n">amin</span><span class="p">,</span> <span class="n">amax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s">&#39;rel&#39;</span><span class="p">)</span>
+
+            <span class="c"># float values:</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="p">(</span><span class="n">amax</span> <span class="o">-</span> <span class="n">orig</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">step</span><span class="p">)</span><span class="o">/</span><span class="n">step</span> 
+            <span class="n">fmin</span> <span class="o">=</span> <span class="p">(</span><span class="n">orig</span> <span class="o">-</span> <span class="n">amin</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">step</span><span class="p">)</span><span class="o">/</span><span class="n">step</span> 
+            <span class="c"># check if they are close to integers:</span>
+            <span class="n">Nmax</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">fmax</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span>
+            <span class="k">if</span> <span class="n">_are_close</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="n">Nmax</span><span class="p">):</span>
+                <span class="n">imax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nmax</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">imax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nmax</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">Nmin</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span>
+            <span class="k">if</span> <span class="n">_are_close</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">Nmin</span><span class="p">):</span>
+                <span class="n">imin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nmin</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">imin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nmin</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">imin</span> <span class="o">=</span> <span class="o">-</span><span class="n">imin</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+        <span class="n">dx2</span> <span class="o">=</span> <span class="n">dx</span><span class="o">/</span><span class="mf">2.</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s">&#39;rel&#39;</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">((</span><span class="n">o</span> <span class="o">-</span> <span class="n">dx2</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">dx</span><span class="p">))</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">o</span> <span class="o">-</span> <span class="n">dx2</span><span class="p">)</span><span class="o">/</span><span class="n">dx</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RGrid.used"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.used">[docs]</a>    <span class="k">def</span> <span class="nf">used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if at least one of the grid container&#39;s local children has not None i,j,k attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">children</span><span class="p">:</span> <span class="c">#### .values():</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">indexed</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="RGrid.elements"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.elements">[docs]</a>    <span class="k">def</span> <span class="nf">elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates over index-positioned elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">indexed</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">e</span>
+</div>
+<div class="viewcode-block" id="RGrid.center"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Positions the central element of the grid so that the box circumscribing all inserted grid elements is centered</span>
+<span class="sd">        with repsect to the container.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elst</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Imin</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Kmin</span> <span class="o">=</span> <span class="n">elst</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ijk</span>
+            <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmax</span> <span class="o">=</span> <span class="n">Imin</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Kmin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># there are no index-positioned elements.</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elst</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Imin</span> <span class="o">&gt;</span> <span class="n">e</span><span class="o">.</span><span class="n">i</span><span class="p">:</span> <span class="n">Imin</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">i</span>
+            <span class="k">if</span> <span class="n">Imax</span> <span class="o">&lt;</span> <span class="n">e</span><span class="o">.</span><span class="n">i</span><span class="p">:</span> <span class="n">Imax</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">i</span>
+            <span class="k">if</span> <span class="n">Jmin</span> <span class="o">&gt;</span> <span class="n">e</span><span class="o">.</span><span class="n">j</span><span class="p">:</span> <span class="n">Jmin</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">j</span>
+            <span class="k">if</span> <span class="n">Jmax</span> <span class="o">&lt;</span> <span class="n">e</span><span class="o">.</span><span class="n">j</span><span class="p">:</span> <span class="n">Jmax</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">j</span>
+            <span class="k">if</span> <span class="n">Kmin</span> <span class="o">&gt;</span> <span class="n">e</span><span class="o">.</span><span class="n">k</span><span class="p">:</span> <span class="n">Kmin</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">k</span>
+            <span class="k">if</span> <span class="n">Kmax</span> <span class="o">&lt;</span> <span class="n">e</span><span class="o">.</span><span class="n">k</span><span class="p">:</span> <span class="n">Kmax</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">k</span>
+
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Imin: &#39;</span><span class="p">,</span> <span class="n">Imin</span>
+            <span class="k">print</span> <span class="s">&#39;Imax: &#39;</span><span class="p">,</span> <span class="n">Imax</span>
+            <span class="k">print</span> <span class="s">&#39;Jmin: &#39;</span><span class="p">,</span> <span class="n">Jmin</span>
+            <span class="k">print</span> <span class="s">&#39;Jmax: &#39;</span><span class="p">,</span> <span class="n">Jmax</span>
+            <span class="k">print</span> <span class="s">&#39;Kmin: &#39;</span><span class="p">,</span> <span class="n">Kmin</span>
+            <span class="k">print</span> <span class="s">&#39;Kmax: &#39;</span><span class="p">,</span> <span class="n">Kmax</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Imin</span> <span class="o">+</span> <span class="n">Imax</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Jmin</span> <span class="o">+</span> <span class="n">Jmax</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Kmin</span> <span class="o">+</span> <span class="n">Kmax</span><span class="p">)</span><span class="o">/</span><span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="RGrid.insert"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ijk</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts element into the grid&#39;s container and specifies for the inserted element</span>
+<span class="sd">        that it should be positioned with respect to the ijk-th grid element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ijk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">element</span>
+</div>
+    <span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ijk</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ijk</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RGrid.boundaries"><a class="viewcode-back" href="../../../pirs.solids.html#pirs.solids.positions.RGrid.boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns coordinates of boundaries in direction d with respect to the grid&#39;s container.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dmin</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s">&#39;rel&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">dmin</span><span class="p">]</span>
+        <span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;x&#39;</span><span class="p">:</span>
+            <span class="c"># along x axis.</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;y&#39;</span><span class="p">:</span>
+            <span class="c"># along y axis.</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">y</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s">&#39;z&#39;</span><span class="p">:</span>
+            <span class="c"># along z axis.</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="o">.</span><span class="n">z</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unsupported value of d &#39;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">o</span> <span class="o">+</span> <span class="n">dd</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="n">dd</span><span class="o">*</span><span class="mf">0.5</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dmax</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span>
+
+
+            </div></div>
+<span class="k">class</span> <span class="nc">PositionedTree</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PositionedTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pos</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>           <span class="c"># position of element with respect to its parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span> <span class="o">=</span> <span class="bp">None</span> <span class="c">### RGrid(self)                # grid parameters, used to position children</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__i</span> <span class="o">=</span> <span class="bp">None</span>                           <span class="c"># indices used to position element in the grid of its parent.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__j</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__k</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c">## self.__abspos = None # variable to store computed abspos(). See compile() method</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Index to position solid in the parent&#39;s grid along x axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__i</span>
+
+    <span class="nd">@i.setter</span>
+    <span class="k">def</span> <span class="nf">i</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__i</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">j</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Index to position solid in the parent&#39;s grid along x axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__j</span>
+
+    <span class="nd">@j.setter</span>
+    <span class="k">def</span> <span class="nf">j</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__j</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">k</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Index to position solid in the parent&#39;s grid along x axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__k</span>
+
+    <span class="nd">@k.setter</span>
+    <span class="k">def</span> <span class="nf">k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__k</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Position of the element with respect to its parent. By default at the origin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pos</span>
+
+    <span class="nd">@pos.setter</span>
+    <span class="k">def</span> <span class="nf">pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Vector3</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__pos</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ijk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tuple with element indices spcifying the parent&#39;s grid element where the element</span>
+<span class="sd">        is positioned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="nd">@ijk.setter</span>
+    <span class="k">def</span> <span class="nf">ijk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grid description. Its parameters are used to compute absolute position</span>
+<span class="sd">        of children, if they have other than None i,j,k attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span> <span class="o">=</span> <span class="n">RGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span>
+
+    <span class="k">def</span> <span class="nf">indexed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns Ture if self is positioned using the indices i, j and k.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">abspos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cs</span><span class="o">=</span><span class="s">&#39;abs&#39;</span><span class="p">,</span> <span class="n">coordinate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns absolute position of the element with respect to the tree&#39;s</span>
+<span class="sd">        root.</span>
+
+<span class="sd">        Optional argument cs (by default &#39;abs&#39;) specifies the coordinate</span>
+<span class="sd">        system. Can be &#39;abs&#39;, &#39;rel&#39;, or an instance of the PositionedTree</span>
+<span class="sd">        class. In the latter case, it must be a direct or indirect parent of</span>
+<span class="sd">        self; the returned position is with respect to this parent.</span>
+
+<span class="sd">        Optional argument coordinate defines the coordinate&#39;s name returned by</span>
+<span class="sd">        the method. By default, coordinate is None and the vector itself is</span>
+<span class="sd">        returned. If coordinate is one of &#39;x&#39;, &#39;y&#39;, &#39;z&#39;, &#39;r&#39;, etc. (the</span>
+<span class="sd">        complete list of variables see in the description of the Vector3</span>
+<span class="sd">        class), the correspondent coordinate is returned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cs</span> <span class="o">==</span> <span class="s">&#39;abs&#39;</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+        <span class="k">elif</span> <span class="n">cs</span> <span class="o">==</span> <span class="s">&#39;rel&#39;</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">PositionedTree</span><span class="p">):</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="n">cs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Unsupported type {} or value of cs: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">cs</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">coordinate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">pp</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pp</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">abspos</span><span class="p">(</span><span class="n">cs</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">coordinate</span><span class="o">=</span><span class="n">coordinate</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span><span class="p">():</span>
+                <span class="n">pp</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">__grd</span><span class="o">.</span><span class="n">position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">coordinate</span><span class="p">)</span>
+        <span class="c">###  res = pp + self.pos</span>
+        <span class="k">if</span> <span class="n">coordinate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> 
+        <span class="k">elif</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;x&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">elif</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;y&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">elif</span> <span class="n">coordinate</span> <span class="o">==</span> <span class="s">&#39;z&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown value of the &#39;coordinate&#39; argument: &quot;</span><span class="p">,</span> <span class="n">coordinate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">copy_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">__pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">__grd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__grd</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="nf">copy_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_node</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">newc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">()</span>
+
+            <span class="n">new</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">newc</span><span class="p">)</span>
+            <span class="n">newc</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">i</span>
+            <span class="n">newc</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">j</span>
+            <span class="n">newc</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">k</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+
+        
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../solids.html" >pirs.solids</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

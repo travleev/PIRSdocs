@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to PIRS documentation! &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="#" />
+    <link rel="next" title="pirs.solids subpackage" href="pirs.solids.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.solids.html" title="pirs.solids subpackage"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-pirs-documentation">
+<h1>Welcome to PIRS documentation!<a class="headerlink" href="#welcome-to-pirs-documentation" title="Permalink to this headline">¶</a></h1>
+<p>PIRS (Python Interfaces for Reactor Simulations) simplifies work flow with reacor
+simulation codes. It provides a geometry constructor that can be used to describe
+a model geometry, and interfaces to computational codes.</p>
+<p>Currently implemented interfaces to the MCNP5 Monte-Carlo neturon transport code and
+to the SCF sub-channel thermo-hydraulics code.</p>
+<p>The PIRS package consists of several sub-packages that can be classified by
+their functionality into four groups: geometry constructor, low-level code
+interfaces, high-level code interfaces, subpackages with base classes used by
+others and utilities.</p>
+<p>The geometry constructor is used to describe model
+geometry in terms, independent on particular computational code:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pirs.solids.html">pirs.solids subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.solids.html#simple-model">Simple model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.solids.html#assembly-like-model">Assembly-like model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.solids.html#axial-distribution-of-dependent-variables">Axial distribution of dependent variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.solids.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Low-level interfaces give possibility to set any
+paramters in the input file, start the code, read output:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pirs.mcnp.html">pirs.mcnp subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.mcnp.html#materials">Materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.mcnp.html#surfaces-and-volumes">Surfaces and volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.mcnp.html#cells-and-models">Cells and models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.mcnp.html#start-mcnp">Start MCNP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.mcnp.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pirs.scf.html">pirs.scf2 subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.scf.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>High-level level interfaces are
+used to convert a model constructed with geometry constructor to the input
+file, to start the code and to read its output (using the correspondent
+low-level interface) and to put calculation results back into the model:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pirs.hmcnp.html">pirs.hli.mcnp subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.hmcnp.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pirs.hscf.html">pirs.hli.scf2 subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.hscf.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Classes providing basis functionality that are used in the other subpackages,
+are collected in the <tt class="docutils literal"><span class="pre">pirs.core</span></tt> subpackage:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pirs.core.scheduler.html">pirs.core.scheduler subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.scheduler.html#jobs-and-schedulers">Jobs and schedulers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.scheduler.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pirs.core.tramat.html">pirs.core.tramat subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.tramat.html#nuclides">Nuclides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.tramat.html#mixtures">Mixtures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.tramat.html#data-modules">Data modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pirs.core.tramat.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pirs.core.trageom.html">pirs.core.trageom subpackage</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to PIRS documentation!</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.solids.html"
+                        title="next chapter">pirs.solids subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.solids.html" title="pirs.solids subpackage"
+             >next</a> |</li>
+        <li><a href="#">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

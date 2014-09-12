@@ -1,0 +1,584 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.core.scheduler subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="next" title="pirs.core.tramat subpackage" href="pirs.core.tramat.html" />
+    <link rel="prev" title="pirs.hli.scf2 subpackage" href="pirs.hscf.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.tramat.html" title="pirs.core.tramat subpackage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pirs.hscf.html" title="pirs.hli.scf2 subpackage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-core-scheduler-subpackage">
+<span id="scheduler"></span><h1>pirs.core.scheduler subpackage<a class="headerlink" href="#pirs-core-scheduler-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>To start a computational code, several things need to be done. Where is the
+code executable? What input data and other files does it need? Where it is
+started? To simplify tasks connected to these questions, there are classes
+defined in the <tt class="xref py py-mod docutils literal"><span class="pre">pirs.core.scheduler</span></tt> module helping to create directories, set
+files necessary to start a code, to start it and to wait until it completes.</p>
+<p>A directory containing all files necessary to start a code is described in the
+<a class="reference internal" href="#pirs.core.scheduler.WorkPlace" title="pirs.core.scheduler.WorkPlace"><tt class="xref py py-class docutils literal"><span class="pre">WorkPlace</span></tt></a> class. An instance of this class helps to define directory
+names where a code will be started.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.scheduler</span> <span class="kn">import</span> <span class="n">WorkPlace</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">WorkPlace</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#39;wp&#39;</span>
+
+<span class="c"># create directory</span>
+<span class="n">w</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">w</span><span class="o">.</span><span class="n">report</span>
+
+<span class="c"># create another directory,</span>
+<span class="c"># do not interfere with previously </span>
+<span class="c"># created</span>
+<span class="n">w</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">w</span><span class="o">.</span><span class="n">report</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>&#39;wp0&#39; created by script source/examples/sched_wp1.py at 2014-08-25 06:52:18.679108
+&#39;wp1&#39; created by script source/examples/sched_wp1.py at 2014-08-25 06:52:18.679228
+</pre></div>
+</div>
+<p>When the <a class="reference internal" href="#pirs.core.scheduler.WorkPlace.prepare" title="pirs.core.scheduler.WorkPlace.prepare"><tt class="xref py py-meth docutils literal"><span class="pre">WorkPlace.prepare()</span></tt></a> is called, the current directory is searched
+for already existing directories starting with string specified in the
+<a class="reference internal" href="#pirs.core.scheduler.WorkPlace.prefix" title="pirs.core.scheduler.WorkPlace.prefix"><tt class="xref py py-attr docutils literal"><span class="pre">WorkPlace.prefix</span></tt></a> attribute, in the example <tt class="docutils literal"><span class="pre">wp</span></tt>. If there are no such
+directories, the directory <tt class="docutils literal"><span class="pre">wp0</span></tt> is created. If there already some
+directories with prefix <tt class="docutils literal"><span class="pre">wp</span></tt>, an integer N is chosen so that directory
+<tt class="docutils literal"><span class="pre">wpN</span></tt> does not exist yet, and this directory is created. The
+<a class="reference internal" href="#pirs.core.scheduler.WorkPlace.report" title="pirs.core.scheduler.WorkPlace.report"><tt class="xref py py-attr docutils literal"><span class="pre">WorkPlace.report</span></tt></a> attribute is a string containing the last created
+directory (see also <tt class="xref py py-attr docutils literal"><span class="pre">WrokPlace.lcd</span></tt>) the name of Python script where the
+method was called, and creation time.  The above example results in two newly
+created empty directories, <tt class="docutils literal"><span class="pre">wp0</span></tt> and <tt class="docutils literal"><span class="pre">wp1</span></tt>.</p>
+<p>To put files in newly created directories, the <a class="reference internal" href="#pirs.core.scheduler.WorkPlace.files" title="pirs.core.scheduler.WorkPlace.files"><tt class="xref py py-attr docutils literal"><span class="pre">WorkPlace.files</span></tt></a> list
+attribute must be populated with instances of the
+<a class="reference internal" href="#pirs.core.scheduler.InputFile" title="pirs.core.scheduler.InputFile"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.scheduler.InputFile</span></tt></a> class. This class describes content and
+name of the file to be written or copied to the workplace directory. The content
+can be specified as a string or as a link to existing file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.scheduler</span> <span class="kn">import</span> <span class="n">InputFile</span><span class="p">,</span> <span class="n">WorkPlace</span>
+
+<span class="c"># MCNP input file</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="n">i1</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;inp&#39;</span>
+<span class="n">i1</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="s">&#39;c input file&#39;</span>
+
+<span class="c"># Srctp from previous run</span>
+<span class="n">i2</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="n">i2</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;srctp2&#39;</span>
+<span class="n">i2</span><span class="o">.</span><span class="n">exfile</span> <span class="o">=</span> <span class="s">&#39;./srctp1&#39;</span>
+
+<span class="c"># shell script to start MCNP</span>
+<span class="n">i3</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="n">i3</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;start.sh&#39;</span>
+<span class="n">i3</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="s">&#39;$MCNP inp=inp srctp=srctp2&#39;</span>
+<span class="n">i3</span><span class="o">.</span><span class="n">executable</span> <span class="o">=</span> <span class="bp">True</span>
+
+<span class="c"># workplace</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">WorkPlace</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s">&#39;wp&#39;</span>
+<span class="n">w</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i2</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i3</span><span class="p">)</span>
+
+<span class="n">w</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">w</span><span class="o">.</span><span class="n">report</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">out</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>&#39;wp2&#39; created by script source/examples/sched_if1.py at 2014-08-25 06:52:18.787231
+    &#39;inp&#39; generated from string
+    &#39;srctp2&#39; copied from &#39;./srctp1&#39;
+    &#39;start.sh&#39; generated from string
+scheduler queued job &lt;job cd &#39;wp2&#39;; start.sh&gt;
+scheduler waits with parameters {&#39;sec&#39;: 1}
+ mcnp     ver=5    , ld=09282010  08/25/14 06:52:18                   
+          Thread Name &amp; Version = MCNP5, 1.60
+          Copyright LANS/LANL/DOE - see output file
+                                  _                                      
+            ._ _    _  ._   ._   |_                                      
+            | | |  (_  | |  |_)   _)                                     
+                            |                                            
+  
+
+ bad trouble in subroutine pass1 of imcn                              
+
+ unexpected eof in file inp                                           
+</pre></div>
+</div>
+<p>In this example three input files are created. The first one, <tt class="docutils literal"><span class="pre">i1</span></tt>, will be
+written to a file in the workplace directory with the name defined by the
+<a class="reference internal" href="#pirs.core.scheduler.InputFile.basename" title="pirs.core.scheduler.InputFile.basename"><tt class="xref py py-attr docutils literal"><span class="pre">InputFile.basename</span></tt></a>.  with content defined by the string passed to the
+<a class="reference internal" href="#pirs.core.scheduler.InputFile.string" title="pirs.core.scheduler.InputFile.string"><tt class="xref py py-attr docutils literal"><span class="pre">InputFile.string</span></tt></a> argument. The second input file, <tt class="docutils literal"><span class="pre">i2</span></tt>, is a link to
+an existing file. In this case, the file <tt class="docutils literal"><span class="pre">./srctp1</span></tt> will be copied from the
+current directory to the workplace under the new name, <tt class="docutils literal"><span class="pre">srctp2</span></tt>. The content
+of the third input file, <tt class="docutils literal"><span class="pre">i3</span></tt> is defined again as a stging.  Additionally,
+the <a class="reference internal" href="#pirs.core.scheduler.InputFile.executable" title="pirs.core.scheduler.InputFile.executable"><tt class="xref py py-attr docutils literal"><span class="pre">InputFile.executable</span></tt></a> attribute is set to <tt class="docutils literal"><span class="pre">True</span></tt> meaning that this
+file, when written to the workplace, will be added executable mode.</p>
+<p>As in the previous example, we create an instance of the <a class="reference internal" href="#pirs.core.scheduler.WorkPlace" title="pirs.core.scheduler.WorkPlace"><tt class="xref py py-class docutils literal"><span class="pre">WorkPlace</span></tt></a>
+class, <tt class="docutils literal"><span class="pre">w</span></tt>, but now we append the defined input files <tt class="docutils literal"><span class="pre">i1</span></tt>, <tt class="docutils literal"><span class="pre">i2</span></tt> and
+<tt class="docutils literal"><span class="pre">i3</span></tt> to the list attribute <a class="reference internal" href="#pirs.core.scheduler.WorkPlace.files" title="pirs.core.scheduler.WorkPlace.files"><tt class="xref py py-attr docutils literal"><span class="pre">files</span></tt></a>.  The
+<a class="reference internal" href="#pirs.core.scheduler.WorkPlace.prepare" title="pirs.core.scheduler.WorkPlace.prepare"><tt class="xref py py-meth docutils literal"><span class="pre">prepare()</span></tt></a> method creates a new directory, an we can see in the
+report that this directory is now called <tt class="docutils literal"><span class="pre">wp2</span></tt> and has three files: <tt class="docutils literal"><span class="pre">'inp'</span></tt>
+and <tt class="docutils literal"><span class="pre">'start.sh'</span></tt> are generated from string and <tt class="docutils literal"><span class="pre">'srctp2'</span></tt> is copied from
+another file. The <a class="reference internal" href="#pirs.core.scheduler.WorkPlace.run" title="pirs.core.scheduler.WorkPlace.run"><tt class="xref py py-meth docutils literal"><span class="pre">WorkPlace.run()</span></tt></a> method called at the last line searches
+for input files with executable mode set to <tt class="docutils literal"><span class="pre">True</span></tt> and if founds, starts it
+and waits until particular criteria are satisfied. In the example we specified
+to wait for 1 second, other criteria are possible, see description of the
+<a class="reference internal" href="#pirs.core.scheduler.Scheduler.wait" title="pirs.core.scheduler.Scheduler.wait"><tt class="xref py py-meth docutils literal"><span class="pre">Scheduler.wait()</span></tt></a> method. The <a class="reference internal" href="#pirs.core.scheduler.WorkPlace.run" title="pirs.core.scheduler.WorkPlace.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> method standard
+output generated by the script.</p>
+<div class="section" id="jobs-and-schedulers">
+<h2>Jobs and schedulers<a class="headerlink" href="#jobs-and-schedulers" title="Permalink to this headline">¶</a></h2>
+<p>TODO: to write.</p>
+</div>
+<div class="section" id="docstrings">
+<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pirs.core.scheduler.WorkPlace">
+<em class="property">class </em><tt class="descclassname">pirs.core.scheduler.</tt><tt class="descname">WorkPlace</tt><a class="headerlink" href="#pirs.core.scheduler.WorkPlace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines common directory name and a
+list of InputFiles to be put to the directory.</p>
+<p>Method WorkPlace.prepare() creates folder &#8216;nameID&#8217;, where &#8216;name&#8217; is the
+common directory name and &#8216;ID&#8217; is an unique integer number. The name of the
+last created folder is saved in the WorkPlace.lcd property.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">WorkPlace</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">wp</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">nextID</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">lcd</span>
+<span class="go">wp 0 None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">wp</span><span class="o">.</span><span class="n">report</span>
+<span class="go">&#39;wp0&#39; created</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">wp</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">nextID</span><span class="p">,</span> <span class="n">wp</span><span class="o">.</span><span class="n">lcd</span>
+<span class="go">wp 1 wp0</span>
+</pre></div>
+</div>
+<p>One can specify files to be put to the work place using the WorkPlace.files
+list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;f1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="s">&#39;f1 content</span><span class="se">\n</span><span class="s">&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f2</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f2</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;f2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f3</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f3</span><span class="o">.</span><span class="n">basename</span> <span class="o">=</span> <span class="s">&#39;f3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f3</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="s">&#39;f3 content&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>   
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.files">
+<tt class="descname">files</tt><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.files" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of files to be written to the workplace directory.</p>
+<p>Elements must be instances of the InputFile class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.lcd">
+<tt class="descname">lcd</tt><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.lcd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the last created directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.nextID">
+<tt class="descname">nextID</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.nextID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer part of the name for the next directory</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.prefix">
+<tt class="descname">prefix</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory name prefix</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.WorkPlace.prepare">
+<tt class="descname">prepare</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.prepare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates directory with the next available directory name. If necessary,
+changes the nextID attribute.</p>
+<p>Puts input files.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.report">
+<tt class="descname">report</tt><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>String describing the last created folder: its name and files in it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.WorkPlace.run">
+<tt class="descname">run</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find executable input file in files and starts it using scheduler module.</p>
+<p>Assumes that directory containing all input files allready created with the prepare() method.</p>
+<p>Keyword arguments are all passed to the scheduler.Scheduler.run() method, see description there.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.WorkPlace.scheduler">
+<tt class="descname">scheduler</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.core.scheduler.WorkPlace.scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default scheduler, used to run executable input file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.core.scheduler.InputFile">
+<em class="property">class </em><tt class="descclassname">pirs.core.scheduler.</tt><tt class="descname">InputFile</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.InputFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>File to be written to a workplace.</p>
+<p>Content of the file is specified as a string or as a link to
+existing file.</p>
+<p>Keyword arguments can specify all properties of the instance.</p>
+<p>If arguments &#8216;exfile&#8217;, &#8216;string&#8217; and &#8216;spf&#8217; are specified in kwargs, 
+the order they are set is exactly as specified here.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="n">basename</span><span class="o">=</span><span class="s">&#39;if.init&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="n">exfile</span><span class="o">=</span><span class="s">&#39;_inp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="n">basename</span><span class="o">=</span><span class="s">&#39;if.init&#39;</span><span class="p">,</span> <span class="n">exfile</span><span class="o">=</span><span class="s">&#39;_inp&#39;</span><span class="p">,</span> <span class="n">psf</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.basename">
+<tt class="descname">basename</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basename of the file to be written.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.defined">
+<tt class="descname">defined</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.defined" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if string or exfile is specififed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.executable">
+<tt class="descname">executable</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.executable" title="Permalink to this definition">¶</a></dt>
+<dd><p>True this file should be marked executable (necessary for scripts);
+False otherwise (appropriate for input and output files). Default value
+is False.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.exfile">
+<tt class="descname">exfile</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.exfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the external file, to be copied to the target file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.mode">
+<tt class="descname">mode</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writing mode. Can be &#8216;w&#8217;  or &#8216;a&#8217;.</p>
+<p>If mode is &#8216;w&#8217;, the target file is rewritten. In this case, exfile is
+copied.</p>
+<p>If mode is &#8216;a&#8217;, file fileName is appended. In this case, exfile is read
+and appended to fileName line by line. This might be inappropriate for
+a binary exfile.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="n">basename</span><span class="o">=</span><span class="s">&#39;if.mode&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="s">&#39;Line 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.psf">
+<tt class="descname">psf</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.psf" title="Permalink to this definition">¶</a></dt>
+<dd><p>The &#8220;Prefer String Flag&#8221;.</p>
+<p>Specifies what to put to the target file if both <tt class="docutils literal"><span class="pre">string</span></tt> and <tt class="docutils literal"><span class="pre">exfile</span></tt>
+attributes are specified. If True, string is preffered, if False, exfile
+is preffered.</p>
+<p>This property set automatically each time string or exfile is set.</p>
+<p>Can be manually set by user.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="n">exfile</span><span class="o">=</span><span class="s">&#39;existting.file&#39;</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s">&#39;if.psf&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">psf</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">psf</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.report">
+<tt class="descname">report</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Report about the last written target file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.InputFile.string">
+<tt class="descname">string</tt><a class="headerlink" href="#pirs.core.scheduler.InputFile.string" title="Permalink to this definition">¶</a></dt>
+<dd><p>String to be written into the target file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.InputFile.write">
+<tt class="descname">write</tt><big>(</big><em>path='.'</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.InputFile.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write file to disk.</p>
+<p>Create a new file containing string if <tt class="docutils literal"><span class="pre">string</span></tt> attribute is specified,
+or copy existing file pointed to by the <tt class="docutils literal"><span class="pre">exfile</span></tt> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.core.scheduler.Scheduler">
+<em class="property">class </em><tt class="descclassname">pirs.core.scheduler.</tt><tt class="descname">Scheduler</tt><a class="headerlink" href="#pirs.core.scheduler.Scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scheduler for jobs.</p>
+<p>A scheduler for running shell jobs. A scheduler consists of a dict of jobs
+and a queue. The <tt class="docutils literal"><span class="pre">add()</span></tt> method registers a new job, the <tt class="docutils literal"><span class="pre">queue()</span></tt> method adds
+a job to the queue and the <tt class="docutils literal"><span class="pre">wait()</span></tt> method waits for a queued job to finish.
+The convenience method <tt class="docutils literal"><span class="pre">run()</span></tt> does both queuing and waiting in one call and
+returns the result of the wait.</p>
+<p>Currently, all jobs will be run in the OS shell using the subprocess
+module, this may change at some point in the future.</p>
+<p>Create a new empty job scheduler.</p>
+<dl class="method">
+<dt id="pirs.core.scheduler.Scheduler.add">
+<tt class="descname">add</tt><big>(</big><em>name</em>, <em>job</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Scheduler.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a job to the scheduler. It will be identified by name, any existing
+job with the same name is replaced.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.Scheduler.get_job">
+<tt class="descname">get_job</tt><big>(</big><em>j</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Scheduler.get_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a job that was added to the scheduler, identified by its name.
+Alternatively just use dictionary syntax (see last example):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">j</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;echo hello world&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">)</span>
+<span class="go">&lt;job cd &#39;.&#39;; echo hello world&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span>
+<span class="go">&lt;job cd &#39;.&#39;; echo hello world&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.Scheduler.queue">
+<tt class="descname">queue</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Scheduler.queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the job identified by name to the current job queue. The same job
+may be queued several times.</p>
+<p>If no job by the given name exists, a ValueError is raised, e.g:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.Scheduler.run">
+<tt class="descname">run</tt><big>(</big><em>name</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Scheduler.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queue the job identified by name to the job queue wait for it to finish
+and return the result. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span>
+<span class="go">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;hi&#39;</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;echo hi&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;hi&#39;</span><span class="p">)</span>
+<span class="go">&#39;hi\n&#39;</span>
+</pre></div>
+</div>
+<p>You can also wait for a number of seconds or for the creation of a file
+in the execution directory of the Job. You can combine these options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;touch test&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="s">&#39;test&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+</pre></div>
+</div>
+<p>The kwargs dictionary is passed to the wait() method, see description of 
+allowed keyword arguments there.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.scheduler.Scheduler.wait">
+<tt class="descname">wait</tt><big>(</big><em>name</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Scheduler.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for the started job to finish.</p>
+<p>Criteria to define whether job is finished or not, depend on the specified
+keyword arguments:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>sec:</dt>
+<dd>number of seconds to wait.</dd>
+<dt>files:</dt>
+<dd>list of filenames. Wait untill all files specified in the list
+exist (created by the job).  If this argument specified, the
+sec argument defines the period to check file existence.</dd>
+<dt>llines:</dt>
+<dd>list of regexp strings (not regex objects!) to compare with the
+last string of file specified in the files argument. The
+llines argument implies that the files argument is given and
+that they have equal lengths. Criteria meet, if all files
+exist and their last lines match the regexp strings.</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.core.scheduler.Job">
+<em class="property">class </em><tt class="descclassname">pirs.core.scheduler.</tt><tt class="descname">Job</tt><big>(</big><em>cmd</em>, <em>dir='.'</em><big>)</big><a class="headerlink" href="#pirs.core.scheduler.Job" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shell job to be executed by the OS shell. A job is described by a command
+and a working directory. The working directory is optional, if ommited, the
+current directory is used. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">j</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;echo hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">j</span>
+<span class="go">&lt;job cd &#39;.&#39;; echo hello&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">j</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;sleep 4&#39;</span><span class="p">,</span> <span class="s">&#39;/home&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">j</span>
+<span class="go">&lt;job cd &#39;/home&#39;; sleep 4&gt;</span>
+</pre></div>
+</div>
+<p>If the string you pass as working directory does not describe a directory
+on your current machine, a ValueError is raised, e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">j</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="s">&#39;sleep 1&#39;</span><span class="p">,</span> <span class="s">&#39;+4w34&quot;\d&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">not a directory: +4w34&quot;\d</span>
+</pre></div>
+</div>
+<p>To execute a job, add it to a scheduler, queue() it and wait().</p>
+<p>Create a new job consisting of a shell command cmd to run and a working
+directory dir in which to execute.</p>
+<p>If dir is not a directory or not accessible by the current user, a
+ValueError is raised. If no directory is specified, the current working
+directory is used.</p>
+<dl class="attribute">
+<dt id="pirs.core.scheduler.Job.cmd">
+<tt class="descname">cmd</tt><a class="headerlink" href="#pirs.core.scheduler.Job.cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Command to be run in the OS shell.</p>
+<p>Must be a string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.scheduler.Job.dir">
+<tt class="descname">dir</tt><a class="headerlink" href="#pirs.core.scheduler.Job.dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Working directory.</p>
+<p>Directory where cmd OS shell command is started.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirs.core.scheduler subpackage</a><ul>
+<li><a class="reference internal" href="#jobs-and-schedulers">Jobs and schedulers</a></li>
+<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pirs.hscf.html"
+                        title="previous chapter">pirs.hli.scf2 subpackage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.core.tramat.html"
+                        title="next chapter">pirs.core.tramat subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.core.scheduler.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.tramat.html" title="pirs.core.tramat subpackage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pirs.hscf.html" title="pirs.hli.scf2 subpackage"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

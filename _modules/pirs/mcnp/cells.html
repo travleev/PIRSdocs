@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.mcnp.cells &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="../../../index.html" />
+    <link rel="up" title="pirs.mcnp" href="../mcnp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../mcnp.html" accesskey="U">pirs.mcnp</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pirs.mcnp.cells</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes to represent MCNP cells.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c">#at</span>
+<span class="c"># Author: Anton Travleev, anton.travleev@kit.edu</span>
+<span class="c"># Developed at INR, Karlsruhe Institute of Technology</span>
+<span class="c">#at</span>
+
+<span class="kn">from</span> <span class="nn">.surfaces</span> <span class="kn">import</span> <span class="n">Volume</span><span class="p">,</span> <span class="n">Surface</span>
+<span class="kn">from</span> <span class="nn">.material</span> <span class="kn">import</span> <span class="n">Material</span>            <span class="c"># for checks only</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">formatter</span>
+
+
+<span class="k">def</span> <span class="nf">_fill_entries</span><span class="p">(</span><span class="n">fillstr</span><span class="p">):</span>
+    <span class="c"># assumes that fillstr is a string</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">fillstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">Imin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">Kmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">([</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="p">],</span> <span class="n">array</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CellOpts"><a class="viewcode-back" href="../../../pirs.mcnp.html#pirs.mcnp.cells.CellOpts">[docs]</a><span class="k">class</span> <span class="nc">CellOpts</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A dictioary to store cell options. </span>
+<span class="sd">    </span>
+<span class="sd">    This is a dictionary that allows only particular string keys. Additionally,</span>
+<span class="sd">    its string representation can be used directly in the input file within</span>
+<span class="sd">    cell card.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#: tuple of valid cell option names.</span>
+    <span class="n">VALIDKEYS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;imp:n&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;fill&#39;</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check additionally that key is a valid MCNP cell option</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALIDKEYS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&#39;Wrong key &#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CellOpts</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;fill&#39;</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c"># do not print default values.</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;tmp&#39;</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">*=</span> <span class="mf">8.617343e-11</span> 
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;nominal_value&#39;</span><span class="p">):</span>
+                        <span class="c"># v is of uncertanties.ufloat type. Only its nominal </span>
+                        <span class="c"># value is needed:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">nominal_value</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;{0}={1:12.6e} &#39;</span>
+                <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;fill&#39;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="c"># if fill array is given, represent it by multiline</span>
+                    <span class="c"># vals = v.split(&#39;:&#39;)</span>
+                    <span class="c"># Imin = int(vals[0])</span>
+                    <span class="c"># Imax, Jmin = map(int, vals[1].split())</span>
+                    <span class="c"># Jmax, Kmin = map(int, vals[2].split())</span>
+                    <span class="c"># array = vals[3].split()</span>
+                    <span class="c"># Kmax = int(array.pop(0))</span>
+                    <span class="p">([</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="p">],</span> <span class="n">array</span><span class="p">)</span> <span class="o">=</span> <span class="n">_fill_entries</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39; fill={0}:{1} {2}:{3} {4}:{5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="p">)</span>
+                    <span class="c"># check that fill array has seferal universes. Otherwise represent it using repetition syntax</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">array</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fmt</span> <span class="o">+=</span> <span class="s">&#39; {0} {1}R&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">fmt</span> <span class="o">+=</span> <span class="s">&#39; {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ef</span> <span class="o">=</span> <span class="s">&#39;{{0:&gt;{0}}}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span> <span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">array</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="c"># formatter for fill array entries</span>
+                        <span class="n">array</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="n">fmt</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">c  k={0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                                <span class="n">fmt</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">     &#39;</span>
+                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                                    <span class="n">fmt</span> <span class="o">+=</span> <span class="n">ef</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+                                    
+                    <span class="n">fmt</span> <span class="o">+=</span> <span class="s">&#39; {0}{1}&#39;</span> <span class="c"># placeholders for k, v</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;{0}={1} &#39;</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="CellOpts.getvalue"><a class="viewcode-back" href="../../../pirs.mcnp.html#pirs.mcnp.cells.CellOpts.getvalue">[docs]</a>    <span class="k">def</span> <span class="nf">getvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns meaningfull part of the value for options &#39;fill&#39;, &#39;u&#39; and &#39;lat&#39;. </span>
+<span class="sd">        </span>
+<span class="sd">        In general, &#39;fill&#39; is a (mulli-line) string that can optionally contain comments.</span>
+<span class="sd">        This method returns a list of values of this cell option.</span>
+
+<span class="sd">        If options were not defined, return 0.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;fill&#39;</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="p">([</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="p">],</span> <span class="n">array</span><span class="p">)</span> <span class="o">=</span> <span class="n">_fill_entries</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">array</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">Imin</span><span class="p">,</span> <span class="n">Imax</span><span class="p">,</span> <span class="n">Jmin</span><span class="p">,</span> <span class="n">Jmax</span><span class="p">,</span> <span class="n">Kmin</span><span class="p">,</span> <span class="n">Kmax</span><span class="p">]</span> <span class="o">+</span> <span class="n">array</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;u&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;lat&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">Cell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Representation of the MCNP cell card.</span>
+
+<span class="sd">    This is a container for cell material, density, geometry description and options,</span>
+<span class="sd">    that can generate string representation of the cell for the MCNP input file.</span>
+
+<span class="sd">    Constructor can take optional keyword arguments to specify cell paramters and options:</span>
+
+<span class="sd">    &gt;&gt;&gt; c = Cell(mat=1, rho=-10., vol=(-1, 1), cmt=&#39;comment&#39;, ID=10, &#39;imp:n&#39;=2.5)</span>
+<span class="sd">    &gt;&gt;&gt; print c</span>
+<span class="sd">    10 1 -10.0 -1 imp:n=2.5  $ comment</span>
+
+<span class="sd">    Cell parameters can be changed after initialization by setting the correspondent attributes:</span>
+
+<span class="sd">    &gt;&gt;&gt; c.ID = 5</span>
+<span class="sd">    &gt;&gt;&gt; c.mat = 4</span>
+<span class="sd">    &gt;&gt;&gt; c.rho = -1.</span>
+<span class="sd">    &gt;&gt;&gt; c.vol = (-1, &#39;a&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; c.opt[&#39;imp:n&#39;] = 0</span>
+<span class="sd">    &gt;&gt;&gt; print c</span>
+<span class="sd">    5 4 -1.0 -a imp:n=0  $ comment</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__v</span> <span class="o">=</span> <span class="s">&#39;{geom}&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__m</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__r</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span> <span class="o">=</span> <span class="n">CellOpts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="p">[</span><span class="s">&#39;imp:n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__c</span> <span class="o">=</span> <span class="s">&#39;comment&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__id</span> <span class="o">=</span> <span class="s">&#39;{ID}&#39;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s">&#39;vol&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="s">&#39;mat&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="s">&#39;rho&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="s">&#39;cmt&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmt</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="s">&#39;ID&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">CellOpts</span><span class="o">.</span><span class="n">VALIDKEYS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__o</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s">&#39; is an invalid keyword argument for this function.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cell geometry (cell volume). </span>
+
+<span class="sd">        Can be set to an integer, string, or to an instance of the Volume()</span>
+<span class="sd">        class.</span>
+
+<span class="sd">        The setter method accepts also a tuple of the form (sign, def), which</span>
+<span class="sd">        is transformed to an instance of the Volume() class.</span>
+
+<span class="sd">        &gt;&gt;&gt; c1 = Cell()</span>
+<span class="sd">        &gt;&gt;&gt; c2 = Cell()</span>
+<span class="sd">        &gt;&gt;&gt; c1.vol = Volume(-1, [&#39;px&#39;, 0.])</span>
+<span class="sd">        &gt;&gt;&gt; c2.vol = (-1, [&#39;px&#39;, 0.])</span>
+<span class="sd">        &gt;&gt;&gt; c1.vol == c2.vol</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__v</span>
+
+    <span class="nd">@vol.setter</span>
+    <span class="k">def</span> <span class="nf">vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">(</span><span class="o">*</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__v</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Material of the cell.</span>
+
+<span class="sd">        Can be an integer or an instance of the Material() class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__m</span>
+
+    <span class="nd">@mat.setter</span>
+    <span class="k">def</span> <span class="nf">mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__m</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cell density.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__r</span>
+
+    <span class="nd">@rho.setter</span>
+    <span class="k">def</span> <span class="nf">rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__r</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">opt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dictionary of cell options.</span>
+
+<span class="sd">        An instance of the CellOpt() class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__o</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cell comment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span>
+
+    <span class="nd">@cmt.setter</span>
+    <span class="k">def</span> <span class="nf">cmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__c</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cell ID.</span>
+
+<span class="sd">        At initialization set to the string &#39;{ID}&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id</span>
+
+    <span class="nd">@ID.setter</span>
+    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__id</span> <span class="o">=</span> <span class="n">v</span>
+
+
+
+
+    <span class="k">def</span> <span class="nf">card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatted</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a string representing the cell in the MCNP input file.</span>
+
+<span class="sd">        If optional argument formatted set to True (default), the returned</span>
+<span class="sd">        string can contain new-line characters delimiting the string to lines</span>
+<span class="sd">        that fit to 80-characters limit imposed by the MCNP input file syntax.</span>
+
+<span class="sd">        Representation of cell ID, material and volume depends on the type of</span>
+<span class="sd">        correspondent attributes.</span>
+
+<span class="sd">        If cell ID is a positive integer or a string, it is printed as is.</span>
+<span class="sd">        Otherwise, placeholder {ID} is printed.</span>
+
+<span class="sd">        If mat is an nonnegative integer or a string, it is printed</span>
+<span class="sd">        together with density rho.  Otherwise, placeholder {mat} {rho} is</span>
+<span class="sd">        printed.</span>
+
+<span class="sd">        If vol is an instance of the Volume() class containing definitions that</span>
+<span class="sd">        utilize the Surface() class, or if it is an instance of the Surface()</span>
+<span class="sd">        class, placeholder {geom} is printed. Otherwise, the string</span>
+<span class="sd">        representation of vol is printed.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># cell ID</span>
+        <span class="n">ID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ID</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">cellID</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span> 
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">cellID</span> <span class="o">=</span> <span class="s">&#39;{ID}&#39;</span>
+
+        <span class="c"># material ID and density</span>
+        <span class="c"># Density can be of uncertainties.Variable class. Use its nominal value</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__r</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="s">&#39;nominal_value&#39;</span><span class="p">):</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span><span class="o">.</span><span class="n">nominal_value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__m</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">matID</span> <span class="o">=</span> <span class="s">&#39;{0} {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rho</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">matID</span> <span class="o">=</span> <span class="s">&#39;0 &#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">matID</span> <span class="o">=</span> <span class="s">&#39;{0} {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rho</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">matID</span> <span class="o">=</span> <span class="s">&#39;{mat} {rho}&#39;</span> <span class="c"># placeholder for both material ID and density/concentration</span>
+        <span class="c"># volume representation</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__v</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vol</span><span class="p">,</span> <span class="n">Volume</span><span class="p">):</span>
+            <span class="n">ff</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># flag to print vol directly. If the volume contains definitions of the Surface type, set this flag to False</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">vol</span><span class="o">.</span><span class="n">surfaces</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+                    <span class="n">ff</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">ff</span><span class="p">:</span>
+                <span class="n">volID</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">volID</span> <span class="o">=</span> <span class="s">&#39;{geom}&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vol</span><span class="p">,</span> <span class="n">Surface</span><span class="p">):</span>
+            <span class="n">volID</span> <span class="o">=</span> <span class="s">&#39;{geom}&#39;</span>
+        <span class="k">elif</span> <span class="n">vol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">volID</span> <span class="o">=</span> <span class="s">&#39;{geom}&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">volID</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+        <span class="c"># compile the whole string for the cell representation:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s">&#39;{0} {1} {2} {3}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cellID</span><span class="p">,</span> <span class="n">matID</span><span class="p">,</span> <span class="n">volID</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="p">))</span>
+        <span class="c"># add comment, if necessary</span>
+        <span class="n">cmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__c</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="s">&#39; $ &#39;</span> <span class="o">+</span> <span class="n">cmt</span>
+        <span class="c"># wrap lines to fit to 80 character line</span>
+        <span class="k">if</span> <span class="n">formatted</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format_card</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">card</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../mcnp.html" >pirs.mcnp</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

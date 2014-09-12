@@ -1,0 +1,937 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.core.tramat subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="next" title="pirs.core.trageom subpackage" href="pirs.core.trageom.html" />
+    <link rel="prev" title="pirs.core.scheduler subpackage" href="pirs.core.scheduler.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.trageom.html" title="pirs.core.trageom subpackage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.scheduler.html" title="pirs.core.scheduler subpackage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-core-tramat-subpackage">
+<span id="tramat"></span><h1>pirs.core.tramat subpackage<a class="headerlink" href="#pirs-core-tramat-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>This package defines classes to represent mixture of nuclides. The classes are
+not used directly, they serve as parent classes providing base functionality
+for example, to the <a class="reference internal" href="pirs.mcnp.html#pirs.mcnp.Material" title="pirs.mcnp.Material"><tt class="xref py py-class docutils literal"><span class="pre">pirs.mcnp.Material</span></tt></a> class.</p>
+<div class="section" id="nuclides">
+<h2>Nuclides<a class="headerlink" href="#nuclides" title="Permalink to this headline">¶</a></h2>
+<p>The basic element of any material mixture is a nuclide represented by
+the <a class="reference internal" href="#pirs.core.tramat.Nuclide" title="pirs.core.tramat.Nuclide"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.tramat.Nuclide</span></tt></a> class. Instances of this
+class have attributes for mass and charge numbers, for molar mass and for the
+isomeric state.  The main functionality of this class is to &#8216;understand&#8217;
+nuclide specifications of different forms; it also defines arithmetical operations of addition of two nuclides and
+multiplication of a nuclide by scalar.</p>
+<p>How nuclides can be defined:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.tramat</span> <span class="kn">import</span> <span class="n">Nuclide</span>
+
+<span class="n">n1</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c"># tuple (Z, A, I)</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="s">&#39;He-4&#39;</span><span class="p">)</span>    <span class="c"># string</span>
+<span class="n">n3</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="s">&#39;Ag-110m&#39;</span><span class="p">)</span> <span class="c"># string for isomer</span>
+<span class="n">n4</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="mi">2004</span><span class="p">)</span>      <span class="c"># ZAID integer</span>
+<span class="n">n5</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="n">n4</span><span class="p">)</span>        <span class="c"># copy of n4.</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">,</span> <span class="n">n5</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">ZAID</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">M</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>&lt;pirs.core.tramat.mixer.Nuclide object at 0x2b3e87433a10&gt; He-004 2004 3.968219
+&lt;pirs.core.tramat.mixer.Nuclide object at 0x2b3e874339d0&gt; He-004 2004 3.968219
+&lt;pirs.core.tramat.mixer.Nuclide object at 0x2b3e874560d0&gt; Ag-110m 47510 108.961963
+&lt;pirs.core.tramat.mixer.Nuclide object at 0x2b3e87456110&gt; He-004 2004 3.968219
+&lt;pirs.core.tramat.mixer.Nuclide object at 0x2b3e87456150&gt; He-004 2004 3.968219
+</pre></div>
+</div>
+<p>In all these examples the molar mass was not specified. In this case, it is
+taken from the class attribute <a class="reference internal" href="#pirs.core.tramat.Nuclide.AWR_SET" title="pirs.core.tramat.Nuclide.AWR_SET"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.core.tramat.Nuclide.AWR_SET</span></tt></a>, which
+is a dictionary of the form <tt class="docutils literal"><span class="pre">ZAID:</span> <span class="pre">awr</span></tt>.  By defualt, this class attribute
+links to the <a class="reference internal" href="#pirs.core.tramat.data_masses.xsdir1" title="pirs.core.tramat.data_masses.xsdir1"><tt class="xref py py-data docutils literal"><span class="pre">pirs.core.tramat.data_masses.xsdir1</span></tt></a> dictionary, which
+contains awr masses from the xsdir file distributed with MCNP5.</p>
+<p>Two nuclide instances can be added and an instance can be multiplied by a scalar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">n1</span>
+</pre></div>
+</div>
+<p>Both operations result in an instance of the <a class="reference internal" href="#pirs.core.tramat.Mixture" title="pirs.core.tramat.Mixture"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.tramat.Mixture</span></tt></a>
+class. In the example, <tt class="docutils literal"><span class="pre">a</span></tt> is a mixture of one mole of nuclide <tt class="docutils literal"><span class="pre">n1</span></tt> and one
+mole of nuclide <tt class="docutils literal"><span class="pre">n2</span></tt>, and <tt class="docutils literal"><span class="pre">b</span></tt> is a mixture consisting of 3 moles of nuclide
+<tt class="docutils literal"><span class="pre">n1</span></tt>.</p>
+</div>
+<div class="section" id="mixtures">
+<h2>Mixtures<a class="headerlink" href="#mixtures" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#pirs.core.tramat.Mixture" title="pirs.core.tramat.Mixture"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.tramat.Mixture</span></tt></a> class represents a mixture of nuclides or
+other mixtures. Its constructor takes arguments that define the mixture recipe
+&#8211; what materials at which amount constitute the mixture. In the most simple
+case, there can be only one integer argument specifying ZAID, or a string
+specifying chemical name. In general case, the constructor accepts several
+tuples each defining material and its amount used to construct the mixture.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.tramat</span> <span class="kn">import</span> <span class="n">Mixture</span>
+
+<span class="n">m1</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>   <span class="c"># mixture conatins only H-1</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;He&#39;</span><span class="p">)</span>   <span class="c"># mixture of He nuclide with nat. abund.</span>
+<span class="c"># Mixture does not accept string representation of a nuclide:</span>
+<span class="c"># m2 = Mixture(&#39;He-4&#39;) # will cause an error</span>
+
+<span class="n">m3</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">((</span><span class="n">m1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="c"># 0.1 mole of m1 and 0.9 moles of m2</span>
+<span class="n">m4</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">((</span><span class="n">m1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="c"># 0.1 g of m1 and 0.9 g of m2</span>
+<span class="n">m5</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">((</span><span class="n">m1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="c"># 0.1 mole of m1 and 0.9 g of m2.</span>
+
+<span class="n">m1</span><span class="o">.</span><span class="n">dens</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># g/cm3</span>
+<span class="n">m6</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">((</span><span class="n">m1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="c"># 0.1 cm3 of m1 and 0.9 moles of m2</span>
+
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">m3</span><span class="p">,</span> <span class="n">m4</span><span class="p">,</span> <span class="n">m5</span><span class="p">,</span> <span class="n">m6</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">30</span>
+</pre></div>
+</div>
+<p>In this example, <tt class="docutils literal"><span class="pre">m1</span></tt> is a mixture consisting of one nuclide H-1, and <tt class="docutils literal"><span class="pre">m2</span></tt>
+is a mixture of He isotopes with natural abundancies. Note that the string
+representation of a nuclide, in the form <tt class="docutils literal"><span class="pre">'He-4'</span></tt> cannot be used in the
+Mixture constructor, while a string is assumed to define a chemical element
+name.  Mixtures <tt class="docutils literal"><span class="pre">m3</span></tt>, <tt class="docutils literal"><span class="pre">m4</span></tt> etc. are defined using the general form of
+constructor arguments.  Each tuple defines the material, amount and units in
+which amound should be understood: 1 for moles, 2 for grams and 3
+for cubic cm; the latter is only possible for materials with specified density
+or concentration.</p>
+<p>In the above example, mixture <tt class="docutils literal"><span class="pre">m3</span></tt> has two ingredients: 0.1 mole (last tuple element
+is 1) of <tt class="docutils literal"><span class="pre">m1</span></tt> and 0.9 moles of <tt class="docutils literal"><span class="pre">m2</span></tt>.  Mixture <tt class="docutils literal"><span class="pre">m4</span></tt> is defined using
+grams: it consists of 0.1 g of <tt class="docutils literal"><span class="pre">m1</span></tt> and 0.9 g of <tt class="docutils literal"><span class="pre">m2</span></tt>. Note that one can
+mix units, see definition of <tt class="docutils literal"><span class="pre">m5</span></tt>.</p>
+<p>One can specify ingredient amount in cubic centimeters, as for the mixture
+<tt class="docutils literal"><span class="pre">m6</span></tt> above. For this to have sense, the ingredient material, <tt class="docutils literal"><span class="pre">m1</span></tt> in this case,
+should have the <a class="reference internal" href="#pirs.core.tramat.Mixture.dens" title="pirs.core.tramat.Mixture.dens"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.core.tramat.Mixture.dens</span></tt></a> or
+<a class="reference internal" href="#pirs.core.tramat.Mixture.conc" title="pirs.core.tramat.Mixture.conc"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.core.tramat.Mixture.conc</span></tt></a> attribute defined.</p>
+<p>Main properties of a mixture can be inquired by the
+<a class="reference internal" href="#pirs.core.tramat.Mixture.report" title="pirs.core.tramat.Mixture.report"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.core.tramat.Mixture.report()</span></tt></a> method.  It returns a multi-line string
+where mixture ingredients and mixture nuclide composition is summarized.  The
+above script produces the following output:</p>
+<div class="highlight-none"><div class="highlight"><pre>Mixture  H-001
+        &lt;    1001   0.9992&gt;: 1.0 mol
+        total: 1.0 mol or 1.00782474906 g or 1.00782474906 cc
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   1.00000e+00   1.00000e+00
+==============================
+Mixture He
+        &lt;    2003   2.9901&gt;: 1.34e-06 mol
+        &lt;    2004   3.9682&gt;: 0.99999866 mol
+        total: 1.0 mol or 4.0026021646 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    2003   2.9901&gt;   1.34000e-06   1.00971e-06
+        &lt;    2004   3.9682&gt;   9.99999e-01   9.99999e-01
+==============================
+Mixture He-H
+        &lt; H-001     0.9992&gt;: 0.1 mol
+        &lt;He         3.9682&gt;: 0.9 mol
+        total: 1.0 mol or 3.70312442304 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   1.00000e-01   2.72155e-02
+        &lt;    2003   2.9901&gt;   1.20600e-06   9.82233e-07
+        &lt;    2004   3.9682&gt;   8.99999e-01   9.72783e-01
+==============================
+Mixture He-H
+        &lt; H-001     0.9992&gt;: 0.1 g
+        &lt;He         3.9682&gt;: 0.9 g
+        total: 0.324077323627 mol or 1.0 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   3.06173e-01   1.00000e-01
+        &lt;    2003   2.9901&gt;   9.29729e-07   9.08742e-07
+        &lt;    2004   3.9682&gt;   6.93826e-01   8.99999e-01
+==============================
+Mixture He-H
+        &lt; H-001     0.9992&gt;: 0.1 mol
+        &lt;He         3.9682&gt;: 0.9 g
+        total: 0.3248537234 mol or 1.00078247491 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   3.07831e-01   1.00704e-01
+        &lt;    2003   2.9901&gt;   9.27507e-07   9.08031e-07
+        &lt;    2004   3.9682&gt;   6.92168e-01   8.99295e-01
+==============================
+Mixture He-H
+        &lt; H-001     0.9992&gt;: 0.1 cc
+        &lt;He         3.9682&gt;: 0.9 mol
+        total: 0.999223600227 mol or 3.70234194814 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   9.93007e-02   2.70099e-02
+        &lt;    2003   2.9901&gt;   1.20694e-06   9.82441e-07
+        &lt;    2004   3.9682&gt;   9.00698e-01   9.72989e-01
+==============================
+</pre></div>
+</div>
+<p>The name of a mixture, printed in the first line returned by the report()
+method, is given by the <a class="reference internal" href="#pirs.core.tramat.Mixture.name" title="pirs.core.tramat.Mixture.name"><tt class="xref py py-attr docutils literal"><span class="pre">pirs.core.tramat.Mixture.name</span></tt></a> attribute. If not
+specified explicitly by the user (as in the example above), it is generated
+based on the chemical element names that constitute the mixture.</p>
+<p>The first part of report, between the lines <tt class="docutils literal"><span class="pre">Mixture</span> <span class="pre">...</span></tt> and <tt class="docutils literal"><span class="pre">Nuclide</span>
+<span class="pre">composition:</span></tt>, lists ingredients used to construct the mixture. The second
+part, after the line <tt class="docutils literal"><span class="pre">Nuclide</span> <span class="pre">composition:</span></tt>, shows nuclide composition,
+computed from the mixture recipe and recipies of its ingredients, recursively.</p>
+<p>Mixtures can be added to each other and multiplied by a scalar, as shown in the
+follwing example.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.tramat</span> <span class="kn">import</span> <span class="n">Mixture</span>
+
+<span class="n">h1</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">)</span>
+<span class="n">he</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;He&#39;</span><span class="p">)</span>
+
+<span class="n">m1</span> <span class="o">=</span> <span class="n">h1</span> <span class="o">+</span> <span class="n">he</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">h1</span>
+<span class="n">m3</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">h1</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">he</span>
+<span class="n">m4</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">m1</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">m2</span>
+
+<span class="n">m1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;m1&#39;</span>
+<span class="n">m2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;m2&#39;</span>
+<span class="n">m3</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;m3&#39;</span>
+<span class="n">m4</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;m4&#39;</span>
+
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">m3</span><span class="p">,</span> <span class="n">m4</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">30</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>Mixture m1
+        &lt;    1001   0.9992&gt;: 0.999885 mol
+        &lt;    1002   1.9968&gt;: 0.000115 mol
+        &lt;    2003   2.9901&gt;: 1.34e-06 mol
+        &lt;    2004   3.9682&gt;: 0.99999866 mol
+        total: 2.0 mol or 5.01054263557 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   4.99943e-01   2.01118e-01
+        &lt;    1002   1.9968&gt;   5.75000e-05   4.62269e-05
+        &lt;    2003   2.9901&gt;   6.70000e-07   8.06595e-07
+        &lt;    2004   3.9682&gt;   4.99999e-01   7.98835e-01
+==============================
+Mixture m2
+        &lt;H          0.9993&gt;: 2.0 mol
+        total: 2.0 mol or 2.01588094194 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   9.99885e-01   9.99770e-01
+        &lt;    1002   1.9968&gt;   1.15000e-04   2.29797e-04
+==============================
+Mixture m3
+        &lt;    1001   0.9992&gt;: 1.99977 mol
+        &lt;    1002   1.9968&gt;: 0.00023 mol
+        &lt;    2003   2.9901&gt;: 4.02e-06 mol
+        &lt;    2004   3.9682&gt;: 2.99999598 mol
+        total: 5.0 mol or 14.0236874357 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   3.99954e-01   1.43715e-01
+        &lt;    1002   1.9968&gt;   4.60000e-05   3.30329e-05
+        &lt;    2003   2.9901&gt;   8.04000e-07   8.64568e-07
+        &lt;    2004   3.9682&gt;   5.99999e-01   8.56251e-01
+==============================
+Mixture m4
+        &lt;    1001   0.9992&gt;: 0.999885 mol
+        &lt;    1002   1.9968&gt;: 0.000115 mol
+        &lt;    2003   2.9901&gt;: 1.34e-06 mol
+        &lt;    2004   3.9682&gt;: 0.99999866 mol
+        &lt;    1001   0.9992&gt;: 2.999655 mol
+        &lt;    1002   1.9968&gt;: 0.000345 mol
+        total: 5.0 mol or 8.03436404848 g
+Nuclide composition:
+                    Nuclide       At.frac      Wgt.frac
+        &lt;    1001   0.9992&gt;   7.99908e-01   5.01699e-01
+        &lt;    1002   1.9968&gt;   9.20000e-05   1.15316e-04
+        &lt;    2003   2.9901&gt;   2.68000e-07   5.03024e-07
+        &lt;    2004   3.9682&gt;   2.00000e-01   4.98185e-01
+==============================
+</pre></div>
+</div>
+<p>Result of adition of two mixtures is a new mixture that is a mix
+of the operands in equal proportions. Note, however, that the resulting mixture
+recipe does not refer directly to the operands, they are first expanded to
+nuclides (see the <a class="reference internal" href="#pirs.core.tramat.Mixture.expanded" title="pirs.core.tramat.Mixture.expanded"><tt class="xref py py-meth docutils literal"><span class="pre">pirs.core.tramat.Mixture.expanded()</span></tt></a> method). In the
+above example, the recipe of <tt class="docutils literal"><span class="pre">m1</span></tt> consists of 4 nuclides, not of two
+mixtures <tt class="docutils literal"><span class="pre">h1</span></tt> and <tt class="docutils literal"><span class="pre">he</span></tt>.</p>
+<p>Multiplication of a mixture by a scalar returns a new mixture with only one
+ingredient &#8211; the operand, which amount in moles is given by the scalar, see
+mixture <tt class="docutils literal"><span class="pre">m2</span></tt>. Note, in this case the operand is not expanded to
+nuclides.</p>
+<p>Note that the total amount of ingredients in the mixture <tt class="docutils literal"><span class="pre">m4</span></tt> sums up to 5 moles,
+although it is defined as <tt class="docutils literal"><span class="pre">2*m1</span> <span class="pre">+</span> <span class="pre">3*m2</span></tt>, where <tt class="docutils literal"><span class="pre">m1</span></tt> and <tt class="docutils literal"><span class="pre">m2</span></tt> have itself
+2 moles in their recipes. This behaviour is chosen deliberately, the scalar
+before the mixture is not a coefficient for the amount of its ingredients, it
+specifies the amount of mixture itself.</p>
+</div>
+<div class="section" id="data-modules">
+<h2>Data modules<a class="headerlink" href="#data-modules" title="Permalink to this headline">¶</a></h2>
+<p>Mapping between charge numbers and chemical names are defined in the <a class="reference internal" href="#module-pirs.core.tramat.data_names" title="pirs.core.tramat.data_names"><tt class="xref py py-mod docutils literal"><span class="pre">pirs.core.tramat.data_names</span></tt></a> module.
+This module also contains functions to parse nuclide names and  to define isomeric names from special ZAIDS.</p>
+<p>Default awr masses are taken from the <a class="reference internal" href="#module-pirs.core.tramat.data_masses" title="pirs.core.tramat.data_masses"><tt class="xref py py-mod docutils literal"><span class="pre">pirs.core.tramat.data_masses</span></tt></a> module.</p>
+<p>Naturall abundancies of isotopes are taken from the module <a class="reference internal" href="#module-pirs.core.tramat.data_natural" title="pirs.core.tramat.data_natural"><tt class="xref py py-mod docutils literal"><span class="pre">pirs.core.tramat.data_natural</span></tt></a>.</p>
+</div>
+<div class="section" id="docstrings">
+<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nuclide-class">
+<h3>Nuclide class<a class="headerlink" href="#nuclide-class" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pirs.core.tramat.Nuclide">
+<em class="property">class </em><tt class="descclassname">pirs.core.tramat.</tt><tt class="descname">Nuclide</tt><big>(</big><em>ID</em>, <em>M=None</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Nuclide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a nuclide. A nuclide is defined by its mass and charge
+numbers, A and Z, isomeric state I, and by its molar mass M.</p>
+<p>The A, Z and I properties of a nuclide instance can be changed. The nuclide
+mass, represented by the property M, cannot be changed.</p>
+<p>The constructor argument ID specifies Z, A and I and can be given in
+several forms:</p>
+<blockquote>
+<div><ul class="simple">
+<li>a tuple (Z, A, I),</li>
+<li>a string of the form &#8216;cc-AAA[m[I]]&#8217;, for example, &#8216;Pu-241&#8217;, &#8216;O-16&#8217;, &#8216;Te-129m&#8217;</li>
+<li>an integer of the form ZZAAA.</li>
+<li>another instance of Nuclide class; in this case, the copy of
+ID is created.</li>
+</ul>
+</div></blockquote>
+<p>If M is not specified, values derived from xsdir file will be used (the
+xsdir file is not read. Mass is actually taken from the data_masses
+module, where nuclide masses in awr units are stored. These values are
+originally taken from an xsdir file).</p>
+<p>The class supports some arithmetical operations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>An instance of the Nuclide class can be multiplied by a scalar c.
+The result is an instance of the Mixture class meaning c moles of
+the nuclide.</li>
+<li>Two Nuclide instances can be added, n1 + n2. This creates a Mixture    
+representing one mole of n1 mixed with one mole of n2.</li>
+</ul>
+</div></blockquote>
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.AWR_SET">
+<tt class="descname">AWR_SET</tt><em class="property"> Dictionary with default awr masses.</em><a class="headerlink" href="#pirs.core.tramat.Nuclide.AWR_SET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.A">
+<tt class="descname">A</tt><a class="headerlink" href="#pirs.core.tramat.Nuclide.A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mass number A of the nuclide (integer). Can be set.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="s">&#39;H-1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">ZAID</span>
+<span class="go">1005</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.I">
+<tt class="descname">I</tt><a class="headerlink" href="#pirs.core.tramat.Nuclide.I" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nuclide isomeric state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Nuclide.M">
+<tt class="descname">M</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Nuclide.M" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the nuclide molar mass. If the molar mass was not specified at the initialization of the instance,
+the value in AWR will be set depending on the nuclide ID:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="mi">1001</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">M</span><span class="p">()</span>
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">M</span><span class="p">()</span>
+<span class="go">0.999167</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.Z">
+<tt class="descname">Z</tt><a class="headerlink" href="#pirs.core.tramat.Nuclide.Z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Charge number, Z, of the nuclide. Can be set.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="s">&#39;O-16&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="n">n1</span><span class="o">.</span><span class="n">Z</span><span class="o">/</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;Be-016&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.ZAID">
+<tt class="descname">ZAID</tt><a class="headerlink" href="#pirs.core.tramat.Nuclide.ZAID" title="Permalink to this definition">¶</a></dt>
+<dd><p>ZAID (integer) of the nuclide. Can be set to any integer of the form AAZZZ.</p>
+<p>Support for isomeric states.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Nuclide.check_attributes">
+<tt class="descname">check_attributes</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Nuclide.check_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check conditions specified in kwargs in the form ATTR=VAL. Attr can be
+usual attribute or a method. In the latter case, the result returned by
+the method is compared against VAL.  Only methods without arguments can
+be checked.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">Nuclide</span><span class="p">(</span><span class="mi">1001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">check_attributes</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">check_attributes</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="mf">0.999167</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Nuclide.isfuel">
+<tt class="descname">isfuel</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Nuclide.isfuel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if one of the fissionable isotopes 92235, 94239 or 94241.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Nuclide.name">
+<tt class="descname">name</tt><a class="headerlink" href="#pirs.core.tramat.Nuclide.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name (string) of the nuclide in the form &#8216;Cc-AAA[m[I]]&#8217;. For
+example, &#8216;Pu-241&#8217;.</p>
+<p>Can be set. in this case, attributes A, Z and I wil be changed
+accordingly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="mixture-class">
+<h3>Mixture class<a class="headerlink" href="#mixture-class" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pirs.core.tramat.Mixture">
+<em class="property">class </em><tt class="descclassname">pirs.core.tramat.</tt><tt class="descname">Mixture</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixture of nuclides or other mixtures.</p>
+<p>A mixture is defined by specifying a recipe &#8211; a sequence of ingredients (a
+nuclide or another mixture) each supplemented with certain amount.</p>
+<p>Since all ingredeints in the recipe have particular amount, the total
+amount of all ingrediants can be computed.  However, if a mixture
+is defined using another, previously defined mixture, the amount of latter is not &#8220;propagated&#8221;.</p>
+<p>The constructor takes arbitrary amount of arguments specifying the mixture ingredients:</p>
+<div class="highlight-python"><div class="highlight"><pre>m = Mixture(arg1, arg2, arg3, ... argN)
+</pre></div>
+</div>
+<p>Each argument must be a string, an integer or an instance of Nuclide or
+Mixture class, or a tuple of the form <tt class="docutils literal"><span class="pre">(MAT,</span> <span class="pre">a)</span></tt> or <tt class="docutils literal"><span class="pre">(MAT,</span> <span class="pre">v,</span> <span class="pre">t)</span></tt>,
+where MAT can be an integer, a string or an instance of the Nuclide or
+Mixture class.  The other tuple elements represent the amount: <tt class="docutils literal"><span class="pre">a</span></tt> is
+an instance of the <tt class="docutils literal"><span class="pre">Amount()</span></tt> class, <tt class="docutils literal"><span class="pre">v</span></tt>, <tt class="docutils literal"><span class="pre">t</span></tt> are value and unit to define the
+amount.</p>
+<p>If a mixture used as ingredient in a new mixture has itself only one
+ingredient, this ingredient will be used in the new mixture.</p>
+<p>If the argument is an integer, it is understood as ZAID of a nuclide.
+This argument adds one mole of the nuclide to the recipe.</p>
+<p>If the argument is a string, it is considered as the name of a chemical
+element. This argument defines one mole of the mixture of naturally
+occuring isotopes of this chemical element.</p>
+<p>When the argument is an instance of the <tt class="docutils literal"><span class="pre">Nuclide</span></tt> or <tt class="docutils literal"><span class="pre">Mixture</span></tt>
+class, it denotes one mole of it.</p>
+<p>When a tuple is given, its first element is understood as described
+above. The second and third elements define amount and unit in which
+the amount is expressed, they both have default values 1. The third
+element is 1 for moles, 2 for grams and 3 for cubic centimeters.</p>
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.M">
+<tt class="descname">M</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.M" title="Permalink to this definition">¶</a></dt>
+<dd><p>Effective molar mass of the recipe.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.amount">
+<tt class="descname">amount</tt><big>(</big><em>t=1</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total amount of ingredients, specified in the recipe
+definition. The t argument defines the units (moles, g or cc).</p>
+<p>Returned value is an instance of the <tt class="docutils literal"><span class="pre">Amount</span></tt> class.</p>
+<p>See also methods <tt class="docutils literal"><span class="pre">cc</span></tt>, <tt class="docutils literal"><span class="pre">grams</span></tt> and <tt class="docutils literal"><span class="pre">moles</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.cc">
+<tt class="descname">cc</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.cc" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns total volume in cubic centimeters of the ingredients, specified in the recipe
+definition.</p>
+<p>Returned value is an instance of the <tt class="docutils literal"><span class="pre">Amount</span></tt> class.</p>
+<p>Some ingredients might have no density/concentration property, in this
+case the direct evaluation of the sum of ingredients volumes is not
+possible. In this case, the value</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">grams</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dens</span>
+</pre></div>
+</div>
+<p>will be returned. If the density/concentration of self is not defined,
+None is returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Mixture.conc">
+<tt class="descname">conc</tt><a class="headerlink" href="#pirs.core.tramat.Mixture.conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concentration of the mixture, 1/cc.</p>
+<p>Concentration can be computed from the material inrgedients, or set
+explicitly. The computed value ( see derived_conc method) is used only if
+the concentration not set explicitly.</p>
+<p>Use the <tt class="docutils literal"><span class="pre">dens</span></tt> property to set concentration in terms of density [g/cc].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Mixture.dens">
+<tt class="descname">dens</tt><a class="headerlink" href="#pirs.core.tramat.Mixture.dens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Density of the mixture, g/cc.</p>
+<p>Density can be computed from the recipe ingredients, or set explicitly to
+the mixture. The computed value is returned only if the density is not
+set explicitly.</p>
+<p>Internally, density is saved as concentration. Thus, if a density was
+set to a recipe and than the molar mass of recipe (or its ingredients)
+was changed, the density will be changed also.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.derived_conc">
+<tt class="descname">derived_conc</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.derived_conc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns computed concentration of the recipe, 1/cc.</p>
+<p>This can be done only if all recipe ingredients have their
+conentration/density attributes either set explicitly or can be computed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.derived_name">
+<tt class="descname">derived_name</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.derived_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The derived name is composed from the element names entering the
+mixture. The general form of the derived name is</p>
+<blockquote>
+<div>&#8216;E1-E2-E3-&#8216;</div></blockquote>
+<p>where E1, E2, E3 are the chemical element names of the mixture
+ingredients.  3 element names accounted at maximum. If there are other
+elements, the name ends with &#8216;-&#8216;, as shown above.</p>
+<p>The element names are listed in the decreasing order of its molar amount
+in the mixture.</p>
+<p>If the mixture consists of only one nuclide, the nuclide name will be used.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.expanded">
+<tt class="descname">expanded</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.expanded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new mixture instance with all ingredients resolved down to nuclides with amounts expressed in moles.</p>
+<p>The sum of moles of each ingredient nuclide is equal to the amount of
+originally defined recipe.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span> <span class="o">=</span> <span class="n">r1</span><span class="o">.</span><span class="n">expanded</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span><span class="o">.</span><span class="n">amount</span><span class="p">()</span> <span class="o">==</span> <span class="n">r2</span><span class="o">.</span><span class="n">amount</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r2</span><span class="o">.</span><span class="n">recipe</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">m</span><span class="p">,</span> <span class="n">a</span>
+<span class="gp">...</span>
+<span class="go">&lt;    1001   0.9992&gt; 1.99977 mol</span>
+<span class="go">&lt;    1002   1.9968&gt; 0.00023 mol</span>
+<span class="go">&lt;    8016  15.8575&gt; 0.99757 mol</span>
+<span class="go">&lt;    8017  16.8531&gt; 0.00038 mol</span>
+<span class="go">&lt;    8018  17.8445&gt; 0.00205 mol</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.grams">
+<tt class="descname">grams</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.grams" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns total mass in grams of the ingredients, specified in the recipe defition.</p>
+<p>Returned value is an instance of the <tt class="docutils literal"><span class="pre">Amount</span></tt> class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.how_much">
+<tt class="descname">how_much</tt><big>(</big><em>t</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.how_much" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes amount of specified ingredients or nuclides entering the mixture.</p>
+<p>Computes the amount in units specified by the argument <tt class="docutils literal"><span class="pre">t</span></tt> of the mixture ingredients specified
+by <tt class="docutils literal"><span class="pre">*args</span></tt>, or of nuclides specified by <tt class="docutils literal"><span class="pre">**kwargs</span></tt>.</p>
+<p>Only t=1 (moles) or t=2 (grams) can be used.</p>
+<p>Returned value is an instance of the <tt class="docutils literal"><span class="pre">Amount</span></tt> class.</p>
+<p>Arguments <tt class="docutils literal"><span class="pre">*args</span></tt> and <tt class="docutils literal"><span class="pre">**kwargs</span></tt> cannot be used simultaneously. If <tt class="docutils literal"><span class="pre">*args</span></tt> are
+specified, the <tt class="docutils literal"><span class="pre">**kwargs</span></tt> have no effect.</p>
+<p>When <tt class="docutils literal"><span class="pre">*args</span></tt> are specified, they must be nuclides,  mixtures or integers
+(meaning ZAID) entering to the mixture recipe.  The returned value is
+the total amount of all specified in <tt class="docutils literal"><span class="pre">*args</span></tt> materials. The materials are
+searched only in the recipe, i.e. a nuclide will be accounted only if
+it was specified directly in the recipe. If it enters the mixture only
+indirectly, it is not accounted for:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="s">&#39;Fe&#39;</span><span class="p">,</span> <span class="mi">8016</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8016</span><span class="p">)</span>
+<span class="go">1.0 mol</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;Fe&#39;</span><span class="p">)</span>
+<span class="go">1.0 mol</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;Fe&#39;</span><span class="p">,</span> <span class="mi">8016</span><span class="p">)</span>
+<span class="go">2.0 mol</span>
+</pre></div>
+</div>
+<p>The optional keyword arguments, <tt class="docutils literal"><span class="pre">**kwargs</span></tt>, specify properties of nuclides that should be accounted for. In
+this case, the mixture first expanded so that nuclides of the mixture ingredients are also taken into account.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="s">&#39;Fe&#39;</span><span class="p">,</span> <span class="mi">8016</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ZAID</span><span class="o">=</span><span class="mi">8016</span><span class="p">)</span>
+<span class="go">1.0 mol</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+<span class="go">1.0 mol</span>
+</pre></div>
+</div>
+<p>If neither <tt class="docutils literal"><span class="pre">*args</span></tt> nor <tt class="docutils literal"><span class="pre">**kwargs</span></tt> are specified, how_much(t) is equal to
+amount(t).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.index">
+<tt class="descname">index</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns index of the ingredient i in the mixture&#8217;s recipe. Similar to the index
+method of a list.</p>
+<p>Argument i can be an instance of the <tt class="docutils literal"><span class="pre">Nuclide</span></tt> or <tt class="docutils literal"><span class="pre">Mixture</span></tt> class, in which case the index of
+this ingredient is returned (if any).</p>
+<p>If i is an integer, it is internally converted into <tt class="docutils literal"><span class="pre">Nuclide(i)</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;Fe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">26054</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">26056</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">26058</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.isfuel">
+<tt class="descname">isfuel</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.isfuel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the mixture contains one of the following
+nuclides: 92235, 94239, 94241.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.moles">
+<tt class="descname">moles</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.moles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns total amount of moles of the ingredients, specified in the recipe definition.</p>
+<p>Returned value is an instance of the <tt class="docutils literal"><span class="pre">Amount</span></tt> class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.tramat.Mixture.name">
+<tt class="descname">name</tt><a class="headerlink" href="#pirs.core.tramat.Mixture.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the mixture, a string.</p>
+<p>The mixture name can be specified explicitly. If not specified
+explicitly, it will be derived from the recipe definition, see
+the <tt class="docutils literal"><span class="pre">derived_name()</span></tt> method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">((</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;U&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;O-U&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;mox&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;mox&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">steel</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="s">&#39;Fe&#39;</span><span class="p">,</span> <span class="s">&#39;Cr&#39;</span><span class="p">,</span> <span class="s">&#39;Mo&#39;</span><span class="p">,</span> <span class="s">&#39;Ni&#39;</span><span class="p">)</span> <span class="c"># more than 4 elements.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">steel</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;Fe-Cr-Mo-&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.normalize">
+<tt class="descname">normalize</tt><big>(</big><em>a</em>, <em>t=1</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the amounts of ingredients in the recipe proportionally, so that
+the resulting amount is a (if a is a float, one has to specify also
+units by setting t=1, 2 or 3).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="s">&#39;U&#39;</span><span class="p">,</span> <span class="s">&#39;O&#39;</span><span class="p">)</span>  <span class="c"># r has 3 moles</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">dens</span> <span class="o">=</span> <span class="mf">10.</span>                <span class="c"># set density so the cc amount has sense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">1.0 mol 90.0092422778 g 9.00092422778 cc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">0.0111099702063 mol 1.0 g 0.1 cc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">amount</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">0.111099702063 mol 10.0 g 1.0 cc</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.recipe">
+<tt class="descname">recipe</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples, representing the recipe of
+the mixture .</p>
+<p>The resulting list can be passed to the mixture
+constructor to create another mixture:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="s">&#39;O&#39;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span> <span class="o">*</span><span class="n">r1</span><span class="o">.</span><span class="n">recipe</span><span class="p">()</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span><span class="o">.</span><span class="n">recipe</span><span class="p">()</span> <span class="o">==</span> <span class="n">r2</span><span class="o">.</span><span class="n">recipe</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.remove_duplicates">
+<tt class="descname">remove_duplicates</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.remove_duplicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the mixture and join equal materials. Changes are made in-place.</p>
+<p>Only the materials specified directly in the recipe are compared.</p>
+<p>If a material is mentioned in the recipe several times, only one
+entry with the total amount will remain. The units are defined by the
+first mentioning of the material in the recipe.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="s">&#39;U&#39;</span><span class="p">,</span> <span class="s">&#39;O&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">remove_duplicates</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">recipe</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="k">print</span> <span class="n">m</span><span class="p">,</span> <span class="n">v</span>
+<span class="gp">...</span>
+<span class="go">&lt;O         15.8620&gt; 2.0 mol</span>
+<span class="go">&lt;U        235.9841&gt; 1.0 mol</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.report">
+<tt class="descname">report</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a multi-line string, describing the mixture.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.tramat.Mixture.tune">
+<tt class="descname">tune</tt><big>(</big><em>objective</em>, <em>var</em>, <em>err=1e-05</em><big>)</big><a class="headerlink" href="#pirs.core.tramat.Mixture.tune" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the mixture recipe to satisfy objective function.</p>
+<p>The <tt class="docutils literal"><span class="pre">objective</span></tt> argument is a function taking as argument an instance of the <tt class="docutils literal"><span class="pre">Mixture</span></tt> class.</p>
+<p>The <tt class="docutils literal"><span class="pre">var</span></tt> argument is a list of two elements each of them can be a
+nuclide, mixture or an integer (meaning ZAID), that were used in the
+definition of the mixture.</p>
+<p>The method changes the amount of materials var[0] and var[1] in the
+mixture recipe, so that the objective function returns value with the
+module less than the <tt class="docutils literal"><span class="pre">err</span></tt> argument.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># mixture m contains several Fe isotopes.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Mixture</span><span class="p">(</span><span class="s">&#39;Fe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># objective function. Returns 0 if amount of Fe-56 </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># and Fe-54 in its argument is equal.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">o</span><span class="p">(</span><span class="n">mix</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">a4</span> <span class="o">=</span> <span class="n">mix</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">26054</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">a6</span> <span class="o">=</span> <span class="n">mix</span><span class="o">.</span><span class="n">how_much</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">26056</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">(</span><span class="n">a4</span> <span class="o">-</span> <span class="n">a6</span><span class="p">)</span><span class="o">.</span><span class="n">v</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># change mixture m in place, now it has the same </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># fraction of Fe-54 and Fe-56.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="p">[</span><span class="mi">26056</span><span class="p">,</span> <span class="mi">26057</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pirs.core.tramat.data_masses">
+<span id="data-masses-module"></span><h3>data_masses module<a class="headerlink" href="#module-pirs.core.tramat.data_masses" title="Permalink to this headline">¶</a></h3>
+<p>A place where sets of isotopic masses are defined.</p>
+<p>A set of masses (the term &#8220;set&#8221; here means a collection of isotopic masses
+consistent to each other, not the python type) must be representad by python
+dictionary of the form</p>
+<div class="highlight-python"><div class="highlight"><pre>d = { ZAID1: mass1, 
+      ZAID2: mass2, 
+      ...
+      &#39;avogadro&#39;: Na,
+      &#39;reference&#39;: &#39;the data origin&#39;}
+</pre></div>
+</div>
+<p>where keys are integer ZAIDs and values are isotope masses. Additionally, each
+dictionary must have the key &#8216;avogadro&#8217;, which value is a float specifying the Avogadro Number
+correspondent to the mass units, and the &#8216;reference&#8217; key, which is a string specifying
+the origin of data.</p>
+<dl class="data">
+<dt id="pirs.core.tramat.data_masses.xsdir1">
+<tt class="descclassname">pirs.core.tramat.data_masses.</tt><tt class="descname">xsdir1</tt><a class="headerlink" href="#pirs.core.tramat.data_masses.xsdir1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary <tt class="docutils literal"><span class="pre">ZAID:</span> <span class="pre">awr</span></tt> with awr masses taken from the xsdir file distributed with MCNP5.
+See also the <tt class="docutils literal"><span class="pre">'reference'</span></tt> key in this dictionary.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pirs.core.tramat.data_names">
+<span id="data-names-module"></span><h3>data_names module<a class="headerlink" href="#module-pirs.core.tramat.data_names" title="Permalink to this headline">¶</a></h3>
+<p>Module contains mapping from Z number to chemical element names.
+For the chemical element names, the following rules apply:</p>
+<blockquote>
+<div><ul class="simple">
+<li>each name is a string of length 2. If chemical name is of length one, it
+is preceeded by space.</li>
+<li>The first letter is capital. The second (if any) &#8211; small.</li>
+</ul>
+</div></blockquote>
+<p>There are two dictionaries defined in the module: <tt class="docutils literal"><span class="pre">name</span></tt> and <tt class="docutils literal"><span class="pre">charge</span></tt>
+defining mappings <tt class="docutils literal"><span class="pre">Z:</span> <span class="pre">name</span></tt> and <tt class="docutils literal"><span class="pre">name:</span> <span class="pre">Z</span></tt>.</p>
+<dl class="data">
+<dt id="pirs.core.tramat.data_names.pirs.core.tramat.data_names.name">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">name</tt><em class="property"> Dictionary Z: name</em><a class="headerlink" href="#pirs.core.tramat.data_names.pirs.core.tramat.data_names.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="pirs.core.tramat.data_names.pirs.core.tramat.data_names.charge">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">charge</tt><em class="property"> Dictionary name: Z</em><a class="headerlink" href="#pirs.core.tramat.data_names.pirs.core.tramat.data_names.charge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pirs.core.tramat.data_names.ZAI2ZAID">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">ZAI2ZAID</tt><big>(</big><em>z</em>, <em>a</em>, <em>i</em><big>)</big><a class="reference internal" href="_modules/pirs/core/tramat/data_names.html#ZAI2ZAID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.core.tramat.data_names.ZAI2ZAID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse function to <tt class="docutils literal"><span class="pre">ZAID2ZAI</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pirs.core.tramat.data_names.ZAID2ZAI">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">ZAID2ZAI</tt><big>(</big><em>ZAID</em><big>)</big><a class="reference internal" href="_modules/pirs/core/tramat/data_names.html#ZAID2ZAI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.core.tramat.data_names.ZAID2ZAI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns (Z, A, I) tuple for the nuclide specified by its ZAID.</p>
+<p>Rules to construct ZAIDs for isomeric states are from 
+<a class="reference external" href="https://www.oecd-nea.org/dbprog/RPSD2008-endf70-paper2.pdf">https://www.oecd-nea.org/dbprog/RPSD2008-endf70-paper2.pdf</a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">I</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">ZAID</span> <span class="o">=</span> <span class="n">Z</span><span class="o">*</span><span class="mi">1000</span> <span class="o">+</span> <span class="n">A</span> 
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">ZAID</span> <span class="o">=</span> <span class="n">Z</span><span class="o">*</span><span class="mi">1000</span> <span class="o">+</span> <span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="mi">300</span><span class="p">)</span> <span class="o">+</span> <span class="n">I</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pirs.core.tramat.data_names.str2ZAI">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">str2ZAI</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/pirs/core/tramat/data_names.html#str2ZAI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.core.tramat.data_names.str2ZAI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns (Z, A, I) tuple for the nuclide name specified in the form <tt class="docutils literal"><span class="pre">%s-%i[m[I]]</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pirs.core.tramat.data_names.zai">
+<tt class="descclassname">pirs.core.tramat.data_names.</tt><tt class="descname">zai</tt><big>(</big><em>ID</em><big>)</big><a class="reference internal" href="_modules/pirs/core/tramat/data_names.html#zai"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.core.tramat.data_names.zai" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (Z, A, I), where I is the isomeric state.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pirs.core.tramat.data_natural">
+<span id="data-natural-module"></span><h3>data_natural module<a class="headerlink" href="#module-pirs.core.tramat.data_natural" title="Permalink to this headline">¶</a></h3>
+<p>Similar to the module <tt class="xref py py-mod docutils literal"><span class="pre">data_masses</span></tt>, there can be several data sets of the
+natural isotopic compositions of chemical elements, originated from different
+sources.</p>
+<p>Each data set is a dictionary of the form <tt class="docutils literal"><span class="pre">ZAID_i:</span> <span class="pre">af_i</span></tt>.  
+The key <tt class="docutils literal"><span class="pre">ZAID_i</span></tt> is the integer of the form ZZZAAA of isotope (Z and A are
+charge and mass numbers of the isotope), correspondent value, <tt class="docutils literal"><span class="pre">af_i</span></tt>, is the
+naturally occuring atomic fraction of this isotope in the chemical element with charge number Z.</p>
+<p>Additionally to the <tt class="docutils literal"><span class="pre">ZAID</span></tt> keys, the <tt class="docutils literal"><span class="pre">reference</span></tt> key contains a string
+referencing the origin of the natural abundancies.</p>
+<dl class="data">
+<dt id="pirs.core.tramat.data_natural.pirs.core.tramat.data_natural.d1">
+<tt class="descclassname">pirs.core.tramat.data_natural.</tt><tt class="descname">d1</tt><em class="property"> dictionary ZAID: af. For reference see the ``reference`` key.</em><a class="headerlink" href="#pirs.core.tramat.data_natural.pirs.core.tramat.data_natural.d1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirs.core.tramat subpackage</a><ul>
+<li><a class="reference internal" href="#nuclides">Nuclides</a></li>
+<li><a class="reference internal" href="#mixtures">Mixtures</a></li>
+<li><a class="reference internal" href="#data-modules">Data modules</a></li>
+<li><a class="reference internal" href="#docstrings">Docstrings</a><ul>
+<li><a class="reference internal" href="#nuclide-class">Nuclide class</a></li>
+<li><a class="reference internal" href="#mixture-class">Mixture class</a></li>
+<li><a class="reference internal" href="#module-pirs.core.tramat.data_masses">data_masses module</a></li>
+<li><a class="reference internal" href="#module-pirs.core.tramat.data_names">data_names module</a></li>
+<li><a class="reference internal" href="#module-pirs.core.tramat.data_natural">data_natural module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pirs.core.scheduler.html"
+                        title="previous chapter">pirs.core.scheduler subpackage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.core.trageom.html"
+                        title="next chapter">pirs.core.trageom subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.core.tramat.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.trageom.html" title="pirs.core.trageom subpackage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.scheduler.html" title="pirs.core.scheduler subpackage"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

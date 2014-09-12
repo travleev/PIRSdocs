@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.core.tramat.data_names &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="../../../../index.html" />
+    <link rel="up" title="pirs.core.tramat" href="../tramat.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../tramat.html" accesskey="U">pirs.core.tramat</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pirs.core.tramat.data_names</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module contains mapping from Z number to chemical element names.</span>
+<span class="sd">For the chemical element names, the following rules apply:</span>
+
+<span class="sd">    * each name is a string of length 2. If chemical name is of length one, it</span>
+<span class="sd">      is preceeded by space.</span>
+
+<span class="sd">    * The first letter is capital. The second (if any) -- small.</span>
+
+<span class="sd">There are two dictionaries defined in the module: ``name`` and ``charge``</span>
+<span class="sd">defining mappings ``Z: name`` and ``name: Z``.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c">#at</span>
+<span class="c"># Author: Anton Travleev, anton.travleev@kit.edu</span>
+<span class="c"># Developed at INR, Karlsruhe Institute of Technology</span>
+<span class="c">#at</span>
+
+
+<span class="n">_symbol</span> <span class="o">=</span> <span class="p">{</span>
+             <span class="mi">0</span> <span class="p">:</span> <span class="s">&#39; n&#39;</span><span class="p">,</span>
+             <span class="mi">1</span> <span class="p">:</span> <span class="s">&#39; H&#39;</span><span class="p">,</span>
+             <span class="mi">2</span> <span class="p">:</span> <span class="s">&#39;He&#39;</span><span class="p">,</span>
+             <span class="mi">3</span> <span class="p">:</span> <span class="s">&#39;Li&#39;</span><span class="p">,</span>
+             <span class="mi">4</span> <span class="p">:</span> <span class="s">&#39;Be&#39;</span><span class="p">,</span>
+             <span class="mi">5</span> <span class="p">:</span> <span class="s">&#39; B&#39;</span><span class="p">,</span>
+             <span class="mi">6</span> <span class="p">:</span> <span class="s">&#39; C&#39;</span><span class="p">,</span>
+             <span class="mi">7</span> <span class="p">:</span> <span class="s">&#39; N&#39;</span><span class="p">,</span>
+             <span class="mi">8</span> <span class="p">:</span> <span class="s">&#39; O&#39;</span><span class="p">,</span>
+             <span class="mi">9</span> <span class="p">:</span> <span class="s">&#39; F&#39;</span><span class="p">,</span>
+            <span class="mi">10</span> <span class="p">:</span> <span class="s">&#39;Ne&#39;</span><span class="p">,</span>
+            <span class="mi">11</span> <span class="p">:</span> <span class="s">&#39;Na&#39;</span><span class="p">,</span>
+            <span class="mi">12</span> <span class="p">:</span> <span class="s">&#39;Mg&#39;</span><span class="p">,</span>
+            <span class="mi">13</span> <span class="p">:</span> <span class="s">&#39;Al&#39;</span><span class="p">,</span>
+            <span class="mi">14</span> <span class="p">:</span> <span class="s">&#39;Si&#39;</span><span class="p">,</span>
+            <span class="mi">15</span> <span class="p">:</span> <span class="s">&#39; P&#39;</span><span class="p">,</span>
+            <span class="mi">16</span> <span class="p">:</span> <span class="s">&#39; S&#39;</span><span class="p">,</span>
+            <span class="mi">17</span> <span class="p">:</span> <span class="s">&#39;Cl&#39;</span><span class="p">,</span>
+            <span class="mi">18</span> <span class="p">:</span> <span class="s">&#39;Ar&#39;</span><span class="p">,</span>
+            <span class="mi">19</span> <span class="p">:</span> <span class="s">&#39; K&#39;</span><span class="p">,</span>
+            <span class="mi">20</span> <span class="p">:</span> <span class="s">&#39;Ca&#39;</span><span class="p">,</span>
+            <span class="mi">21</span> <span class="p">:</span> <span class="s">&#39;Sc&#39;</span><span class="p">,</span>
+            <span class="mi">22</span> <span class="p">:</span> <span class="s">&#39;Ti&#39;</span><span class="p">,</span>
+            <span class="mi">23</span> <span class="p">:</span> <span class="s">&#39; V&#39;</span><span class="p">,</span>
+            <span class="mi">24</span> <span class="p">:</span> <span class="s">&#39;Cr&#39;</span><span class="p">,</span>
+            <span class="mi">25</span> <span class="p">:</span> <span class="s">&#39;Mn&#39;</span><span class="p">,</span>
+            <span class="mi">26</span> <span class="p">:</span> <span class="s">&#39;Fe&#39;</span><span class="p">,</span>
+            <span class="mi">27</span> <span class="p">:</span> <span class="s">&#39;Co&#39;</span><span class="p">,</span>
+            <span class="mi">28</span> <span class="p">:</span> <span class="s">&#39;Ni&#39;</span><span class="p">,</span>
+            <span class="mi">29</span> <span class="p">:</span> <span class="s">&#39;Cu&#39;</span><span class="p">,</span>
+            <span class="mi">30</span> <span class="p">:</span> <span class="s">&#39;Zn&#39;</span><span class="p">,</span>
+            <span class="mi">31</span> <span class="p">:</span> <span class="s">&#39;Ga&#39;</span><span class="p">,</span>
+            <span class="mi">32</span> <span class="p">:</span> <span class="s">&#39;Ge&#39;</span><span class="p">,</span>
+            <span class="mi">33</span> <span class="p">:</span> <span class="s">&#39;As&#39;</span><span class="p">,</span>
+            <span class="mi">34</span> <span class="p">:</span> <span class="s">&#39;Se&#39;</span><span class="p">,</span>
+            <span class="mi">35</span> <span class="p">:</span> <span class="s">&#39;Br&#39;</span><span class="p">,</span>
+            <span class="mi">36</span> <span class="p">:</span> <span class="s">&#39;Kr&#39;</span><span class="p">,</span>
+            <span class="mi">37</span> <span class="p">:</span> <span class="s">&#39;Rb&#39;</span><span class="p">,</span>
+            <span class="mi">38</span> <span class="p">:</span> <span class="s">&#39;Sr&#39;</span><span class="p">,</span>
+            <span class="mi">39</span> <span class="p">:</span> <span class="s">&#39; Y&#39;</span><span class="p">,</span>
+            <span class="mi">40</span> <span class="p">:</span> <span class="s">&#39;Zr&#39;</span><span class="p">,</span>
+            <span class="mi">41</span> <span class="p">:</span> <span class="s">&#39;Nb&#39;</span><span class="p">,</span>
+            <span class="mi">42</span> <span class="p">:</span> <span class="s">&#39;Mo&#39;</span><span class="p">,</span>
+            <span class="mi">43</span> <span class="p">:</span> <span class="s">&#39;Tc&#39;</span><span class="p">,</span>
+            <span class="mi">44</span> <span class="p">:</span> <span class="s">&#39;Ru&#39;</span><span class="p">,</span>
+            <span class="mi">45</span> <span class="p">:</span> <span class="s">&#39;Rh&#39;</span><span class="p">,</span>
+            <span class="mi">46</span> <span class="p">:</span> <span class="s">&#39;Pd&#39;</span><span class="p">,</span>
+            <span class="mi">47</span> <span class="p">:</span> <span class="s">&#39;Ag&#39;</span><span class="p">,</span>
+            <span class="mi">48</span> <span class="p">:</span> <span class="s">&#39;Cd&#39;</span><span class="p">,</span>
+            <span class="mi">49</span> <span class="p">:</span> <span class="s">&#39;In&#39;</span><span class="p">,</span>
+            <span class="mi">50</span> <span class="p">:</span> <span class="s">&#39;Sn&#39;</span><span class="p">,</span>
+            <span class="mi">51</span> <span class="p">:</span> <span class="s">&#39;Sb&#39;</span><span class="p">,</span>
+            <span class="mi">52</span> <span class="p">:</span> <span class="s">&#39;Te&#39;</span><span class="p">,</span>
+            <span class="mi">53</span> <span class="p">:</span> <span class="s">&#39; I&#39;</span><span class="p">,</span>
+            <span class="mi">54</span> <span class="p">:</span> <span class="s">&#39;Xe&#39;</span><span class="p">,</span>
+            <span class="mi">55</span> <span class="p">:</span> <span class="s">&#39;Cs&#39;</span><span class="p">,</span>
+            <span class="mi">56</span> <span class="p">:</span> <span class="s">&#39;Ba&#39;</span><span class="p">,</span>
+            <span class="mi">57</span> <span class="p">:</span> <span class="s">&#39;La&#39;</span><span class="p">,</span>
+            <span class="mi">58</span> <span class="p">:</span> <span class="s">&#39;Ce&#39;</span><span class="p">,</span>
+            <span class="mi">59</span> <span class="p">:</span> <span class="s">&#39;Pr&#39;</span><span class="p">,</span>
+            <span class="mi">60</span> <span class="p">:</span> <span class="s">&#39;Nd&#39;</span><span class="p">,</span>
+            <span class="mi">61</span> <span class="p">:</span> <span class="s">&#39;Pm&#39;</span><span class="p">,</span>
+            <span class="mi">62</span> <span class="p">:</span> <span class="s">&#39;Sm&#39;</span><span class="p">,</span>
+            <span class="mi">63</span> <span class="p">:</span> <span class="s">&#39;Eu&#39;</span><span class="p">,</span>
+            <span class="mi">64</span> <span class="p">:</span> <span class="s">&#39;Gd&#39;</span><span class="p">,</span>
+            <span class="mi">65</span> <span class="p">:</span> <span class="s">&#39;Tb&#39;</span><span class="p">,</span>
+            <span class="mi">66</span> <span class="p">:</span> <span class="s">&#39;Dy&#39;</span><span class="p">,</span>
+            <span class="mi">67</span> <span class="p">:</span> <span class="s">&#39;Ho&#39;</span><span class="p">,</span>
+            <span class="mi">68</span> <span class="p">:</span> <span class="s">&#39;Er&#39;</span><span class="p">,</span>
+            <span class="mi">69</span> <span class="p">:</span> <span class="s">&#39;Tm&#39;</span><span class="p">,</span>
+            <span class="mi">70</span> <span class="p">:</span> <span class="s">&#39;Yb&#39;</span><span class="p">,</span>
+            <span class="mi">71</span> <span class="p">:</span> <span class="s">&#39;Lu&#39;</span><span class="p">,</span>
+            <span class="mi">72</span> <span class="p">:</span> <span class="s">&#39;Hf&#39;</span><span class="p">,</span>
+            <span class="mi">73</span> <span class="p">:</span> <span class="s">&#39;Ta&#39;</span><span class="p">,</span>
+            <span class="mi">74</span> <span class="p">:</span> <span class="s">&#39; W&#39;</span><span class="p">,</span>
+            <span class="mi">75</span> <span class="p">:</span> <span class="s">&#39;Re&#39;</span><span class="p">,</span>
+            <span class="mi">76</span> <span class="p">:</span> <span class="s">&#39;Os&#39;</span><span class="p">,</span>
+            <span class="mi">77</span> <span class="p">:</span> <span class="s">&#39;Ir&#39;</span><span class="p">,</span>
+            <span class="mi">78</span> <span class="p">:</span> <span class="s">&#39;Pt&#39;</span><span class="p">,</span>
+            <span class="mi">79</span> <span class="p">:</span> <span class="s">&#39;Au&#39;</span><span class="p">,</span>
+            <span class="mi">80</span> <span class="p">:</span> <span class="s">&#39;Hg&#39;</span><span class="p">,</span>
+            <span class="mi">81</span> <span class="p">:</span> <span class="s">&#39;Tl&#39;</span><span class="p">,</span>
+            <span class="mi">82</span> <span class="p">:</span> <span class="s">&#39;Pb&#39;</span><span class="p">,</span>
+            <span class="mi">83</span> <span class="p">:</span> <span class="s">&#39;Bi&#39;</span><span class="p">,</span>
+            <span class="mi">84</span> <span class="p">:</span> <span class="s">&#39;Po&#39;</span><span class="p">,</span>
+            <span class="mi">85</span> <span class="p">:</span> <span class="s">&#39;At&#39;</span><span class="p">,</span>
+            <span class="mi">86</span> <span class="p">:</span> <span class="s">&#39;Rn&#39;</span><span class="p">,</span>
+            <span class="mi">87</span> <span class="p">:</span> <span class="s">&#39;Fr&#39;</span><span class="p">,</span>
+            <span class="mi">88</span> <span class="p">:</span> <span class="s">&#39;Ra&#39;</span><span class="p">,</span>
+            <span class="mi">89</span> <span class="p">:</span> <span class="s">&#39;Ac&#39;</span><span class="p">,</span>
+            <span class="mi">90</span> <span class="p">:</span> <span class="s">&#39;Th&#39;</span><span class="p">,</span>
+            <span class="mi">91</span> <span class="p">:</span> <span class="s">&#39;Pa&#39;</span><span class="p">,</span>
+            <span class="mi">92</span> <span class="p">:</span> <span class="s">&#39; U&#39;</span><span class="p">,</span>
+            <span class="mi">93</span> <span class="p">:</span> <span class="s">&#39;Np&#39;</span><span class="p">,</span>
+            <span class="mi">94</span> <span class="p">:</span> <span class="s">&#39;Pu&#39;</span><span class="p">,</span>
+            <span class="mi">95</span> <span class="p">:</span> <span class="s">&#39;Am&#39;</span><span class="p">,</span>
+            <span class="mi">96</span> <span class="p">:</span> <span class="s">&#39;Cm&#39;</span><span class="p">,</span>
+            <span class="mi">97</span> <span class="p">:</span> <span class="s">&#39;Bk&#39;</span><span class="p">,</span>
+            <span class="mi">98</span> <span class="p">:</span> <span class="s">&#39;Cf&#39;</span><span class="p">,</span>
+            <span class="mi">99</span> <span class="p">:</span> <span class="s">&#39;Es&#39;</span><span class="p">,</span>
+           <span class="mi">100</span> <span class="p">:</span> <span class="s">&#39;Fm&#39;</span><span class="p">,</span>
+           <span class="mi">101</span> <span class="p">:</span> <span class="s">&#39;Md&#39;</span><span class="p">,</span>
+           <span class="mi">102</span> <span class="p">:</span> <span class="s">&#39;No&#39;</span><span class="p">,</span>
+           <span class="mi">103</span> <span class="p">:</span> <span class="s">&#39;Lr&#39;</span><span class="p">,</span>
+           <span class="mi">104</span> <span class="p">:</span> <span class="s">&#39;Rf&#39;</span><span class="p">,</span>
+           <span class="mi">105</span> <span class="p">:</span> <span class="s">&#39;Db&#39;</span><span class="p">,</span>
+           <span class="mi">106</span> <span class="p">:</span> <span class="s">&#39;Sg&#39;</span><span class="p">,</span>
+           <span class="mi">107</span> <span class="p">:</span> <span class="s">&#39;Bh&#39;</span><span class="p">,</span>
+           <span class="mi">108</span> <span class="p">:</span> <span class="s">&#39;Hs&#39;</span><span class="p">,</span>
+           <span class="mi">109</span> <span class="p">:</span> <span class="s">&#39;Mt&#39;</span><span class="p">,</span>
+           <span class="mi">110</span> <span class="p">:</span> <span class="s">&#39;Ds&#39;</span><span class="p">,</span>
+           <span class="mi">111</span> <span class="p">:</span> <span class="s">&#39;Rg&#39;</span><span class="p">,</span>
+           <span class="mi">112</span> <span class="p">:</span> <span class="s">&#39;Cn&#39;</span><span class="p">}</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_symbol</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+
+<span class="c"># Dictionary Z: name</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">_symbol</span>
+
+<span class="c"># Dictionary name: Z</span>
+<span class="n">charge</span> <span class="o">=</span> <span class="n">z</span>
+
+<div class="viewcode-block" id="str2ZAI"><a class="viewcode-back" href="../../../../pirs.core.tramat.html#pirs.core.tramat.data_names.str2ZAI">[docs]</a><span class="k">def</span> <span class="nf">str2ZAI</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns (Z, A, I) tuple for the nuclide name specified in the form ``%s-%i[m[I]]``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># ID must be of the form %s-%i[m]</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)</span>
+
+    <span class="c"># convert a to A:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># isomeric state</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="s">&#39;nat&#39;</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> 
+    <span class="k">elif</span> <span class="s">&#39;m&#39;</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;m&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">I</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">I</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">I</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">I</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c"># ensure that capital letters are used</span>
+        <span class="n">n</span> <span class="o">=</span>  <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">n</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Wrong chemical name &#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">charge</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ZAID2ZAI"><a class="viewcode-back" href="../../../../pirs.core.tramat.html#pirs.core.tramat.data_names.ZAID2ZAI">[docs]</a><span class="k">def</span> <span class="nf">ZAID2ZAI</span><span class="p">(</span><span class="n">ZAID</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns (Z, A, I) tuple for the nuclide specified by its ZAID.</span>
+
+<span class="sd">    Rules to construct ZAIDs for isomeric states are from </span>
+<span class="sd">    https://www.oecd-nea.org/dbprog/RPSD2008-endf70-paper2.pdf ::</span>
+
+<span class="sd">        if I &lt; 1:</span>
+<span class="sd">            ZAID = Z*1000 + A </span>
+<span class="sd">        else:</span>
+<span class="sd">            ZAID = Z*1000 + (A + 300) + I*100</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">ZAID</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ZAID</span> <span class="o">%</span> <span class="mi">1000</span>
+
+    <span class="n">I</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span>   <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="mi">242</span><span class="p">):</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="mi">642</span><span class="p">):</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">242</span>
+    <span class="k">elif</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">400</span><span class="p">:</span>
+        <span class="n">aa</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">300</span>
+        <span class="n">az</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="mi">2</span> <span class="c"># estimate for a</span>
+        <span class="k">for</span> <span class="n">I</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="n">aa</span> <span class="o">=</span> <span class="n">aa</span> <span class="o">-</span> <span class="n">I</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">aa</span> <span class="o">-</span> <span class="n">az</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">aa</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="zai"><a class="viewcode-back" href="../../../../pirs.core.tramat.html#pirs.core.tramat.data_names.zai">[docs]</a><span class="k">def</span> <span class="nf">zai</span><span class="p">(</span><span class="n">ID</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a tuple (Z, A, I), where I is the isomeric state. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">str2ZAI</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">ZAID2ZAI</span><span class="p">(</span><span class="n">ID</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># assume ID is an iterable</span>
+            <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">ID</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown nuclide ID: &#39;</span><span class="p">,</span> <span class="n">ID</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ZAI2ZAID"><a class="viewcode-back" href="../../../../pirs.core.tramat.html#pirs.core.tramat.data_names.ZAI2ZAID">[docs]</a><span class="k">def</span> <span class="nf">ZAI2ZAID</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inverse function to ``ZAID2ZAI``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">zaid</span> <span class="o">=</span> <span class="mi">95642</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">zaid</span> <span class="o">=</span> <span class="mi">95242</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">zaid</span> <span class="o">=</span> <span class="n">z</span><span class="o">*</span><span class="mi">1000</span> <span class="o">+</span> <span class="n">a</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">zaid</span> <span class="o">+=</span> <span class="mi">300</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">100</span>
+    <span class="k">return</span> <span class="n">zaid</span>
+
+
+                        
+                        
+                    
+        
+        
+        
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../tramat.html" >pirs.core.tramat</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

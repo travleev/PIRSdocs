@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.core.trageom subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="prev" title="pirs.core.tramat subpackage" href="pirs.core.tramat.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.tramat.html" title="pirs.core.tramat subpackage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-core-trageom-subpackage">
+<span id="trageom"></span><h1>pirs.core.trageom subpackage<a class="headerlink" href="#pirs-core-trageom-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>This subpackage defins only one class, <a class="reference internal" href="#pirs.core.trageom.Vector3" title="pirs.core.trageom.Vector3"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.trageom.Vector3</span></tt></a>
+representing a vector (coordinate) in three-dimensional space. The main
+functionality of this class is to perform conversion between cartesian,
+cylindrical and spherical coordinate systems (CS). A user can work (set and get)
+attributes representing coordinates in these coordinate systems and the class
+unsures that all coordinates are everytime consistent.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.core.trageom</span> <span class="kn">import</span> <span class="n">Vector3</span><span class="p">,</span> <span class="n">pi2</span><span class="p">,</span> <span class="n">pi</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">car</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>   <span class="c"># x, y, z</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>   <span class="c"># r, theta, z</span>
+<span class="n">v3</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>   <span class="c"># R, theta, phi</span>
+
+<span class="k">print</span> <span class="s">&#39;rotate v1:&#39;</span>
+<span class="k">print</span> <span class="n">v1</span><span class="o">.</span><span class="n">car</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">t</span> <span class="o">+=</span> <span class="n">pi2</span>
+<span class="k">print</span> <span class="n">v1</span><span class="o">.</span><span class="n">car</span>
+
+<span class="k">print</span> <span class="s">&#39;stretch v2 2 times:&#39;</span>
+<span class="k">print</span> <span class="n">v2</span><span class="o">.</span><span class="n">car</span>
+<span class="n">v2</span><span class="o">.</span><span class="n">R</span> <span class="o">*=</span> <span class="mf">2.</span>
+<span class="k">print</span> <span class="n">v2</span><span class="o">.</span><span class="n">car</span>
+
+<span class="k">print</span> <span class="s">&#39;flip v3:&#39;</span>
+<span class="k">print</span> <span class="n">v3</span><span class="o">.</span><span class="n">car</span>
+<span class="n">v3</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">pi</span> 
+<span class="k">print</span> <span class="n">v3</span><span class="o">.</span><span class="n">car</span>
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>rotate v1:
+(1.0, 0.0, 0.0)
+(0.0, 1.0, 0.0)
+stretch v2 2 times:
+(1.0, 0.0, 1.0)
+(2.0, 0.0, 2.0000000000000004)
+flip v3:
+(0.0, 0.0, 1.0)
+(-0.0, -0.0, -1.0)
+</pre></div>
+</div>
+<p>A vector instance is initialized by passing a coordinate 3-tuple to the
+constructor. Read-only attributes <a class="reference internal" href="#pirs.core.trageom.Vector3.car" title="pirs.core.trageom.Vector3.car"><tt class="xref py py-attr docutils literal"><span class="pre">car</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.cyl" title="pirs.core.trageom.Vector3.cyl"><tt class="xref py py-attr docutils literal"><span class="pre">cyl</span></tt></a>
+and <a class="reference internal" href="#pirs.core.trageom.Vector3.sph" title="pirs.core.trageom.Vector3.sph"><tt class="xref py py-attr docutils literal"><span class="pre">sph</span></tt></a> return coordinates in the correspondent CS.
+Properties <a class="reference internal" href="#pirs.core.trageom.Vector3.x" title="pirs.core.trageom.Vector3.x"><tt class="xref py py-attr docutils literal"><span class="pre">x</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.y" title="pirs.core.trageom.Vector3.y"><tt class="xref py py-attr docutils literal"><span class="pre">y</span></tt></a>, , <a class="reference internal" href="#pirs.core.trageom.Vector3.z" title="pirs.core.trageom.Vector3.z"><tt class="xref py py-attr docutils literal"><span class="pre">z</span></tt></a>,
+<a class="reference internal" href="#pirs.core.trageom.Vector3.r" title="pirs.core.trageom.Vector3.r"><tt class="xref py py-attr docutils literal"><span class="pre">r</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.t" title="pirs.core.trageom.Vector3.t"><tt class="xref py py-attr docutils literal"><span class="pre">t</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.z" title="pirs.core.trageom.Vector3.z"><tt class="xref py py-attr docutils literal"><span class="pre">z</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.R" title="pirs.core.trageom.Vector3.R"><tt class="xref py py-attr docutils literal"><span class="pre">R</span></tt></a>,
+<a class="reference internal" href="#pirs.core.trageom.Vector3.t" title="pirs.core.trageom.Vector3.t"><tt class="xref py py-attr docutils literal"><span class="pre">t</span></tt></a>, <a class="reference internal" href="#pirs.core.trageom.Vector3.p" title="pirs.core.trageom.Vector3.p"><tt class="xref py py-attr docutils literal"><span class="pre">p</span></tt></a> can be set. In the above, the <tt class="docutils literal"><span class="pre">v1</span></tt>
+vector is first specified using the cartesian CS. The coordinates and the CS
+type is stored internaly and can be used later to compute coordinates in the
+other CS. When <a class="reference internal" href="#pirs.core.trageom.Vector3.t" title="pirs.core.trageom.Vector3.t"><tt class="xref py py-attr docutils literal"><span class="pre">t</span></tt></a> is changed, first, coordinates in the
+cylindrical CS are computed from the previously defined cartesian coordinates.
+Then, the theta cylindrical variable is updated and the internal CS type is set
+to the cylindrical CS. When we call the <a class="reference internal" href="#pirs.core.trageom.Vector3.car" title="pirs.core.trageom.Vector3.car"><tt class="xref py py-attr docutils literal"><span class="pre">Vector3.car</span></tt></a> for the second
+time, i.e. after <a class="reference internal" href="#pirs.core.trageom.Vector3.t" title="pirs.core.trageom.Vector3.t"><tt class="xref py py-attr docutils literal"><span class="pre">Vector3.t</span></tt></a> was set, the cartesian coordinates are
+computed from internally stored cylindrical coordinates and returned as a
+3-tuple.</p>
+<dl class="class">
+<dt id="pirs.core.trageom.Vector3">
+<em class="property">class </em><tt class="descclassname">pirs.core.trageom.</tt><tt class="descname">Vector3</tt><big>(</big><em>car=None</em>, <em>cyl=None</em>, <em>sph=None</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector in three-dimensional space.</p>
+<p>Coordinate conversion between cartesian (car), cylindrical (cyl)  and
+spherical (sph) coordinate systems is performed &#8220;on demand&#8221;, i.e. when
+values of these coordinates are inquired by user.</p>
+<p>Vectors are created by specifying a 3-tuple containing coordinates in
+cartesian, cylinder, or spherical coordinate system (CS):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span>  <span class="n">car</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="p">)</span>     <span class="c"># cartesian coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span>  <span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="p">)</span>     <span class="c"># cylinder coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v3</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span>  <span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pi2</span><span class="p">))</span>    <span class="c"># spherical coordinates (pi2 is defined in the module as pi2 = pi/2)</span>
+</pre></div>
+</div>
+<p>The order of values in tuples is the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>       <span class="c"># for cartesian CS</span>
+<span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>   <span class="c"># for cylinder CS</span>
+<span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span> <span class="c"># for spherical CS</span>
+</pre></div>
+</div>
+<p>Coordinates R and r used in the spherical and cylinder CS, have different meaning:
+R is the vector&#8217;s length, r is the length of vector&#8217;s projection onto xy plane.</p>
+<p>If the type of coordinate system is not given explicitly, the cartesian is
+assumed. The following two definitions are equal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v4</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span>     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v5</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">car</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v4</span> <span class="o">==</span> <span class="n">v5</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>If incomplete tuples are specified, they are augmented by zeroes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>If the &#8216;car&#8217; argument is another Vector3 object, its copy is returned.
+This is to make Vector3() method a type convertor.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">v1</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="ow">is</span> <span class="n">v2</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>If no arguments are specified in the constructor, the argument car=(0,0,0) is
+assumed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">Vector3</span><span class="p">()</span>
+<span class="go">car (x=0, y=0, z=0)</span>
+</pre></div>
+</div>
+<p>After a vector instance is created, their coordinates can be accessed by
+attributes x, y, z, r, t, R, p, which mean one of the coordinate in cartesian
+(x,y,z), cylindrical (r, t[heta], z), or spherical (R[ho], t[heta], p[hi])
+systems.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">z</span>            <span class="c"># cartesian coordinates</span>
+<span class="go">(1.0, 1.0, 1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">z</span>            <span class="c"># cylinder coordinates </span>
+<span class="go">(1.414...,  0.785...,  1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">p</span>            <span class="c"># shperical coordinates </span>
+<span class="go">(1.732...,  0.785...,  0.955...)</span>
+</pre></div>
+</div>
+<p>After a vector instance is created, it has at least one set of coordinates.
+Thus, they always can be used to get the coordinates in another system.</p>
+<p>The transition from one coordinate system to another is performed when a
+coordinate is set.  For example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>   
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">r</span>                      
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>In the first line, a vector instance is created. Since the cartesian
+coordinates are given (by default), the internal representation of the vector v
+uses cartesian system. In the second line, the radius in the cylindrical CS is
+requested. This results internaly in calculation of the coordinates in the
+cylindrical system, but the internal representation is still uses cartesian
+coordinates. In the third line, the cylundrical radius is set. Now, the
+internal representation is changed from cartesian to cylindrical.</p>
+<p>Each time a coordinate is read, it is recalculated from the internal
+representation. Each time coordinate of a new system is set, first the new
+system coordinates are updated using the current coordinate system and then the
+new coordinate is set and the internal system is changed.</p>
+<p>Sets coordinates of the vector.</p>
+<p>Arguments car, cyl or sph must be a tuple specifying coordinates in the
+cartesian, cylinder or spherical coordinate systems, respectively.</p>
+<p>If the passed tuple contains less than 3 elements, it is augmented with
+zeroes.</p>
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.R">
+<tt class="descname">R</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>R coordinate in spherical CS.</p>
+<p>When R is set, the vector internal representation is changed to
+spherical (thus R, t and p are computed from cartesian or cylinder coordinates),
+and then new value is set to R.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.core.trageom.Vector3.UnitX">
+<em class="property">classmethod </em><tt class="descname">UnitX</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.UnitX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns unit vector along X axis</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.core.trageom.Vector3.UnitY">
+<em class="property">classmethod </em><tt class="descname">UnitY</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.UnitY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns unit vector along Y axis</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.core.trageom.Vector3.UnitZ">
+<em class="property">classmethod </em><tt class="descname">UnitZ</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.UnitZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns unit vector along Z axis</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.core.trageom.Vector3.Zero">
+<em class="property">classmethod </em><tt class="descname">Zero</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.Zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns zero vector with cartesian internal coordinate system.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="o">.</span><span class="n">Zero</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v3</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">car</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">==</span> <span class="n">v3</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.all">
+<tt class="descname">all</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a 7-tuple of coordinates in all systems, (x, y, z, r, t, R, p)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.alld">
+<tt class="descname">alld</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.alld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with coordinates in all systems,:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">:</span><span class="n">y</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">:</span><span class="n">z</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">:</span><span class="n">r</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">:</span><span class="n">t</span><span class="p">,</span> <span class="s">&#39;R&#39;</span><span class="p">:</span><span class="n">R</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">:</span><span class="n">p</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.car">
+<tt class="descname">car</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.car" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a 3-tuple with cartesian coordinates, (x, y, z).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.card">
+<tt class="descname">card</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.card" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with cartesian coordinates, {&#8216;x&#8217;:x, &#8216;y&#8217;:y, &#8216;z&#8217;:z}.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new instance with the same coordinates</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">v1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="ow">is</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span>
+<span class="go">(False, True)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.cross">
+<tt class="descname">cross</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.cross" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector product</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.cyl">
+<tt class="descname">cyl</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.cyl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a 3-tuple with cylinder coordinates, (r, t, z).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.cyld">
+<tt class="descname">cyld</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.cyld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with cylinder coordinates, {&#8216;r&#8217;:r, &#8216;t&#8217;:t, &#8216;z&#8217;:z}.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.dot">
+<tt class="descname">dot</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>scalar product</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.is_on_axis">
+<tt class="descname">is_on_axis</tt><big>(</big><em>axis='x'</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.is_on_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>test if self is on axis</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.is_parallel">
+<tt class="descname">is_parallel</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.is_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if self and othr are parallel taking into account machine epsilon.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.is_perpendicular">
+<tt class="descname">is_perpendicular</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.is_perpendicular" title="Permalink to this definition">¶</a></dt>
+<dd><p>check that two vectors are perpendicular taking into account the machine epsilon.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.core.trageom.Vector3.is_zero">
+<tt class="descname">is_zero</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.core.trageom.Vector3.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>return true if length of self is zero</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.own">
+<tt class="descname">own</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.own" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a 3-tuple with coordinates in the internal CS.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.p">
+<tt class="descname">p</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.p" title="Permalink to this definition">¶</a></dt>
+<dd><p>p (phi) coordinate in spherical CS.</p>
+<p>When p is set, the vector internal representation is changed to
+spherical (thus R, t and p are computed from cartesian or cylinder coordinates),
+and then new value is set to p.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.r">
+<tt class="descname">r</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.r" title="Permalink to this definition">¶</a></dt>
+<dd><p>r coordinate in cylinder CS.</p>
+<p>When r is set, the vector internal representation is changed to
+cylinder (thus r, t and z are computed from cartesian or spherical coordinates),
+and then new value is set to r.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.sph">
+<tt class="descname">sph</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.sph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a 3-tuple with spherical coordinates, (R, t, p).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.sphd">
+<tt class="descname">sphd</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.sphd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with spherical coordinates, {&#8216;R&#8217;:R, &#8216;t&#8217;:t, &#8216;p&#8217;:p}.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.t">
+<tt class="descname">t</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.t" title="Permalink to this definition">¶</a></dt>
+<dd><p>t (theta) coordinate in cylinder CS.</p>
+<p>When t is set to a vector with cylinder or spherical coordinates, the
+internal CS is not changed.  If t is set to a vector with cartesian
+coordinates, the spherical coordinates are computed from cartesian, and
+than the new value is set to t.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.x">
+<tt class="descname">x</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns x coordinate in cartesian CS.</p>
+<p>When x is set, the vector internal representation is changed to
+cartesian (thus x, y and z are computed from cyl. or sph coordinates),
+and then new value is set to x.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">x</span>                   
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span><span class="o">.</span><span class="n">x</span>      
+<span class="go">1.00...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">x</span>    
+<span class="go">1.00...</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">car (x=1, y=0, z=1)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">car (x=4, y=1, z=1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.y">
+<tt class="descname">y</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns y coordinate in cartesian CS.</p>
+<p>When y is set, the vector internal representation is changed to
+cartesian (thus x, y and z are computed from cyl. or sph coordinates),
+and then new value is set to y.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">y</span>                   
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span><span class="o">.</span><span class="n">y</span>      
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">y</span>    
+<span class="go">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">car (x=0, y=1, z=1)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">car (x=1, y=4, z=1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.core.trageom.Vector3.z">
+<tt class="descname">z</tt><a class="headerlink" href="#pirs.core.trageom.Vector3.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns z coordinate in cartesian or cylinder CS.</p>
+<p>When z is set in a vector with spherical internal representation, the
+new CS will be cartesian. In other cases, i.e. when z is set to a
+cartesian or cylinder vector, its type is not changed.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">z</span>                   
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span><span class="o">.</span><span class="n">z</span>      
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Vector3</span><span class="p">(</span><span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">z</span>    
+<span class="go">0.0</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">sph</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>
+<span class="go">car (x=1, y=0, z=1)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span> <span class="n">cyl</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">v</span>                                
+<span class="go">cyl (r=1.41..., t=0.785..., z=4)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pirs.core.tramat.html"
+                        title="previous chapter">pirs.core.tramat subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.core.trageom.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.core.tramat.html" title="pirs.core.tramat subpackage"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

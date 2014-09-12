@@ -1,0 +1,2402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.solids subpackage &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="index.html" />
+    <link rel="next" title="pirs.mcnp subpackage" href="pirs.mcnp.html" />
+    <link rel="prev" title="Welcome to PIRS documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.mcnp.html" title="pirs.mcnp subpackage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to PIRS documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pirs-solids-subpackage">
+<span id="solids"></span><h1>pirs.solids subpackage<a class="headerlink" href="#pirs-solids-subpackage" title="Permalink to this headline">¶</a></h1>
+<p>This package provides description of classes representing solids that can be used to describe model
+geometry. Currently there are <a class="reference internal" href="#pirs.solids.Cylinder" title="pirs.solids.Cylinder"><tt class="xref py py-class docutils literal"><span class="pre">Cylinder</span></tt></a>, <a class="reference internal" href="#pirs.solids.Box" title="pirs.solids.Box"><tt class="xref py py-class docutils literal"><span class="pre">Box</span></tt></a> and <a class="reference internal" href="#pirs.solids.Sphere" title="pirs.solids.Sphere"><tt class="xref py py-class docutils literal"><span class="pre">Sphere</span></tt></a> classes.</p>
+<p>Model geometry is represented as a set of boxes or cylinders organized in a
+tree structure. One solid can be inserted into another one (in this case the
+latter is called a container of the former one), can be positioned arbitrarily
+within its container (no rotation implemented yet!), and can be partially or
+completely covered by another solid.</p>
+<div class="section" id="simple-model">
+<h2>Simple model<a class="headerlink" href="#simple-model" title="Permalink to this headline">¶</a></h2>
+<p>In the following example, a box with two cylinders is described and plotted.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.solids</span> <span class="kn">import</span> <span class="n">Box</span><span class="p">,</span> <span class="n">Cylinder</span>
+<span class="kn">from</span> <span class="nn">pirs.tools.plots</span> <span class="kn">import</span> <span class="n">colormap</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">Box</span><span class="p">()</span>
+<span class="n">b</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">b</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">b</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">b</span><span class="o">.</span><span class="n">material</span> <span class="o">=</span> <span class="s">&#39;m1&#39;</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Cylinder</span><span class="p">()</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">material</span> <span class="o">=</span> <span class="s">&#39;m2&#39;</span>
+
+<span class="n">b</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span>
+
+<span class="n">c2</span> <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">()</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">material</span> <span class="o">=</span> <span class="s">&#39;m3&#39;</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">0.8</span> 
+<span class="n">c2</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.6</span>
+
+<span class="n">b</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
+
+
+<span class="n">colormap</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol1z.png&#39;</span><span class="p">)</span>
+<span class="n">colormap</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol1x.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="#pirs.solids.Box" title="pirs.solids.Box"><tt class="xref py py-class docutils literal"><span class="pre">Box</span></tt></a> class describes a rectangular parallelepiped with facets
+perpendicular to the coordinate axes. Attributes <a class="reference internal" href="#pirs.solids.Box.X" title="pirs.solids.Box.X"><tt class="xref py py-attr docutils literal"><span class="pre">Box.X</span></tt></a>, <a class="reference internal" href="#pirs.solids.Box.Y" title="pirs.solids.Box.Y"><tt class="xref py py-attr docutils literal"><span class="pre">Box.Y</span></tt></a>
+and <a class="reference internal" href="#pirs.solids.Box.Z" title="pirs.solids.Box.Z"><tt class="xref py py-attr docutils literal"><span class="pre">Box.Z</span></tt></a> describe dimensions of the box. The <a class="reference internal" href="#pirs.solids.Box.material" title="pirs.solids.Box.material"><tt class="xref py py-attr docutils literal"><span class="pre">material</span></tt></a>
+attribute holds the material name (its particular meaning in the computational
+code must be defined separately in the code&#8217;s high-level interface).</p>
+<p>Variable <tt class="docutils literal"><span class="pre">c1</span></tt> is a cylinder. It is inserted into <tt class="docutils literal"><span class="pre">b</span></tt> by the
+<a class="reference internal" href="#pirs.solids.Box.insert" title="pirs.solids.Box.insert"><tt class="xref py py-meth docutils literal"><span class="pre">insert()</span></tt></a> method. The second cylinder, <tt class="docutils literal"><span class="pre">c2</span></tt>, is a copy of <tt class="docutils literal"><span class="pre">c1</span></tt>,
+except material and its position in container, represented by <a class="reference internal" href="#pirs.solids.Box.pos" title="pirs.solids.Box.pos"><tt class="xref py py-attr docutils literal"><span class="pre">pos</span></tt></a> (an instance
+of the <a class="reference internal" href="pirs.core.trageom.html#pirs.core.trageom.Vector3" title="pirs.core.trageom.Vector3"><tt class="xref py py-class docutils literal"><span class="pre">pirs.core.trageom.Vector3</span></tt></a> class) are changed. Cylinder <tt class="docutils literal"><span class="pre">c2</span></tt> is also
+inserted into <tt class="docutils literal"><span class="pre">b</span></tt>.</p>
+<p>Cross-sections of the model can be plotted with the help of
+<a class="reference internal" href="#pirs.tools.plots.colormap" title="pirs.tools.plots.colormap"><tt class="xref py py-func docutils literal"><span class="pre">pirs.tools.plots.colormap()</span></tt></a> function that takes as argument a solid and
+returns an instance of the Matplotlib&#8217;s <tt class="xref py py-class docutils literal"><span class="pre">Axes</span></tt> class. If optional argument <tt class="docutils literal"><span class="pre">filename</span></tt> is given, the plot
+will be saved to disk.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol1z.png"><img alt="_images/sol1z.png" src="_images/sol1z.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Vertical cross-section.</p>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol1x.png"><img alt="_images/sol1x.png" src="_images/sol1x.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Horizontal cross-section.</p>
+</div>
+<p>As one can see, cylinder <tt class="docutils literal"><span class="pre">c2</span></tt> partly covers <tt class="docutils literal"><span class="pre">c1</span></tt>, while it was inserted
+into <tt class="docutils literal"><span class="pre">b</span></tt> after <tt class="docutils literal"><span class="pre">c1</span></tt>. At the second plot showing horizontal cross-section,
+cylinder <tt class="docutils literal"><span class="pre">c2</span></tt> not seen while the cross-section plane, <tt class="docutils literal"><span class="pre">x=0</span></tt> does not
+intersect it.</p>
+</div>
+<div class="section" id="assembly-like-model">
+<h2>Assembly-like model<a class="headerlink" href="#assembly-like-model" title="Permalink to this headline">¶</a></h2>
+<p>The next example shows how an assembly-like geometry can be modelled:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.solids</span> <span class="kn">import</span> <span class="n">Box</span><span class="p">,</span> <span class="n">Cylinder</span>
+<span class="kn">from</span> <span class="nn">pirs.tools.plots</span> <span class="kn">import</span> <span class="n">colormap</span>
+
+<span class="c"># pin model</span>
+<span class="n">pin</span> <span class="o">=</span> <span class="n">Cylinder</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s">&#39;clad&#39;</span><span class="p">)</span>
+<span class="n">pin</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">Cylinder</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="n">pin</span><span class="o">.</span><span class="n">Z</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s">&#39;fuel&#39;</span><span class="p">))</span>
+
+<span class="c"># assembly box</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">Box</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="n">pin</span><span class="o">.</span><span class="n">Z</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s">&#39;water&#39;</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">1.1</span>
+<span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">Z</span>
+
+<span class="c"># insert pins</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">insert</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">pin</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">())</span>
+
+<span class="c"># center grid with respect to solid</span>
+<span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">center</span><span class="p">()</span>
+
+<span class="n">colormap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol2z.png&#39;</span><span class="p">)</span>
+<span class="n">colormap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol2x.png&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">pin</span></tt> variable is a cylinder containing another, 5 cm shorter and 0.05 cm thinner
+coaxial cylinder. It represents a pin. Note that attributes of created solids can be set
+by passing correspondent arguments to the constructor.</p>
+<p>Next, the box <tt class="docutils literal"><span class="pre">a</span></tt> is created. Its <a class="reference internal" href="#pirs.solids.Box.grid" title="pirs.solids.Box.grid"><tt class="xref py py-attr docutils literal"><span class="pre">Box.grid</span></tt></a> attribute (an instance of
+the <a class="reference internal" href="#pirs.solids.positions.RGrid" title="pirs.solids.positions.RGrid"><tt class="xref py py-class docutils literal"><span class="pre">pirs.solids.positions.RGrid</span></tt></a> class) describes a rectangular grid
+(lattice) superimposed over the solid, which can be used to position inserted
+elements. In the example, we set grid pitches along axes using
+<tt class="xref py py-attr docutils literal"><span class="pre">x</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">y</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">z</span></tt> attributes of
+the grid.</p>
+<p>In the nexted loop over <tt class="docutils literal"><span class="pre">i</span></tt> and <tt class="docutils literal"><span class="pre">j</span></tt> indices a copy of <tt class="docutils literal"><span class="pre">pin</span></tt> is inserted
+into <tt class="docutils literal"><span class="pre">a</span></tt> using the <a class="reference internal" href="#pirs.solids.positions.RGrid.insert" title="pirs.solids.positions.RGrid.insert"><tt class="xref py py-meth docutils literal"><span class="pre">insert()</span></tt></a> method of the grid. Unlike the
+<a class="reference internal" href="#pirs.solids.Box.insert" title="pirs.solids.Box.insert"><tt class="xref py py-meth docutils literal"><span class="pre">Box.insert()</span></tt></a> method of the solid, the grid&#8217;s <tt class="docutils literal"><span class="pre">insert()</span></tt> method takes
+additional argument &#8211; a 3-tuple with indices <tt class="docutils literal"><span class="pre">(i,</span> <span class="pre">j,</span> <span class="pre">k)</span></tt>, which define the
+grid element where the inserted solid will be positioned. A grid can be shifted as a whole
+with respect to its solid. By default, the grid is positioned so that the
+center of the <tt class="docutils literal"><span class="pre">(0,0,0)</span></tt> grid element conicides with the solid&#8217;s center.  The grid&#8217;s
+<a class="reference internal" href="#pirs.solids.positions.RGrid.origin" title="pirs.solids.positions.RGrid.origin"><tt class="xref py py-attr docutils literal"><span class="pre">origin</span></tt></a> attribute can be used to set grid position. Altenatively, there is
+the grid&#8217;s <a class="reference internal" href="#pirs.solids.positions.RGrid.center" title="pirs.solids.positions.RGrid.center"><tt class="xref py py-meth docutils literal"><span class="pre">center()</span></tt></a> method that centers the grid in the solid. Note
+that we have not defined grid dimensions (number of elements in each direction), since
+they are defined automatically to include all inserted elements.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol2z.png"><img alt="_images/sol2z.png" src="_images/sol2z.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Vertical cross-section.</p>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol2x.png"><img alt="_images/sol2x.png" src="_images/sol2x.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Horizontal cross-section.</p>
+</div>
+</div>
+<div class="section" id="axial-distribution-of-dependent-variables">
+<h2>Axial distribution of dependent variables<a class="headerlink" href="#axial-distribution-of-dependent-variables" title="Permalink to this headline">¶</a></h2>
+<p>Each solid has <a class="reference internal" href="#pirs.solids.Box.heat" title="pirs.solids.Box.heat"><tt class="xref py py-attr docutils literal"><span class="pre">heat</span></tt></a>, <a class="reference internal" href="#pirs.solids.Box.dens" title="pirs.solids.Box.dens"><tt class="xref py py-attr docutils literal"><span class="pre">dens</span></tt></a> and <a class="reference internal" href="#pirs.solids.Box.temp" title="pirs.solids.Box.temp"><tt class="xref py py-attr docutils literal"><span class="pre">temp</span></tt></a>
+attributes, that are instances of the <a class="reference internal" href="#pirs.solids.zmesh" title="pirs.solids.zmesh"><tt class="xref py py-class docutils literal"><span class="pre">pirs.solids.zmesh</span></tt></a> class,  representing axial distribution of heat deposition, density and
+temeprature in the solid. All three axial distributions can be specified
+on independent axial grid.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pirs.solids</span> <span class="kn">import</span> <span class="n">Cylinder</span>
+<span class="kn">from</span> <span class="nn">pirs.tools.plots</span> <span class="kn">import</span> <span class="n">colormap</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Cylinder</span><span class="p">(</span><span class="n">Z</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c"># heat</span>
+<span class="n">c</span><span class="o">.</span><span class="n">heat</span><span class="o">.</span><span class="n">set_grid</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">c</span><span class="o">.</span><span class="n">heat</span><span class="o">.</span><span class="n">set_values</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+
+<span class="c"># temperature</span>
+<span class="n">c</span><span class="o">.</span><span class="n">temp</span><span class="o">.</span><span class="n">set_grid</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">temp</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="mi">300</span> <span class="o">+</span> <span class="mi">100</span><span class="o">*</span><span class="n">z</span><span class="p">)</span>
+
+<span class="c"># density</span>
+<span class="n">c</span><span class="o">.</span><span class="n">dens</span><span class="o">.</span><span class="n">set_grid</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">dens</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+
+<span class="n">colormap</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s">&#39;heat&#39;</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol3h.png&#39;</span><span class="p">)</span>
+<span class="n">colormap</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s">&#39;temp&#39;</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol3t.png&#39;</span><span class="p">)</span>
+<span class="n">colormap</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s">&#39;dens&#39;</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;sol3d.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To specify the grid for axial distribution, the mesh&#8217;
+<a class="reference internal" href="#pirs.solids.zmesh.set_grid" title="pirs.solids.zmesh.set_grid"><tt class="xref py py-meth docutils literal"><span class="pre">set_grid()</span></tt></a> method is used. It takes a list of scalars
+which define relative heigth of axial layers (the first list element
+corresponds to the lowest axial layer). In the example, the axial grid to represent heat
+deposition has three axial layers, the middle one is two times thicker as the
+others. The temperature grid has 20 equal layers, and density grid &#8211; 5 layers.</p>
+<p>Values of axial distribution are set with the help of the
+<a class="reference internal" href="#pirs.solids.zmesh.set_values" title="pirs.solids.zmesh.set_values"><tt class="xref py py-meth docutils literal"><span class="pre">set_values()</span></tt></a> method. It accepts lists (as used for
+heat), mappings (as used for temperature) or scalars (as used for density).</p>
+<p>Axial distribution of heat, temeprature or density can be plotted with the <a class="reference internal" href="#pirs.tools.plots.colormap" title="pirs.tools.plots.colormap"><tt class="xref py py-func docutils literal"><span class="pre">pirs.tools.plots.colormap()</span></tt></a> by specifying
+the <tt class="docutils literal"><span class="pre">var</span></tt> argument.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol3h.png"><img alt="_images/sol3h.png" src="_images/sol3h.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Heat.</p>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol3t.png"><img alt="_images/sol3t.png" src="_images/sol3t.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Temperature.</p>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/sol3d.png"><img alt="_images/sol3d.png" src="_images/sol3d.png" style="width: 400.0px; height: 300.0px;" /></a>
+<p class="caption">Density.</p>
+</div>
+</div>
+<div class="section" id="docstrings">
+<h2>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pirs.solids.Box">
+<em class="property">class </em><tt class="descclassname">pirs.solids.</tt><tt class="descname">Box</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Box" title="Permalink to this definition">¶</a></dt>
+<dd><p>A box with facets perpendicular to the axes.</p>
+<p>Box geometry is defined by three atributes, <tt class="docutils literal"><span class="pre">X</span></tt>, <tt class="docutils literal"><span class="pre">Y</span></tt> and <tt class="docutils literal"><span class="pre">Z</span></tt>, 
+which represent box dimensions.</p>
+<dl class="attribute">
+<dt id="pirs.solids.Box.R">
+<tt class="descname">R</tt><a class="headerlink" href="#pirs.solids.Box.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radius of circumscribed sphere.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.X">
+<tt class="descname">X</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.solids.Box.X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Box dimension along x axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.Y">
+<tt class="descname">Y</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.solids.Box.Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Box dimension along y axis</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.Z">
+<tt class="descname">Z</tt><em class="property"> = None</em><a class="headerlink" href="#pirs.solids.Box.Z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Box dimension along z axis</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.Zrange">
+<tt class="descname">Zrange</tt><big>(</big><em>cs='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.Zrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple of floats (Zmin, Zmax) &#8211; range of self in z coordinate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box._append">
+<tt class="descname">_append</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Box._append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unconditinally inserts othr to the latest place.</p>
+<p>Assumes that othr is not previously inserted</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.abspos">
+<tt class="descname">abspos</tt><big>(</big><em>cs='abs'</em>, <em>coordinate=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.abspos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns absolute position of the element with respect to the tree&#8217;s
+root.</p>
+<p>Optional argument cs (by default &#8216;abs&#8217;) specifies the coordinate
+system. Can be &#8216;abs&#8217;, &#8216;rel&#8217;, or an instance of the PositionedTree
+class. In the latter case, it must be a direct or indirect parent of
+self; the returned position is with respect to this parent.</p>
+<p>Optional argument coordinate defines the coordinate&#8217;s name returned by
+the method. By default, coordinate is None and the vector itself is
+returned. If coordinate is one of &#8216;x&#8217;, &#8216;y&#8217;, &#8216;z&#8217;, &#8216;r&#8217;, etc. (the
+complete list of variables see in the description of the Vector3
+class), the correspondent coordinate is returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.children">
+<tt class="descname">children</tt><a class="headerlink" href="#pirs.solids.Box.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of the OrderedDict class where all children of self are stored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.circumscribe">
+<tt class="descname">circumscribe</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.circumscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes inplace properties of the box, so it circumscribes solid s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.circumscribed">
+<tt class="descname">circumscribed</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.circumscribed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new instance of the class self.__class__ that circumscribes s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.common_zmesh">
+<tt class="descname">common_zmesh</tt><big>(</big><em>own=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.common_zmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the <tt class="docutils literal"><span class="pre">Mesh()</span></tt> class, which axial boundaries is the union
+of axial boundaries of all meshes of the solid itself and all its children.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.covering_sibling">
+<tt class="descname">covering_sibling</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.covering_sibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the younger sibling of the solid or the younger sibling of the
+solid&#8217;s parent(s) that covers coimpletely the solid. If there are no
+such siblings, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.dens">
+<tt class="descname">dens</tt><a class="headerlink" href="#pirs.solids.Box.dens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Density axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.denss">
+<tt class="descname">denss</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.denss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with density axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.extension">
+<tt class="descname">extension</tt><big>(</big><em>a</em>, <em>s='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (min, max) representing extension of the solid along axis a.</p>
+<p>Argument a can be &#8216;x&#8217;, &#8216;y&#8217; or &#8216;z&#8217;.</p>
+<p>Optional argument s specifies the coordinate system. &#8216;abs&#8217; means the
+gloabal coordinate system (with respect to the root of self), any other
+means the local element&#8217;s coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_child">
+<tt class="descname">get_child</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the node with compound or local key k.</p>
+<p>The compound key is relative to the instance the method bound to.
+Compare with the result of get_key() method.</p>
+<p>If k is not a local key, can be indexed but has no 0-th element, the
+self is returned.  For example, if k is an empty tuple or an emtply
+string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_key">
+<tt class="descname">get_key</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the compound key of the node relative to the tree root.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">(1,)</span>
+<span class="go">(1, 2)</span>
+<span class="go">(3,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_parents">
+<tt class="descname">get_parents</tt><big>(</big><em>reverse=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a  list of all node parents, starting from the direct parent and
+ending with the tree root.</p>
+<p>The optional boolean argument reverse changes the order of parents in
+the resulting list.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="s">&#39;for &#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="s">&#39; parents are: &#39;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">n</span><span class="o">.</span><span class="n">get_parents</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">for  (1,)  parents are:  [()]</span>
+<span class="go">for  (1, 2)  parents are:  [(1,), ()]</span>
+<span class="go">for  (3,)  parents are:  [()]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_radius">
+<tt class="descname">get_radius</tt><big>(</big><em>inscribed=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns radius of circumscribed sphere. Deprecated, use circumscribe method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_siblings">
+<tt class="descname">get_siblings</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_siblings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of two lists with nodes inserted into
+the node&#8217;s parent before and after the node itself.</p>
+<p>For example, n0 contains 4 nodes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n0</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">],</span> <span class="p">[</span><span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([],</span> <span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_value_by_coord">
+<tt class="descname">get_value_by_coord</tt><big>(</big><em>var</em>, <em>xyz</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_value_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns value of axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt> at position given by the <tt class="docutils literal"><span class="pre">xyz</span></tt> tuple.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">cs</span></tt> specifies whether <tt class="docutils literal"><span class="pre">xyz</span></tt> given in absolute (<tt class="docutils literal"><span class="pre">'abs'</span></tt>) or relative (<tt class="docutils literal"><span class="pre">'rel'</span></tt>) coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.get_value_by_index">
+<tt class="descname">get_value_by_index</tt><big>(</big><em>var</em>, <em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.get_value_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <tt class="docutils literal"><span class="pre">i</span></tt>-th value in the axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt>.</p>
+<p>If axial distribution is not defined for the solid yet, return default value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.grid">
+<tt class="descname">grid</tt><a class="headerlink" href="#pirs.solids.Box.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid description. Its parameters are used to compute absolute position
+of children, if they have other than None i,j,k attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.has_var">
+<tt class="descname">has_var</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.has_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True, if axial distribution name (can be &#8216;temp&#8217;, &#8216;heat&#8217; or &#8216;dens&#8217;)
+is defined for the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.heat">
+<tt class="descname">heat</tt><a class="headerlink" href="#pirs.solids.Box.heat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.heats">
+<tt class="descname">heats</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.heats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with heat axial distribution, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.hiding_parent">
+<tt class="descname">hiding_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.hiding_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the container that completely hides the solid. If there are no
+such parent, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.i">
+<tt class="descname">i</tt><a class="headerlink" href="#pirs.solids.Box.i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns id(self).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.ijk">
+<tt class="descname">ijk</tt><a class="headerlink" href="#pirs.solids.Box.ijk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple with element indices spcifying the parent&#8217;s grid element where the element
+is positioned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.indexed">
+<tt class="descname">indexed</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.indexed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Ture if self is positioned using the indices i, j and k.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.insert">
+<tt class="descname">insert</tt><big>(</big><em>othr</em>, <em>i=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert element <tt class="docutils literal"><span class="pre">othr</span></tt> into self.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">i</span></tt> specifies index, where <tt class="docutils literal"><span class="pre">othr</span></tt> should be inserted. By
+default, <tt class="docutils literal"><span class="pre">othr</span></tt> is inserted as the last (most recent) child. One can specify
+<tt class="docutils literal"><span class="pre">i</span></tt> to set order fo the inserted element in the list of previously inserted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.intersect">
+<tt class="descname">intersect</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if self positioned at self.abspos() intersects (i.e. has common points)
+with othr positioned at othr.abspos().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.is_constant">
+<tt class="descname">is_constant</tt><big>(</big><em>var</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.is_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the axial distribution <tt class="docutils literal"><span class="pre">var</span></tt> is constant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.is_visible">
+<tt class="descname">is_visible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.is_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the solid is seen from its parent(s), and is not completely
+covered by the younger siblings. Only in this case the element and its
+interior can be &#8220;seen&#8221; in the model. Otherwise, it can be
+removed from the model tree, without actually changing the model.</p>
+<p>Note that the element can also be covered by its child. In this case,
+however, its children (at least one that covers) are still visible 
+and cannot be removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.items">
+<tt class="descname">items</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples (ckey, node) for all children in self
+recursively, where ckey is a compound key and node is the correspondent
+Tree instance.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>         
+<span class="go">[((1,), &lt;__main__.Tree object at ...&gt;), ((2,), &lt;__main__.Tree object at ...&gt;), ((2, 21), &lt;__main__.Tree object at ...&gt;)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.j">
+<tt class="descname">j</tt><a class="headerlink" href="#pirs.solids.Box.j" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.k">
+<tt class="descname">k</tt><a class="headerlink" href="#pirs.solids.Box.k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of compound keys of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>The local key specified in the insert() method refers only to the
+direct child. To refer to a node inserted into a child node, the
+compound key is used. The compound key is a tuple of local keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">311</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[(1,), (2,), (2, 21), (3,), (3, 31), (3, 31, 311)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.lattice_elements">
+<tt class="descname">lattice_elements</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.lattice_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of boxes that represent lattice elements of the solid.</p>
+<p>Returned values are tuples of the form (ijk, itype, Box()), where
+ijk is (i,j,k), itype is the type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.layers">
+<tt class="descname">layers</tt><big>(</big><em>temp=True</em>, <em>dens=True</em>, <em>heat=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator with elements describing each layer.</p>
+<p>Each returned element is a tuple (Zmin, Zmax, values, children, (is_first, is_last))</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.lies_in">
+<tt class="descname">lies_in</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.lies_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True, if self lies completely inside othr.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.local_index">
+<tt class="descname">local_index</tt><a class="headerlink" href="#pirs.solids.Box.local_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position of element in its parent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.material">
+<tt class="descname">material</tt><a class="headerlink" href="#pirs.solids.Box.material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Material name. Any immutable, e.g. integer or string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.max">
+<tt class="descname">max</tt><big>(</big><em>param='heat'</em>, <em>filter_=&lt;function &lt;lambda&gt; at 0x2add5e67e398&gt;</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (v, key) where v is the maximal value of parameter param
+found in the solid itself and its children. Searched only elements that 
+pass the <a href="#id3"><span class="problematic" id="id4">filter_</span></a> functions, i.e if filter_(element) returns True.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.parent">
+<tt class="descname">parent</tt><a class="headerlink" href="#pirs.solids.Box.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>If self is inserted into another tree element, parent points to this element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.parents">
+<tt class="descname">parents</tt><big>(</big><em>last=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over all parents of self, starting from the
+direct parent till the root.</p>
+<p>If optional argument last is given, iterates untill
+this parent, not untill the root.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.pos">
+<tt class="descname">pos</tt><a class="headerlink" href="#pirs.solids.Box.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position of the element with respect to its parent. By default at the origin.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Box.properties">
+<em class="property">classmethod </em><tt class="descname">properties</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of property names defined in the class, including all
+inherited properties.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Box.random_tree">
+<em class="property">classmethod </em><tt class="descname">random_tree</tt><big>(</big><em>N=20</em>, <em>seed=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.random_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random tree with N nodes.</p>
+<p>Algorithm: untill the number of nodes in the tree, Ne, less than N,
+sample an integer from [1..Ne] and insert a new node as a child into
+the node with sampled number.</p>
+<p>Note, this is a class method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.remove">
+<tt class="descname">remove</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child with local key lkey from the node. The removed element is
+returned.</p>
+<p>Note that this method provides functionality similar to the
+functionality of the withdraw method. The difference is that remove()
+removes child from self, and withdraw removes self from its parent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.remove_by_criteria">
+<tt class="descname">remove_by_criteria</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.remove_by_criteria" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes direct shildren if they meet all criteria specified
+by kwargs. For example,</p>
+<p>t.remove_by_criteria(name=&#8217;fuel&#8217;, i=3)</p>
+<p>will remove from t all children with name set to &#8216;fuel&#8217; and
+positioned in the grid with i index equal to 3.</p>
+<p>Returns the list of removed elements.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.remove_by_index">
+<tt class="descname">remove_by_index</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.remove_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes i-th child.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.remove_child">
+<tt class="descname">remove_child</tt><big>(</big><em>element</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child from self.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.remove_invisible">
+<tt class="descname">remove_invisible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.remove_invisible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all invisible children of the element recursively.</p>
+<p>The element itself remains in the model even if its is_visible() method
+returns False.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.root">
+<tt class="descname">root</tt><a class="headerlink" href="#pirs.solids.Box.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to the root element of the tree self belongs to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.setp">
+<tt class="descname">setp</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.setp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attributes and properties specified in the keyword arguments.</p>
+<p>If an attribute or a property does not exist, the AttributeError is
+raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.shift_children">
+<tt class="descname">shift_children</tt><big>(</big><em>i</em>, <em>N</em>, <em>inew</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.shift_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift children [i:i+N] to [inew:inew+N]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.str_node">
+<tt class="descname">str_node</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.str_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the string representing the node properties.</p>
+<p>The optional argument <a href="#id5"><span class="problematic" id="id6">attr_</span></a> specifies the name of an attribute to print
+out. Can be a list of attribute names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">()</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;id()&#39;</span><span class="p">)</span>    <span class="c"># by default, t.str_node() returns t.id()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">)</span>                  <span class="c"># prints out the value of the parent attribute.</span>
+<span class="go">&quot;Tree &#39;parent&#39;: None&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.str_tree">
+<tt class="descname">str_tree</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.str_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string representing the (sub)tree structure of the node and
+its children.</p>
+<p>The optional argument <a href="#id7"><span class="problematic" id="id8">attr_</span></a> defines what will be printed. Its meaning
+and defualt see in the description of the str_node() method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">str_tree</span><span class="p">()</span>                  
+<span class="go">Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 1: Tree &#39;id()&#39;: ...</span>
+<span class="go">                - key 3: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 2: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 4: Tree &#39;id()&#39;: ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.stype">
+<tt class="descname">stype</tt><a class="headerlink" href="#pirs.solids.Box.stype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns type of the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Box.temp">
+<tt class="descname">temp</tt><a class="headerlink" href="#pirs.solids.Box.temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temperature axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.temps">
+<tt class="descname">temps</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.temps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with temperature axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.values">
+<tt class="descname">values</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Box.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>         
+<span class="go">[&lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Box.withdraw">
+<tt class="descname">withdraw</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Box.withdraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes self from its parent.</p>
+<p>Method returns self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.solids.Cylinder">
+<em class="property">class </em><tt class="descclassname">pirs.solids.</tt><tt class="descname">Cylinder</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>A finite-height cylinder with the axis parallel to the z axis.
+Cylinder geometry is defined by attributes <tt class="docutils literal"><span class="pre">R</span></tt> and <tt class="docutils literal"><span class="pre">Z</span></tt>.</p>
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.X">
+<tt class="descname">X</tt><a class="headerlink" href="#pirs.solids.Cylinder.X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cylinder&#8217;s dimension along X axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.Y">
+<tt class="descname">Y</tt><a class="headerlink" href="#pirs.solids.Cylinder.Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cylinder&#8217;s dimension along Y axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.Zrange">
+<tt class="descname">Zrange</tt><big>(</big><em>cs='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.Zrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple of floats (Zmin, Zmax) &#8211; range of self in z coordinate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder._append">
+<tt class="descname">_append</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder._append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unconditinally inserts othr to the latest place.</p>
+<p>Assumes that othr is not previously inserted</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.abspos">
+<tt class="descname">abspos</tt><big>(</big><em>cs='abs'</em>, <em>coordinate=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.abspos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns absolute position of the element with respect to the tree&#8217;s
+root.</p>
+<p>Optional argument cs (by default &#8216;abs&#8217;) specifies the coordinate
+system. Can be &#8216;abs&#8217;, &#8216;rel&#8217;, or an instance of the PositionedTree
+class. In the latter case, it must be a direct or indirect parent of
+self; the returned position is with respect to this parent.</p>
+<p>Optional argument coordinate defines the coordinate&#8217;s name returned by
+the method. By default, coordinate is None and the vector itself is
+returned. If coordinate is one of &#8216;x&#8217;, &#8216;y&#8217;, &#8216;z&#8217;, &#8216;r&#8217;, etc. (the
+complete list of variables see in the description of the Vector3
+class), the correspondent coordinate is returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.children">
+<tt class="descname">children</tt><a class="headerlink" href="#pirs.solids.Cylinder.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of the OrderedDict class where all children of self are stored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.circumscribe">
+<tt class="descname">circumscribe</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.circumscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change inplace properties of the cylinder so that it circumscribes solid s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.circumscribed">
+<tt class="descname">circumscribed</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.circumscribed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new instance of the class self.__class__ that circumscribes s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.common_zmesh">
+<tt class="descname">common_zmesh</tt><big>(</big><em>own=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.common_zmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the <tt class="docutils literal"><span class="pre">Mesh()</span></tt> class, which axial boundaries is the union
+of axial boundaries of all meshes of the solid itself and all its children.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.covering_sibling">
+<tt class="descname">covering_sibling</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.covering_sibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the younger sibling of the solid or the younger sibling of the
+solid&#8217;s parent(s) that covers coimpletely the solid. If there are no
+such siblings, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.dens">
+<tt class="descname">dens</tt><a class="headerlink" href="#pirs.solids.Cylinder.dens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Density axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.denss">
+<tt class="descname">denss</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.denss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with density axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.extension">
+<tt class="descname">extension</tt><big>(</big><em>a</em>, <em>s='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (min, max) representing extension of the solid along axis a.</p>
+<p>Argument a can be &#8216;x&#8217;, &#8216;y&#8217; or &#8216;z&#8217;.</p>
+<p>Optional argument s specifies the coordinate system. &#8216;abs&#8217; means the
+gloabal coordinate system (with respect to the root of self), any other
+means the local element&#8217;s coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_child">
+<tt class="descname">get_child</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the node with compound or local key k.</p>
+<p>The compound key is relative to the instance the method bound to.
+Compare with the result of get_key() method.</p>
+<p>If k is not a local key, can be indexed but has no 0-th element, the
+self is returned.  For example, if k is an empty tuple or an emtply
+string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_key">
+<tt class="descname">get_key</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the compound key of the node relative to the tree root.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">(1,)</span>
+<span class="go">(1, 2)</span>
+<span class="go">(3,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_parents">
+<tt class="descname">get_parents</tt><big>(</big><em>reverse=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a  list of all node parents, starting from the direct parent and
+ending with the tree root.</p>
+<p>The optional boolean argument reverse changes the order of parents in
+the resulting list.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="s">&#39;for &#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="s">&#39; parents are: &#39;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">n</span><span class="o">.</span><span class="n">get_parents</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">for  (1,)  parents are:  [()]</span>
+<span class="go">for  (1, 2)  parents are:  [(1,), ()]</span>
+<span class="go">for  (3,)  parents are:  [()]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_radius">
+<tt class="descname">get_radius</tt><big>(</big><em>inscribed=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns radius of circumscribed sphere. Deprecated, use circumscribe method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_siblings">
+<tt class="descname">get_siblings</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_siblings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of two lists with nodes inserted into
+the node&#8217;s parent before and after the node itself.</p>
+<p>For example, n0 contains 4 nodes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n0</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">],</span> <span class="p">[</span><span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([],</span> <span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_value_by_coord">
+<tt class="descname">get_value_by_coord</tt><big>(</big><em>var</em>, <em>xyz</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_value_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns value of axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt> at position given by the <tt class="docutils literal"><span class="pre">xyz</span></tt> tuple.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">cs</span></tt> specifies whether <tt class="docutils literal"><span class="pre">xyz</span></tt> given in absolute (<tt class="docutils literal"><span class="pre">'abs'</span></tt>) or relative (<tt class="docutils literal"><span class="pre">'rel'</span></tt>) coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.get_value_by_index">
+<tt class="descname">get_value_by_index</tt><big>(</big><em>var</em>, <em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.get_value_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <tt class="docutils literal"><span class="pre">i</span></tt>-th value in the axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt>.</p>
+<p>If axial distribution is not defined for the solid yet, return default value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.grid">
+<tt class="descname">grid</tt><a class="headerlink" href="#pirs.solids.Cylinder.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid description. Its parameters are used to compute absolute position
+of children, if they have other than None i,j,k attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.has_var">
+<tt class="descname">has_var</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.has_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True, if axial distribution name (can be &#8216;temp&#8217;, &#8216;heat&#8217; or &#8216;dens&#8217;)
+is defined for the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.heat">
+<tt class="descname">heat</tt><a class="headerlink" href="#pirs.solids.Cylinder.heat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.heats">
+<tt class="descname">heats</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.heats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with heat axial distribution, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.hiding_parent">
+<tt class="descname">hiding_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.hiding_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the container that completely hides the solid. If there are no
+such parent, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.i">
+<tt class="descname">i</tt><a class="headerlink" href="#pirs.solids.Cylinder.i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns id(self).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.ijk">
+<tt class="descname">ijk</tt><a class="headerlink" href="#pirs.solids.Cylinder.ijk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple with element indices spcifying the parent&#8217;s grid element where the element
+is positioned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.indexed">
+<tt class="descname">indexed</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.indexed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Ture if self is positioned using the indices i, j and k.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.insert">
+<tt class="descname">insert</tt><big>(</big><em>othr</em>, <em>i=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert element <tt class="docutils literal"><span class="pre">othr</span></tt> into self.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">i</span></tt> specifies index, where <tt class="docutils literal"><span class="pre">othr</span></tt> should be inserted. By
+default, <tt class="docutils literal"><span class="pre">othr</span></tt> is inserted as the last (most recent) child. One can specify
+<tt class="docutils literal"><span class="pre">i</span></tt> to set order fo the inserted element in the list of previously inserted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.intersect">
+<tt class="descname">intersect</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if self positioned at self.abspos() intersects (i.e. has common points)
+with othr positioned at othr.abspos().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.is_constant">
+<tt class="descname">is_constant</tt><big>(</big><em>var</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.is_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the axial distribution <tt class="docutils literal"><span class="pre">var</span></tt> is constant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.is_visible">
+<tt class="descname">is_visible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.is_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the solid is seen from its parent(s), and is not completely
+covered by the younger siblings. Only in this case the element and its
+interior can be &#8220;seen&#8221; in the model. Otherwise, it can be
+removed from the model tree, without actually changing the model.</p>
+<p>Note that the element can also be covered by its child. In this case,
+however, its children (at least one that covers) are still visible 
+and cannot be removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.items">
+<tt class="descname">items</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples (ckey, node) for all children in self
+recursively, where ckey is a compound key and node is the correspondent
+Tree instance.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>         
+<span class="go">[((1,), &lt;__main__.Tree object at ...&gt;), ((2,), &lt;__main__.Tree object at ...&gt;), ((2, 21), &lt;__main__.Tree object at ...&gt;)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.j">
+<tt class="descname">j</tt><a class="headerlink" href="#pirs.solids.Cylinder.j" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.k">
+<tt class="descname">k</tt><a class="headerlink" href="#pirs.solids.Cylinder.k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of compound keys of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>The local key specified in the insert() method refers only to the
+direct child. To refer to a node inserted into a child node, the
+compound key is used. The compound key is a tuple of local keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">311</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[(1,), (2,), (2, 21), (3,), (3, 31), (3, 31, 311)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.lattice_elements">
+<tt class="descname">lattice_elements</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.lattice_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of boxes that represent lattice elements of the solid.</p>
+<p>Returned values are tuples of the form (ijk, itype, Box()), where
+ijk is (i,j,k), itype is the type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.layers">
+<tt class="descname">layers</tt><big>(</big><em>temp=True</em>, <em>dens=True</em>, <em>heat=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator with elements describing each layer.</p>
+<p>Each returned element is a tuple (Zmin, Zmax, values, children, (is_first, is_last))</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.lies_in">
+<tt class="descname">lies_in</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.lies_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True, if self lies completely inside othr.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.local_index">
+<tt class="descname">local_index</tt><a class="headerlink" href="#pirs.solids.Cylinder.local_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position of element in its parent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.material">
+<tt class="descname">material</tt><a class="headerlink" href="#pirs.solids.Cylinder.material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Material name. Any immutable, e.g. integer or string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.max">
+<tt class="descname">max</tt><big>(</big><em>param='heat'</em>, <em>filter_=&lt;function &lt;lambda&gt; at 0x2add5e67e398&gt;</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (v, key) where v is the maximal value of parameter param
+found in the solid itself and its children. Searched only elements that 
+pass the <a href="#id9"><span class="problematic" id="id10">filter_</span></a> functions, i.e if filter_(element) returns True.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.parent">
+<tt class="descname">parent</tt><a class="headerlink" href="#pirs.solids.Cylinder.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>If self is inserted into another tree element, parent points to this element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.parents">
+<tt class="descname">parents</tt><big>(</big><em>last=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over all parents of self, starting from the
+direct parent till the root.</p>
+<p>If optional argument last is given, iterates untill
+this parent, not untill the root.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.pos">
+<tt class="descname">pos</tt><a class="headerlink" href="#pirs.solids.Cylinder.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position of the element with respect to its parent. By default at the origin.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Cylinder.properties">
+<em class="property">classmethod </em><tt class="descname">properties</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of property names defined in the class, including all
+inherited properties.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Cylinder.random_tree">
+<em class="property">classmethod </em><tt class="descname">random_tree</tt><big>(</big><em>N=20</em>, <em>seed=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.random_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random tree with N nodes.</p>
+<p>Algorithm: untill the number of nodes in the tree, Ne, less than N,
+sample an integer from [1..Ne] and insert a new node as a child into
+the node with sampled number.</p>
+<p>Note, this is a class method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.remove">
+<tt class="descname">remove</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child with local key lkey from the node. The removed element is
+returned.</p>
+<p>Note that this method provides functionality similar to the
+functionality of the withdraw method. The difference is that remove()
+removes child from self, and withdraw removes self from its parent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.remove_by_criteria">
+<tt class="descname">remove_by_criteria</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.remove_by_criteria" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes direct shildren if they meet all criteria specified
+by kwargs. For example,</p>
+<p>t.remove_by_criteria(name=&#8217;fuel&#8217;, i=3)</p>
+<p>will remove from t all children with name set to &#8216;fuel&#8217; and
+positioned in the grid with i index equal to 3.</p>
+<p>Returns the list of removed elements.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.remove_by_index">
+<tt class="descname">remove_by_index</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.remove_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes i-th child.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.remove_child">
+<tt class="descname">remove_child</tt><big>(</big><em>element</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child from self.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.remove_invisible">
+<tt class="descname">remove_invisible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.remove_invisible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all invisible children of the element recursively.</p>
+<p>The element itself remains in the model even if its is_visible() method
+returns False.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.root">
+<tt class="descname">root</tt><a class="headerlink" href="#pirs.solids.Cylinder.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to the root element of the tree self belongs to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.setp">
+<tt class="descname">setp</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.setp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attributes and properties specified in the keyword arguments.</p>
+<p>If an attribute or a property does not exist, the AttributeError is
+raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.shift_children">
+<tt class="descname">shift_children</tt><big>(</big><em>i</em>, <em>N</em>, <em>inew</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.shift_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift children [i:i+N] to [inew:inew+N]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.str_node">
+<tt class="descname">str_node</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.str_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the string representing the node properties.</p>
+<p>The optional argument <a href="#id11"><span class="problematic" id="id12">attr_</span></a> specifies the name of an attribute to print
+out. Can be a list of attribute names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">()</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;id()&#39;</span><span class="p">)</span>    <span class="c"># by default, t.str_node() returns t.id()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">)</span>                  <span class="c"># prints out the value of the parent attribute.</span>
+<span class="go">&quot;Tree &#39;parent&#39;: None&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.str_tree">
+<tt class="descname">str_tree</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.str_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string representing the (sub)tree structure of the node and
+its children.</p>
+<p>The optional argument <a href="#id13"><span class="problematic" id="id14">attr_</span></a> defines what will be printed. Its meaning
+and defualt see in the description of the str_node() method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">str_tree</span><span class="p">()</span>                  
+<span class="go">Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 1: Tree &#39;id()&#39;: ...</span>
+<span class="go">                - key 3: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 2: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 4: Tree &#39;id()&#39;: ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.stype">
+<tt class="descname">stype</tt><a class="headerlink" href="#pirs.solids.Cylinder.stype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns type of the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Cylinder.temp">
+<tt class="descname">temp</tt><a class="headerlink" href="#pirs.solids.Cylinder.temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temperature axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.temps">
+<tt class="descname">temps</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.temps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with temperature axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.values">
+<tt class="descname">values</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>         
+<span class="go">[&lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Cylinder.withdraw">
+<tt class="descname">withdraw</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Cylinder.withdraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes self from its parent.</p>
+<p>Method returns self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.solids.Sphere">
+<em class="property">class </em><tt class="descclassname">pirs.solids.</tt><tt class="descname">Sphere</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sphere, which radius is defined by the attribute <tt class="docutils literal"><span class="pre">R</span></tt>.</p>
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.X">
+<tt class="descname">X</tt><a class="headerlink" href="#pirs.solids.Sphere.X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sphere&#8217;s dimension along axis X.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.Y">
+<tt class="descname">Y</tt><a class="headerlink" href="#pirs.solids.Sphere.Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sphere&#8217;s dimension along axis Y.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.Z">
+<tt class="descname">Z</tt><a class="headerlink" href="#pirs.solids.Sphere.Z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sphere&#8217;s dimension along axis Z.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.Zrange">
+<tt class="descname">Zrange</tt><big>(</big><em>cs='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.Zrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple of floats (Zmin, Zmax) &#8211; range of self in z coordinate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere._append">
+<tt class="descname">_append</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere._append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unconditinally inserts othr to the latest place.</p>
+<p>Assumes that othr is not previously inserted</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.abspos">
+<tt class="descname">abspos</tt><big>(</big><em>cs='abs'</em>, <em>coordinate=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.abspos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns absolute position of the element with respect to the tree&#8217;s
+root.</p>
+<p>Optional argument cs (by default &#8216;abs&#8217;) specifies the coordinate
+system. Can be &#8216;abs&#8217;, &#8216;rel&#8217;, or an instance of the PositionedTree
+class. In the latter case, it must be a direct or indirect parent of
+self; the returned position is with respect to this parent.</p>
+<p>Optional argument coordinate defines the coordinate&#8217;s name returned by
+the method. By default, coordinate is None and the vector itself is
+returned. If coordinate is one of &#8216;x&#8217;, &#8216;y&#8217;, &#8216;z&#8217;, &#8216;r&#8217;, etc. (the
+complete list of variables see in the description of the Vector3
+class), the correspondent coordinate is returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.children">
+<tt class="descname">children</tt><a class="headerlink" href="#pirs.solids.Sphere.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of the OrderedDict class where all children of self are stored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.circumscribe">
+<tt class="descname">circumscribe</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.circumscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes inplace parameters of the sphere, so that it circumscribes solid s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.circumscribed">
+<tt class="descname">circumscribed</tt><big>(</big><em>s</em>, <em>adjust_position=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.circumscribed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new instance of the class self.__class__ that circumscribes s.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.common_zmesh">
+<tt class="descname">common_zmesh</tt><big>(</big><em>own=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.common_zmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the <tt class="docutils literal"><span class="pre">Mesh()</span></tt> class, which axial boundaries is the union
+of axial boundaries of all meshes of the solid itself and all its children.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.covering_sibling">
+<tt class="descname">covering_sibling</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.covering_sibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the younger sibling of the solid or the younger sibling of the
+solid&#8217;s parent(s) that covers coimpletely the solid. If there are no
+such siblings, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.dens">
+<tt class="descname">dens</tt><a class="headerlink" href="#pirs.solids.Sphere.dens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Density axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.denss">
+<tt class="descname">denss</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.denss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with density axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.extension">
+<tt class="descname">extension</tt><big>(</big><em>a</em>, <em>s='abs'</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (min, max) representing extension of the solid along axis a.</p>
+<p>Argument a can be &#8216;x&#8217;, &#8216;y&#8217; or &#8216;z&#8217;.</p>
+<p>Optional argument s specifies the coordinate system. &#8216;abs&#8217; means the
+gloabal coordinate system (with respect to the root of self), any other
+means the local element&#8217;s coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_child">
+<tt class="descname">get_child</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the node with compound or local key k.</p>
+<p>The compound key is relative to the instance the method bound to.
+Compare with the result of get_key() method.</p>
+<p>If k is not a local key, can be indexed but has no 0-th element, the
+self is returned.  For example, if k is an empty tuple or an emtply
+string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_key">
+<tt class="descname">get_key</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the compound key of the node relative to the tree root.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">(1,)</span>
+<span class="go">(1, 2)</span>
+<span class="go">(3,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_parents">
+<tt class="descname">get_parents</tt><big>(</big><em>reverse=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a  list of all node parents, starting from the direct parent and
+ending with the tree root.</p>
+<p>The optional boolean argument reverse changes the order of parents in
+the resulting list.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="s">&#39;for &#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="s">&#39; parents are: &#39;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">n</span><span class="o">.</span><span class="n">get_parents</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">for  (1,)  parents are:  [()]</span>
+<span class="go">for  (1, 2)  parents are:  [(1,), ()]</span>
+<span class="go">for  (3,)  parents are:  [()]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_radius">
+<tt class="descname">get_radius</tt><big>(</big><em>inscribed=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns radius of circumscribed sphere. Deprecated, use circumscribe method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_siblings">
+<tt class="descname">get_siblings</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_siblings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of two lists with nodes inserted into
+the node&#8217;s parent before and after the node itself.</p>
+<p>For example, n0 contains 4 nodes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n0</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span> <span class="o">=</span> <span class="n">n0</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">],</span> <span class="p">[</span><span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([],</span> <span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">get_siblings</span><span class="p">()</span> <span class="o">==</span> <span class="p">([</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_value_by_coord">
+<tt class="descname">get_value_by_coord</tt><big>(</big><em>var</em>, <em>xyz</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_value_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns value of axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt> at position given by the <tt class="docutils literal"><span class="pre">xyz</span></tt> tuple.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">cs</span></tt> specifies whether <tt class="docutils literal"><span class="pre">xyz</span></tt> given in absolute (<tt class="docutils literal"><span class="pre">'abs'</span></tt>) or relative (<tt class="docutils literal"><span class="pre">'rel'</span></tt>) coordinate system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.get_value_by_index">
+<tt class="descname">get_value_by_index</tt><big>(</big><em>var</em>, <em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.get_value_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <tt class="docutils literal"><span class="pre">i</span></tt>-th value in the axial distribution specified by <tt class="docutils literal"><span class="pre">var</span></tt>.</p>
+<p>If axial distribution is not defined for the solid yet, return default value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.grid">
+<tt class="descname">grid</tt><a class="headerlink" href="#pirs.solids.Sphere.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid description. Its parameters are used to compute absolute position
+of children, if they have other than None i,j,k attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.has_var">
+<tt class="descname">has_var</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.has_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True, if axial distribution name (can be &#8216;temp&#8217;, &#8216;heat&#8217; or &#8216;dens&#8217;)
+is defined for the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.heat">
+<tt class="descname">heat</tt><a class="headerlink" href="#pirs.solids.Sphere.heat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.heats">
+<tt class="descname">heats</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.heats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with heat axial distribution, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.hiding_parent">
+<tt class="descname">hiding_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.hiding_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the container that completely hides the solid. If there are no
+such parent, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.i">
+<tt class="descname">i</tt><a class="headerlink" href="#pirs.solids.Sphere.i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.id">
+<tt class="descname">id</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns id(self).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.ijk">
+<tt class="descname">ijk</tt><a class="headerlink" href="#pirs.solids.Sphere.ijk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple with element indices spcifying the parent&#8217;s grid element where the element
+is positioned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.indexed">
+<tt class="descname">indexed</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.indexed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Ture if self is positioned using the indices i, j and k.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.insert">
+<tt class="descname">insert</tt><big>(</big><em>othr</em>, <em>i=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert element <tt class="docutils literal"><span class="pre">othr</span></tt> into self.</p>
+<p>Optional argument <tt class="docutils literal"><span class="pre">i</span></tt> specifies index, where <tt class="docutils literal"><span class="pre">othr</span></tt> should be inserted. By
+default, <tt class="docutils literal"><span class="pre">othr</span></tt> is inserted as the last (most recent) child. One can specify
+<tt class="docutils literal"><span class="pre">i</span></tt> to set order fo the inserted element in the list of previously inserted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.intersect">
+<tt class="descname">intersect</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if self positioned at self.abspos() intersects (i.e. has common points)
+with othr positioned at othr.abspos().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.is_constant">
+<tt class="descname">is_constant</tt><big>(</big><em>var</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.is_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the axial distribution <tt class="docutils literal"><span class="pre">var</span></tt> is constant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.is_visible">
+<tt class="descname">is_visible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.is_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the solid is seen from its parent(s), and is not completely
+covered by the younger siblings. Only in this case the element and its
+interior can be &#8220;seen&#8221; in the model. Otherwise, it can be
+removed from the model tree, without actually changing the model.</p>
+<p>Note that the element can also be covered by its child. In this case,
+however, its children (at least one that covers) are still visible 
+and cannot be removed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.items">
+<tt class="descname">items</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples (ckey, node) for all children in self
+recursively, where ckey is a compound key and node is the correspondent
+Tree instance.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>         
+<span class="go">[((1,), &lt;__main__.Tree object at ...&gt;), ((2,), &lt;__main__.Tree object at ...&gt;), ((2, 21), &lt;__main__.Tree object at ...&gt;)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.j">
+<tt class="descname">j</tt><a class="headerlink" href="#pirs.solids.Sphere.j" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.k">
+<tt class="descname">k</tt><a class="headerlink" href="#pirs.solids.Sphere.k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index to position solid in the parent&#8217;s grid along x axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of compound keys of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>The local key specified in the insert() method refers only to the
+direct child. To refer to a node inserted into a child node, the
+compound key is used. The compound key is a tuple of local keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">311</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[(1,), (2,), (2, 21), (3,), (3, 31), (3, 31, 311)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.lattice_elements">
+<tt class="descname">lattice_elements</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.lattice_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of boxes that represent lattice elements of the solid.</p>
+<p>Returned values are tuples of the form (ijk, itype, Box()), where
+ijk is (i,j,k), itype is the type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.layers">
+<tt class="descname">layers</tt><big>(</big><em>temp=True</em>, <em>dens=True</em>, <em>heat=True</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator with elements describing each layer.</p>
+<p>Each returned element is a tuple (Zmin, Zmax, values, children, (is_first, is_last))</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.lies_in">
+<tt class="descname">lies_in</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.lies_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True, if self lies completely inside othr.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.local_index">
+<tt class="descname">local_index</tt><a class="headerlink" href="#pirs.solids.Sphere.local_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position of element in its parent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.material">
+<tt class="descname">material</tt><a class="headerlink" href="#pirs.solids.Sphere.material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Material name. Any immutable, e.g. integer or string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.max">
+<tt class="descname">max</tt><big>(</big><em>param='heat'</em>, <em>filter_=&lt;function &lt;lambda&gt; at 0x2add5e67e398&gt;</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (v, key) where v is the maximal value of parameter param
+found in the solid itself and its children. Searched only elements that 
+pass the <a href="#id15"><span class="problematic" id="id16">filter_</span></a> functions, i.e if filter_(element) returns True.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.parent">
+<tt class="descname">parent</tt><a class="headerlink" href="#pirs.solids.Sphere.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>If self is inserted into another tree element, parent points to this element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.parents">
+<tt class="descname">parents</tt><big>(</big><em>last=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over all parents of self, starting from the
+direct parent till the root.</p>
+<p>If optional argument last is given, iterates untill
+this parent, not untill the root.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.pos">
+<tt class="descname">pos</tt><a class="headerlink" href="#pirs.solids.Sphere.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position of the element with respect to its parent. By default at the origin.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Sphere.properties">
+<em class="property">classmethod </em><tt class="descname">properties</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of property names defined in the class, including all
+inherited properties.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pirs.solids.Sphere.random_tree">
+<em class="property">classmethod </em><tt class="descname">random_tree</tt><big>(</big><em>N=20</em>, <em>seed=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.random_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random tree with N nodes.</p>
+<p>Algorithm: untill the number of nodes in the tree, Ne, less than N,
+sample an integer from [1..Ne] and insert a new node as a child into
+the node with sampled number.</p>
+<p>Note, this is a class method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.remove">
+<tt class="descname">remove</tt><big>(</big><em>obj</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child with local key lkey from the node. The removed element is
+returned.</p>
+<p>Note that this method provides functionality similar to the
+functionality of the withdraw method. The difference is that remove()
+removes child from self, and withdraw removes self from its parent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.remove_by_criteria">
+<tt class="descname">remove_by_criteria</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.remove_by_criteria" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes direct shildren if they meet all criteria specified
+by kwargs. For example,</p>
+<p>t.remove_by_criteria(name=&#8217;fuel&#8217;, i=3)</p>
+<p>will remove from t all children with name set to &#8216;fuel&#8217; and
+positioned in the grid with i index equal to 3.</p>
+<p>Returns the list of removed elements.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.remove_by_index">
+<tt class="descname">remove_by_index</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.remove_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes i-th child.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.remove_child">
+<tt class="descname">remove_child</tt><big>(</big><em>element</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child from self.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.remove_invisible">
+<tt class="descname">remove_invisible</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.remove_invisible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all invisible children of the element recursively.</p>
+<p>The element itself remains in the model even if its is_visible() method
+returns False.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.root">
+<tt class="descname">root</tt><a class="headerlink" href="#pirs.solids.Sphere.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to the root element of the tree self belongs to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.setp">
+<tt class="descname">setp</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.setp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attributes and properties specified in the keyword arguments.</p>
+<p>If an attribute or a property does not exist, the AttributeError is
+raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.shift_children">
+<tt class="descname">shift_children</tt><big>(</big><em>i</em>, <em>N</em>, <em>inew</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.shift_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift children [i:i+N] to [inew:inew+N]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.str_node">
+<tt class="descname">str_node</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.str_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the string representing the node properties.</p>
+<p>The optional argument <a href="#id17"><span class="problematic" id="id18">attr_</span></a> specifies the name of an attribute to print
+out. Can be a list of attribute names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">()</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;id()&#39;</span><span class="p">)</span>    <span class="c"># by default, t.str_node() returns t.id()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">str_node</span><span class="p">(</span><span class="s">&#39;parent&#39;</span><span class="p">)</span>                  <span class="c"># prints out the value of the parent attribute.</span>
+<span class="go">&quot;Tree &#39;parent&#39;: None&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.str_tree">
+<tt class="descname">str_tree</tt><big>(</big><em>attr_=None</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.str_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string representing the (sub)tree structure of the node and
+its children.</p>
+<p>The optional argument <a href="#id19"><span class="problematic" id="id20">attr_</span></a> defines what will be printed. Its meaning
+and defualt see in the description of the str_node() method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">str_tree</span><span class="p">()</span>                  
+<span class="go">Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 1: Tree &#39;id()&#39;: ...</span>
+<span class="go">                - key 3: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 2: Tree &#39;id()&#39;: ...</span>
+<span class="go">        - key 4: Tree &#39;id()&#39;: ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.stype">
+<tt class="descname">stype</tt><a class="headerlink" href="#pirs.solids.Sphere.stype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns type of the solid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.Sphere.temp">
+<tt class="descname">temp</tt><a class="headerlink" href="#pirs.solids.Sphere.temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temperature axial distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.temps">
+<tt class="descname">temps</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.temps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator. Yeilds child elements with temperature axial distribution defined, recursively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.values">
+<tt class="descname">values</tt><big>(</big><em>selfInclusive=False</em><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all children in self recursively.</p>
+<p>The order is depth-first.</p>
+<p>If the optional argument selfInclusive is True, the first element of
+the returned list is the node itself (by default, it is not included).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span><span class="o">.</span><span class="n">inserT</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">Tree</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>         
+<span class="go">[&lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;, &lt;__main__.Tree object at ...&gt;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.Sphere.withdraw">
+<tt class="descname">withdraw</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.Sphere.withdraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes self from its parent.</p>
+<p>Method returns self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.solids.positions.RGrid">
+<em class="property">class </em><tt class="descclassname">pirs.solids.positions.</tt><tt class="descname">RGrid</tt><big>(</big><em>container</em>, <em>x=1</em>, <em>y=1</em>, <em>z=1</em>, <em>origin=(0</em>, <em>0</em>, <em>0)</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pirs.solids.positions.RGrid.boundaries">
+<tt class="descname">boundaries</tt><big>(</big><em>d='x'</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.boundaries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns coordinates of boundaries in direction d with respect to the grid&#8217;s container.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.center">
+<tt class="descname">center</tt><big>(</big><em>log=False</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Positions the central element of the grid so that the box circumscribing all inserted grid elements is centered
+with repsect to the container.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.positions.RGrid.container">
+<tt class="descname">container</tt><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.container"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Link to the solid containing the grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.elements">
+<tt class="descname">elements</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over index-positioned elements.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.extension">
+<tt class="descname">extension</tt><big>(</big><em>a=None</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple (Imin, Imax) of minimal and maximal grid element indices
+in the direction along axis a.</p>
+<p>The argument a can be &#8216;x&#8217;, &#8216;y&#8217; or &#8216;z&#8217;.</p>
+<p>UPD: the default a is None; in this case the tuple (Imin,
+Imax, Jmin, Jmax, Kmin, Kmax) is returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.index">
+<tt class="descname">index</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns index i,j,k of the element containing point p (with respect to the grid&#8217;s container)</p>
+<p>index(x=5, y=7, z=8) # returns tuple (i, j, k)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.insert">
+<tt class="descname">insert</tt><big>(</big><em>ijk</em>, <em>element</em>, <em>i=None</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts element into the grid&#8217;s container and specifies for the inserted element
+that it should be positioned with respect to the ijk-th grid element.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.positions.RGrid.origin">
+<tt class="descname">origin</tt><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position of the grid&#8217;s central element (0,0,0) with respect to the container.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.position">
+<tt class="descname">position</tt><big>(</big><em>i</em>, <em>j</em>, <em>k</em>, <em>coordinate=None</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns position of element ijk with respect to the grid&#8217;s container.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.set_origin">
+<tt class="descname">set_origin</tt><big>(</big><em>(i</em>, <em>j</em>, <em>k)</em>, <em>(x</em>, <em>y</em>, <em>z)</em><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.set_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.set_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the grid origin so that the grid element (i,j,k) has position (x, y, z) 
+with respect to the grid&#8217;s container.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.positions.RGrid.used">
+<tt class="descname">used</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if at least one of the grid container&#8217;s local children has not None i,j,k attributes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.positions.RGrid.x">
+<tt class="descname">x</tt><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid pitch along x axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.positions.RGrid.y">
+<tt class="descname">y</tt><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid pitch along y axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pirs.solids.positions.RGrid.z">
+<tt class="descname">z</tt><a class="reference internal" href="_modules/pirs/solids/positions.html#RGrid.z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pirs.solids.positions.RGrid.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid pitch along z axis.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pirs.solids.zmesh">
+<em class="property">class </em><tt class="descclassname">pirs.solids.</tt><tt class="descname">zmesh</tt><big>(</big><em>boundary</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to represent axial mesh for density, temperature and heat in a solid with Z dimension.</p>
+<p>An axial mesh is defined by giving a solid (A reference solid)and by
+giving relative height of mesh elements (a relative grid).</p>
+<p>When a new instance of zmesh is created, an instance of one of the solids must be
+provided, which will be used to define the absolute height of the mesh
+elements.</p>
+<blockquote>
+<div>b = Box()       # default box with X,Y,Z = 1
+m = zmesh(b)    # axial mesh m with b as the reference solid.</div></blockquote>
+<p>Lenght of mesh elements is specified in relative units. For example,</p>
+<blockquote>
+<div>m.set_grid([0.5, 1., 0.5])</div></blockquote>
+<p>sets number of mesh elements and their lengths. The argument is a list, which i-th element gives the relative length of the
+i-th mesh element along z axis. The absolute lenght is obtained first by
+normalizing the values in the list, so their sum gives one, and by
+multiplying by the dimension of the reference solid. For the above example,
+mesh elements along z will be 0.25 cm, 0.5 cm and 0.25 cm.</p>
+<p>Initialize the axial mesh. Boundary must be an object with
+attribute Z, which defines the absolute height of the
+mesh (this is, for example, instance of Box class).</p>
+<p>Initially, there is only one mesh element, and value is set to 0.</p>
+<dl class="method">
+<dt id="pirs.solids.zmesh.adjust_grid">
+<tt class="descname">adjust_grid</tt><big>(</big><em>Nmax</em>, <em>dVmin</em>, <em>alpha=0.3333333333333333</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.adjust_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the grid by inserting new mesh elements between elements with maximal dV,
+and by combining elements with dV less than dVmin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.boundary_coords">
+<tt class="descname">boundary_coords</tt><big>(</big><em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.boundary_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of boundary coordinates of the grid.</p>
+<p>The first and last elements in the returned list give coordinates of
+the facet of the reference solid.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">solids</span><span class="o">.</span><span class="n">Box</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">zmesh</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;abs&#39;</span><span class="p">)</span>
+<span class="go">[5.5, 6.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;rel&#39;</span><span class="p">)</span>
+<span class="go">[-0.5, 0.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">set_grid</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;rel&#39;</span><span class="p">)</span>
+<span class="go">[-0.5, -0.25, 0.0, 0.25, 0.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;abs&#39;</span><span class="p">)</span>
+<span class="go">[5.5, 5.75, 6.0, 6.25, 6.5]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set grid so that the mesh has only one element and set the value to 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.common_grid">
+<tt class="descname">common_grid</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.common_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. Use unify()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.convert">
+<tt class="descname">convert</tt><big>(</big><em>type_=&lt;type 'float'&gt;</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts values saved in zmesh to <a href="#id21"><span class="problematic" id="id22">type_</span></a>. Argument <a href="#id23"><span class="problematic" id="id24">type_</span></a> must be a
+function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.copy">
+<tt class="descname">copy</tt><big>(</big><em>boundary=None</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>return copy of self.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.crop">
+<tt class="descname">crop</tt><big>(</big><em>othr</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>put to self data from othr, so that mesh elements coincide.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.element_coord">
+<tt class="descname">element_coord</tt><big>(</big><em>k=0</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.element_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns coordinates of k-th mesh element&#8217;s center.</p>
+<p>The optional argument cs accepts the following values:</p>
+<ul class="simple">
+<li>&#8216;rel&#8217; (default): the returned coordinates are in the coordinate system of
+the reference solid.</li>
+<li>&#8216;abs&#8217;: the returned coordinates are in the coordinate system of the root of
+the reference solid.</li>
+<li>&#8216;1&#8217;: the returned coordinates are relative to the c.s. of the reference solid
+whose height is set to 1.</li>
+</ul>
+<p>Between rel, abs and 1 coordinates hold the following equalities:</p>
+<blockquote>
+<div><p>Zabs = Zrel - self.__b.abspos()</p>
+<p>Zrel = Z1 * self.__b.Z</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.element_coords">
+<tt class="descname">element_coords</tt><big>(</big><em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.element_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of mesh-elements center coordinates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.element_index">
+<tt class="descname">element_index</tt><big>(</big><em>z=0.0</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.element_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the mesh element containing coordinate z, relative
+or absolute.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.get_grid">
+<tt class="descname">get_grid</tt><big>(</big><em>rel=True</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of mesh elements lengths</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.get_max">
+<tt class="descname">get_max</tt><big>(</big><em>func=None</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.get_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns (Vmax, i) tuple, where Vmax is the maximal value, and i &#8211;its index.</p>
+<p>When func is given, maximum is searched among func(vi).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.get_solid">
+<tt class="descname">get_solid</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.get_solid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the reference solid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.get_value_by_coord">
+<tt class="descname">get_value_by_coord</tt><big>(</big><em>xyz</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.get_value_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of mesh element, specified by the xyz coordinate.</p>
+<p>The value of the mesh element covering point with axial coordinate z is
+returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.get_value_by_index">
+<tt class="descname">get_value_by_index</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.get_value_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of mesh element speficied by its index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.has_zeroes">
+<tt class="descname">has_zeroes</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.has_zeroes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if self.values() has one or more zeroes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.integral">
+<tt class="descname">integral</tt><big>(</big><em>A=None</em>, <em>B=None</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns integral from A to B of the piecewise-constant function.</p>
+<p>cs defines the meaning of A and B. Can be &#8216;rel&#8217;, &#8216;abs&#8217; and &#8216;1&#8217;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">zmesh</span><span class="p">(</span><span class="n">solids</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">Z</span><span class="o">=</span><span class="mf">4.</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">)</span>
+<span class="go">0.0</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">set_grid</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">set_values</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Zlst</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.</span><span class="p">]</span> <span class="o">+</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;rel&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">element_coords</span><span class="p">(</span><span class="s">&#39;rel&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="mf">4.</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Zlst</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">Zlst</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="n">Zlst</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">Zlst</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="s">&#39;    {0:7.3f} {1:7.3f}   {2:9.5f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="s">&#39;rel&#39;</span><span class="p">))</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="n">cs</span><span class="o">=</span><span class="s">&#39;1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="n">cs</span><span class="o">=</span><span class="s">&#39;rel&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="n">cs</span><span class="o">=</span><span class="s">&#39;abs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.interpolate">
+<tt class="descname">interpolate</tt><big>(</big><em>z</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns interpolated value at coordinate z.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">zmesh</span><span class="p">(</span><span class="n">solids</span><span class="o">.</span><span class="n">Box</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">set_grid</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">set_values</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">element_coords</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">boundary_coords</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">z</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.is_constant">
+<tt class="descname">is_constant</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.is_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if all values of the mesh are equal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.items">
+<tt class="descname">items</tt><big>(</big><em>key_type='index'</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples (k, val) in the order described in method
+set_values().</p>
+<p>If key_type is &#8216;index&#8217; (defalut), k is the mesh element index. 
+If key_type is &#8216;coord&#8217;, k is the mesh
+center&#8217;s coordinates, k = (x,y,z). In this case one can additionally
+specify coordinate system, &#8216;rel&#8217; or &#8216;abs&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.set_grid">
+<tt class="descname">set_grid</tt><big>(</big><em>lst=[1.0]</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.set_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set relative grid.</p>
+<p>lst is a list specifiying the number of grid elements and their
+relative length.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.set_value_by_coord">
+<tt class="descname">set_value_by_coord</tt><big>(</big><em>val</em>, <em>z</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.set_value_by_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value to the mesh element, specified by its z coordinate, relative or absolute.</p>
+<p>The value set to the mesh element, which covers the given coordinate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.set_value_by_index">
+<tt class="descname">set_value_by_index</tt><big>(</big><em>val</em>, <em>k</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.set_value_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value to mesh element specified by its index.</p>
+<p>Index is an integer. Counting starts from zero.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.set_values">
+<tt class="descname">set_values</tt><big>(</big><em>val</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.set_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values of the mesh.</p>
+<p>Accepted types of val are:</p>
+<ul>
+<li><p class="first">a list or a tuple. Must have the same number of elements as the 
+list returned by the get_grid() method.</p>
+</li>
+<li><p class="first">a mapping (function) used to calculate value at each mesh element center.
+The meaning of the mapping&#8217;s argument can be set by the method&#8217;s optional 
+argument cs, its meaning see in element_coord() method.</p>
+</li>
+<li><p class="first">another instance of the zmesh class. In this case, grid and values of this 
+instance are copied to self. This is equal to :</p>
+<blockquote>
+<div><p>self.update(othr)</p>
+</div></blockquote>
+</li>
+<li><p class="first">if not one of the above, transformed to the list [val]*len(self.get_grid())</p>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.set_values_by_function">
+<tt class="descname">set_values_by_function</tt><big>(</big><em>f</em>, <em>cs='rel'</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.set_values_by_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values of the mesh by function f(z): z -&gt; f.</p>
+<p>Value of each mesh element is set to f(z), where z is
+coordinate of the mesh element&#8217;s center.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.simplify">
+<tt class="descname">simplify</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.simplify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joins adjacent mesh elements if their values are within the precision prec.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.unify">
+<tt class="descname">unify</tt><big>(</big><em>othr</em>, <em>log=False</em><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.unify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes self and othr so that their mesh boundaries coincide.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pirs.solids.zmesh.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#pirs.solids.zmesh.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of values in the order described in method set_values()</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pirs.tools.plots.colormap">
+<tt class="descclassname">pirs.tools.plots.</tt><tt class="descname">colormap</tt><big>(</big><em>model</em>, <em>plane={'z': 0}</em>, <em>axis=None</em>, <em>var=None</em>, <em>filter_=None</em>, <em>aspect='equal'</em>, <em>colors=None</em>, <em>nmarker={}</em>, <em>mmarker={}</em>, <em>legend=True</em>, <em>filename=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pirs.tools.plots.colormap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the matplotlib Axes class containing colormap that
+shows distribution of the system variable var on the cross-section plane
+defined by the argument <tt class="docutils literal"><span class="pre">plane</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> &#8211; Model to be plotted. Instance of Box, Cylinder or Sphere class.</li>
+<li><strong>plane</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Dictionary describing the cut plane.</li>
+<li><strong>axis</strong> &#8211; Instance of the <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.axes.Axes</span></tt> class where geometry plot will be added. If not specified,
+a new instance will be created.</li>
+<li><strong>var</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Variable name, one of &#8216;material&#8217;, &#8216;temp&#8217;, &#8216;heat&#8217; or &#8216;dens&#8217; which will be used to color the geometry.</li>
+<li><strong>filter</strong> (<em>func</em>) &#8211; boolean function taking a solid as argument. A solid will be plotted only if this function returns True for it.
+By default, all solids are plotted.</li>
+<li><strong>aspect</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; string &#8216;equal&#8217; or &#8216;auto&#8217;.</li>
+<li><strong>colors</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary for colors used for material names.</li>
+<li><strong>nmarker</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary specifying solids names to be marked on the plot. &#8216;name&#8217;:&#8217;*&#8217; or &#8216;name&#8217;:dict, where &#8216;*&#8217; or dict defines
+the marker shape, as in the <tt class="xref py py-func docutils literal"><span class="pre">maptlotlib.pyplot.plot()</span></tt> function.</li>
+<li><strong>mmarker</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; as nmarker, but to mark solids with particular material names.</li>
+<li><strong>legend</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Show the legend on the plot.</li>
+<li><strong>filename</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; File name where the plot will be stored. This attribute is passed to the <tt class="xref py py-meth docutils literal"><span class="pre">matplotlib.pyplot.Figure.savefig()</span></tt> method.</li>
+<li><strong>**kwargs</strong> &#8211; <p>keyword arguments describing contour lines.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pirs.solids subpackage</a><ul>
+<li><a class="reference internal" href="#simple-model">Simple model</a></li>
+<li><a class="reference internal" href="#assembly-like-model">Assembly-like model</a></li>
+<li><a class="reference internal" href="#axial-distribution-of-dependent-variables">Axial distribution of dependent variables</a></li>
+<li><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to PIRS documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pirs.mcnp.html"
+                        title="next chapter">pirs.mcnp subpackage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pirs.solids.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pirs.mcnp.html" title="pirs.mcnp subpackage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to PIRS documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">PIRS manual 1.1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

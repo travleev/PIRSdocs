@@ -1,0 +1,576 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pirs.core.tramat.data_natural &mdash; PIRS manual 1.1a documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PIRS manual 1.1a documentation" href="../../../../index.html" />
+    <link rel="up" title="pirs.core.tramat" href="../tramat.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../tramat.html" accesskey="U">pirs.core.tramat</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pirs.core.tramat.data_natural</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Similar to the module :mod:`data_masses`, there can be several data sets of the</span>
+<span class="sd">natural isotopic compositions of chemical elements, originated from different</span>
+<span class="sd">sources.</span>
+
+<span class="sd">Each data set is a dictionary of the form ``ZAID_i: af_i``.  </span>
+<span class="sd">The key ``ZAID_i`` is the integer of the form ZZZAAA of isotope (Z and A are</span>
+<span class="sd">charge and mass numbers of the isotope), correspondent value, ``af_i``, is the</span>
+<span class="sd">naturally occuring atomic fraction of this isotope in the chemical element with charge number Z.</span>
+
+<span class="sd">Additionally to the ``ZAID`` keys, the ``reference`` key contains a string</span>
+<span class="sd">referencing the origin of the natural abundancies.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c">#at</span>
+<span class="c"># Author: Anton Travleev, anton.travleev@kit.edu</span>
+<span class="c"># Developed at INR, Karlsruhe Institute of Technology</span>
+<span class="c">#at</span>
+
+
+<span class="n">d1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;reference&#39;</span><span class="p">:</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">        Pure Appl. Chem., vol. 83, No 2, pp. 397-410, 2011 &lt;http://www.iupac.org/publications/pac/83/2/0397/&gt;_. </span>
+<span class="s">        Data from table 1, last column. Digits in the parentheses are skipped.</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span>
+   <span class="c">#H        </span>
+    <span class="mi">1001</span><span class="p">:</span>  <span class="mf">0.999885</span><span class="p">,</span>
+    <span class="mi">1002</span><span class="p">:</span>  <span class="mf">0.000115</span><span class="p">,</span>
+
+   <span class="c">#He</span>
+    <span class="mi">2003</span><span class="p">:</span>  <span class="mf">0.00000134</span><span class="p">,</span>
+    <span class="mi">2004</span><span class="p">:</span>  <span class="mf">0.99999866</span><span class="p">,</span>
+
+   <span class="c">#Li</span>
+    <span class="mi">3006</span><span class="p">:</span>   <span class="mf">0.0759</span><span class="p">,</span>
+    <span class="mi">3007</span><span class="p">:</span>   <span class="mf">0.9241</span><span class="p">,</span>
+
+   <span class="c">#Be</span>
+    <span class="mi">4009</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#B</span>
+    <span class="mi">5010</span><span class="p">:</span>  <span class="mf">0.199</span><span class="p">,</span>
+    <span class="mi">5011</span><span class="p">:</span>  <span class="mf">0.801</span><span class="p">,</span>
+
+   <span class="c">#C</span>
+    <span class="mi">6012</span><span class="p">:</span>  <span class="mf">0.9893</span><span class="p">,</span>
+    <span class="mi">6013</span><span class="p">:</span>  <span class="mf">0.0107</span><span class="p">,</span>
+
+   <span class="c">#N</span>
+    <span class="mi">7014</span><span class="p">:</span>  <span class="mf">0.99636</span><span class="p">,</span>
+    <span class="mi">7015</span><span class="p">:</span>  <span class="mf">0.00364</span><span class="p">,</span>
+
+   <span class="c">#O</span>
+    <span class="mi">8016</span><span class="p">:</span>  <span class="mf">0.99757</span><span class="p">,</span>
+    <span class="mi">8017</span><span class="p">:</span>  <span class="mf">0.00038</span><span class="p">,</span>
+    <span class="mi">8018</span><span class="p">:</span>  <span class="mf">0.00205</span><span class="p">,</span>
+      
+   <span class="c">#F</span>
+    <span class="mi">9019</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Ne</span>
+    <span class="mi">10020</span><span class="p">:</span>  <span class="mf">0.9048</span><span class="p">,</span>
+    <span class="mi">10021</span><span class="p">:</span>  <span class="mf">0.0027</span><span class="p">,</span>
+    <span class="mi">10022</span><span class="p">:</span>  <span class="mf">0.0925</span><span class="p">,</span>
+
+   <span class="c">#Na</span>
+    <span class="mi">11023</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Mg</span>
+    <span class="mi">12024</span><span class="p">:</span>  <span class="mf">0.7899</span><span class="p">,</span>
+    <span class="mi">12025</span><span class="p">:</span>  <span class="mf">0.1000</span><span class="p">,</span>
+    <span class="mi">12026</span><span class="p">:</span>  <span class="mf">0.1101</span><span class="p">,</span>
+
+   <span class="c">#Al</span>
+    <span class="mi">13027</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Si</span>
+    <span class="mi">14028</span><span class="p">:</span>  <span class="mf">0.92223</span><span class="p">,</span>
+    <span class="mi">14029</span><span class="p">:</span>  <span class="mf">0.04685</span><span class="p">,</span>
+    <span class="mi">14030</span><span class="p">:</span>  <span class="mf">0.03092</span><span class="p">,</span>
+
+   <span class="c">#P</span>
+    <span class="mi">15031</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#S</span>
+    <span class="mi">16032</span><span class="p">:</span>  <span class="mf">0.9499</span><span class="p">,</span>
+    <span class="mi">16033</span><span class="p">:</span>  <span class="mf">0.0075</span><span class="p">,</span>
+    <span class="mi">16034</span><span class="p">:</span>  <span class="mf">0.0425</span><span class="p">,</span>
+    <span class="mi">16036</span><span class="p">:</span>  <span class="mf">0.0001</span><span class="p">,</span>
+
+   <span class="c">#Cl</span>
+    <span class="mi">17035</span><span class="p">:</span>  <span class="mf">0.7576</span><span class="p">,</span>
+    <span class="mi">17037</span><span class="p">:</span>  <span class="mf">0.2424</span><span class="p">,</span>
+
+   <span class="c">#Ar</span>
+    <span class="mi">18036</span><span class="p">:</span>  <span class="mf">0.003336</span><span class="p">,</span>
+    <span class="mi">18038</span><span class="p">:</span>  <span class="mf">0.000629</span><span class="p">,</span>
+    <span class="mi">18040</span><span class="p">:</span>  <span class="mf">0.996035</span><span class="p">,</span>
+
+   <span class="c">#K</span>
+    <span class="mi">19039</span><span class="p">:</span>  <span class="mf">0.932581</span><span class="p">,</span>
+    <span class="mi">19040</span><span class="p">:</span>  <span class="mf">0.000117</span><span class="p">,</span>
+    <span class="mi">19041</span><span class="p">:</span>  <span class="mf">0.067302</span><span class="p">,</span>
+
+   <span class="c">#Ca</span>
+    <span class="mi">20040</span><span class="p">:</span>  <span class="mf">0.96941</span><span class="p">,</span>
+    <span class="mi">20042</span><span class="p">:</span>  <span class="mf">0.00647</span><span class="p">,</span>
+    <span class="mi">20043</span><span class="p">:</span>  <span class="mf">0.00135</span><span class="p">,</span>
+    <span class="mi">20044</span><span class="p">:</span>  <span class="mf">0.02086</span><span class="p">,</span>
+    <span class="mi">20046</span><span class="p">:</span>  <span class="mf">0.00004</span><span class="p">,</span>
+    <span class="mi">20048</span><span class="p">:</span>  <span class="mf">0.00187</span><span class="p">,</span>
+
+   <span class="c">#Sc</span>
+    <span class="mi">21045</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Ti</span>
+    <span class="mi">22046</span><span class="p">:</span>  <span class="mf">0.0825</span><span class="p">,</span>
+    <span class="mi">22047</span><span class="p">:</span>  <span class="mf">0.0744</span><span class="p">,</span>
+    <span class="mi">22048</span><span class="p">:</span>  <span class="mf">0.7372</span><span class="p">,</span>
+    <span class="mi">22049</span><span class="p">:</span>  <span class="mf">0.0541</span><span class="p">,</span>
+    <span class="mi">22050</span><span class="p">:</span>  <span class="mf">0.0518</span><span class="p">,</span>
+
+   <span class="c">#V</span>
+    <span class="mi">23050</span><span class="p">:</span>  <span class="mf">0.00250</span><span class="p">,</span>
+    <span class="mi">23051</span><span class="p">:</span>  <span class="mf">0.99750</span><span class="p">,</span>
+
+   <span class="c">#Cr</span>
+    <span class="mi">24050</span><span class="p">:</span>  <span class="mf">0.04345</span><span class="p">,</span>
+    <span class="mi">24052</span><span class="p">:</span>  <span class="mf">0.83789</span><span class="p">,</span>
+    <span class="mi">24053</span><span class="p">:</span>  <span class="mf">0.09501</span><span class="p">,</span>
+    <span class="mi">24054</span><span class="p">:</span>  <span class="mf">0.02365</span><span class="p">,</span>
+
+   <span class="c">#Mn</span>
+    <span class="mi">25055</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Fe</span>
+    <span class="mi">26054</span><span class="p">:</span>  <span class="mf">0.05845</span><span class="p">,</span>
+    <span class="mi">26056</span><span class="p">:</span>  <span class="mf">0.91754</span><span class="p">,</span>
+    <span class="mi">26057</span><span class="p">:</span>  <span class="mf">0.02119</span><span class="p">,</span>
+    <span class="mi">26058</span><span class="p">:</span>  <span class="mf">0.00282</span><span class="p">,</span>
+
+   <span class="c">#Co</span>
+    <span class="mi">27059</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Ni</span>
+    <span class="mi">28058</span><span class="p">:</span>  <span class="mf">0.68077</span><span class="p">,</span>
+    <span class="mi">28060</span><span class="p">:</span>  <span class="mf">0.26223</span><span class="p">,</span>
+    <span class="mi">28061</span><span class="p">:</span>  <span class="mf">0.011399</span><span class="p">,</span>
+    <span class="mi">28062</span><span class="p">:</span>  <span class="mf">0.036346</span><span class="p">,</span>
+    <span class="mi">28064</span><span class="p">:</span>  <span class="mf">0.009255</span><span class="p">,</span>
+
+   <span class="c">#Cu</span>
+    <span class="mi">29063</span><span class="p">:</span>  <span class="mf">0.6915</span><span class="p">,</span>
+    <span class="mi">29065</span><span class="p">:</span>  <span class="mf">0.3085</span><span class="p">,</span>
+      
+   <span class="c">#Zn     </span>
+    <span class="mi">30064</span><span class="p">:</span>  <span class="mf">0.4917</span><span class="p">,</span>
+    <span class="mi">30066</span><span class="p">:</span>  <span class="mf">0.2773</span><span class="p">,</span>
+    <span class="mi">30067</span><span class="p">:</span>  <span class="mf">0.0404</span><span class="p">,</span>
+    <span class="mi">30068</span><span class="p">:</span>  <span class="mf">0.1845</span><span class="p">,</span>
+    <span class="mi">30070</span><span class="p">:</span>  <span class="mf">0.0061</span><span class="p">,</span>
+
+   <span class="c">#Ga</span>
+    <span class="mi">31069</span><span class="p">:</span>  <span class="mf">0.60108</span><span class="p">,</span>
+    <span class="mi">31071</span><span class="p">:</span>  <span class="mf">0.39892</span><span class="p">,</span>
+
+   <span class="c">#Ge</span>
+    <span class="mi">32070</span><span class="p">:</span>  <span class="mf">0.2057</span><span class="p">,</span>
+    <span class="mi">32072</span><span class="p">:</span>  <span class="mf">0.2745</span><span class="p">,</span>
+    <span class="mi">32073</span><span class="p">:</span>  <span class="mf">0.0775</span><span class="p">,</span>
+    <span class="mi">32074</span><span class="p">:</span>  <span class="mf">0.3650</span><span class="p">,</span>
+    <span class="mi">32076</span><span class="p">:</span>  <span class="mf">0.0773</span><span class="p">,</span>
+    
+   <span class="c">#As</span>
+    <span class="mi">33075</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Se</span>
+    <span class="mi">34074</span><span class="p">:</span>  <span class="mf">0.0089</span><span class="p">,</span>
+    <span class="mi">34076</span><span class="p">:</span>  <span class="mf">0.0937</span><span class="p">,</span>
+    <span class="mi">34077</span><span class="p">:</span>  <span class="mf">0.0763</span><span class="p">,</span>
+    <span class="mi">34078</span><span class="p">:</span>  <span class="mf">0.2377</span><span class="p">,</span>
+    <span class="mi">34080</span><span class="p">:</span>  <span class="mf">0.4961</span><span class="p">,</span>
+    <span class="mi">34082</span><span class="p">:</span>  <span class="mf">0.0873</span><span class="p">,</span>
+
+   <span class="c">#Br</span>
+    <span class="mi">35079</span><span class="p">:</span>  <span class="mf">0.5069</span><span class="p">,</span>
+    <span class="mi">35081</span><span class="p">:</span>  <span class="mf">0.4931</span><span class="p">,</span>
+
+   <span class="c">#Kr</span>
+    <span class="mi">36078</span><span class="p">:</span>  <span class="mf">0.00355</span><span class="p">,</span>
+    <span class="mi">36080</span><span class="p">:</span>  <span class="mf">0.02286</span><span class="p">,</span>
+    <span class="mi">36082</span><span class="p">:</span>  <span class="mf">0.11593</span><span class="p">,</span>
+    <span class="mi">36083</span><span class="p">:</span>  <span class="mf">0.11500</span><span class="p">,</span>
+    <span class="mi">36084</span><span class="p">:</span>  <span class="mf">0.56987</span><span class="p">,</span>
+    <span class="mi">36086</span><span class="p">:</span>  <span class="mf">0.17279</span><span class="p">,</span>
+
+   <span class="c">#Rb</span>
+    <span class="mi">37085</span><span class="p">:</span>  <span class="mf">0.7217</span><span class="p">,</span>
+    <span class="mi">37087</span><span class="p">:</span>  <span class="mf">0.2783</span><span class="p">,</span>
+
+   <span class="c">#Sr</span>
+    <span class="mi">38084</span><span class="p">:</span>  <span class="mf">0.0056</span><span class="p">,</span>
+    <span class="mi">38086</span><span class="p">:</span>  <span class="mf">0.0986</span><span class="p">,</span>
+    <span class="mi">38087</span><span class="p">:</span>  <span class="mf">0.0700</span><span class="p">,</span>
+    <span class="mi">38088</span><span class="p">:</span>  <span class="mf">0.8258</span><span class="p">,</span>
+
+   <span class="c">#Y</span>
+    <span class="mi">39089</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Zr</span>
+    <span class="mi">40090</span><span class="p">:</span>  <span class="mf">0.5145</span><span class="p">,</span>
+    <span class="mi">40091</span><span class="p">:</span>  <span class="mf">0.1122</span><span class="p">,</span>
+    <span class="mi">40092</span><span class="p">:</span>  <span class="mf">0.1715</span><span class="p">,</span>
+    <span class="mi">40094</span><span class="p">:</span>  <span class="mf">0.1738</span><span class="p">,</span>
+    <span class="mi">40096</span><span class="p">:</span>  <span class="mf">0.0280</span><span class="p">,</span>
+
+   <span class="c">#Nb</span>
+    <span class="mi">41093</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Mo</span>
+    <span class="mi">42092</span><span class="p">:</span>  <span class="mf">0.1453</span><span class="p">,</span>
+    <span class="mi">42094</span><span class="p">:</span>  <span class="mf">0.0915</span><span class="p">,</span>
+    <span class="mi">42095</span><span class="p">:</span>  <span class="mf">0.1584</span><span class="p">,</span>
+    <span class="mi">42096</span><span class="p">:</span>  <span class="mf">0.1667</span><span class="p">,</span>
+    <span class="mi">42097</span><span class="p">:</span>  <span class="mf">0.0960</span><span class="p">,</span>
+    <span class="mi">42098</span><span class="p">:</span>  <span class="mf">0.2439</span><span class="p">,</span>
+    <span class="mi">42100</span><span class="p">:</span>  <span class="mf">0.0982</span><span class="p">,</span>
+
+   <span class="c">#Ru</span>
+    <span class="mi">44096</span><span class="p">:</span>  <span class="mf">0.0554</span><span class="p">,</span>
+    <span class="mi">44098</span><span class="p">:</span>  <span class="mf">0.0187</span><span class="p">,</span>
+    <span class="mi">44099</span><span class="p">:</span>  <span class="mf">0.1276</span><span class="p">,</span>
+    <span class="mi">44100</span><span class="p">:</span>  <span class="mf">0.1260</span><span class="p">,</span>
+    <span class="mi">44101</span><span class="p">:</span>  <span class="mf">0.1706</span><span class="p">,</span>
+    <span class="mi">44102</span><span class="p">:</span>  <span class="mf">0.3155</span><span class="p">,</span>
+    <span class="mi">44104</span><span class="p">:</span>  <span class="mf">0.1862</span><span class="p">,</span>
+
+   <span class="c">#Rh</span>
+    <span class="mi">45103</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Pd</span>
+    <span class="mi">46102</span><span class="p">:</span>  <span class="mf">0.0102</span><span class="p">,</span>
+    <span class="mi">46104</span><span class="p">:</span>  <span class="mf">0.1114</span><span class="p">,</span>
+    <span class="mi">46105</span><span class="p">:</span>  <span class="mf">0.2233</span><span class="p">,</span>
+    <span class="mi">46106</span><span class="p">:</span>  <span class="mf">0.2733</span><span class="p">,</span>
+    <span class="mi">46108</span><span class="p">:</span>  <span class="mf">0.2646</span><span class="p">,</span>
+    <span class="mi">46110</span><span class="p">:</span>  <span class="mf">0.1172</span><span class="p">,</span>
+
+   <span class="c">#Ag</span>
+    <span class="mi">47107</span><span class="p">:</span>  <span class="mf">0.51839</span><span class="p">,</span>
+    <span class="mi">47109</span><span class="p">:</span>  <span class="mf">0.48161</span><span class="p">,</span>
+
+   <span class="c">#Cd</span>
+    <span class="mi">48106</span><span class="p">:</span>  <span class="mf">0.0125</span><span class="p">,</span>
+    <span class="mi">48108</span><span class="p">:</span>  <span class="mf">0.0089</span><span class="p">,</span>
+    <span class="mi">48110</span><span class="p">:</span>  <span class="mf">0.1249</span><span class="p">,</span>
+    <span class="mi">48111</span><span class="p">:</span>  <span class="mf">0.1280</span><span class="p">,</span>
+    <span class="mi">48112</span><span class="p">:</span>  <span class="mf">0.2413</span><span class="p">,</span>
+    <span class="mi">48113</span><span class="p">:</span>  <span class="mf">0.1222</span><span class="p">,</span>
+    <span class="mi">48114</span><span class="p">:</span>  <span class="mf">0.2873</span><span class="p">,</span>
+    <span class="mi">48116</span><span class="p">:</span>  <span class="mf">0.0749</span><span class="p">,</span>
+
+   <span class="c">#In</span>
+    <span class="mi">49113</span><span class="p">:</span>  <span class="mf">0.0429</span><span class="p">,</span>
+    <span class="mi">49115</span><span class="p">:</span>  <span class="mf">0.9571</span><span class="p">,</span>
+
+   <span class="c">#Sn</span>
+    <span class="mi">50112</span><span class="p">:</span>   <span class="mf">0.0097</span><span class="p">,</span>
+    <span class="mi">50114</span><span class="p">:</span>   <span class="mf">0.0066</span><span class="p">,</span>
+    <span class="mi">50115</span><span class="p">:</span>   <span class="mf">0.0034</span><span class="p">,</span>
+    <span class="mi">50116</span><span class="p">:</span>   <span class="mf">0.1454</span><span class="p">,</span>
+    <span class="mi">50117</span><span class="p">:</span>   <span class="mf">0.0768</span><span class="p">,</span>
+    <span class="mi">50118</span><span class="p">:</span>   <span class="mf">0.2422</span><span class="p">,</span>
+    <span class="mi">50119</span><span class="p">:</span>   <span class="mf">0.0859</span><span class="p">,</span>
+    <span class="mi">50120</span><span class="p">:</span>   <span class="mf">0.3258</span><span class="p">,</span>
+    <span class="mi">50122</span><span class="p">:</span>   <span class="mf">0.0463</span><span class="p">,</span>
+    <span class="mi">50124</span><span class="p">:</span>   <span class="mf">0.0579</span><span class="p">,</span>
+    
+   <span class="c">#Sb</span>
+    <span class="mi">51121</span><span class="p">:</span>  <span class="mf">0.5721</span><span class="p">,</span>
+    <span class="mi">51123</span><span class="p">:</span>  <span class="mf">0.4279</span><span class="p">,</span>
+
+   <span class="c">#Te</span>
+    <span class="mi">52120</span><span class="p">:</span>  <span class="mf">0.0009</span><span class="p">,</span>
+    <span class="mi">52122</span><span class="p">:</span>  <span class="mf">0.0255</span><span class="p">,</span>
+    <span class="mi">52123</span><span class="p">:</span>  <span class="mf">0.0089</span><span class="p">,</span>
+    <span class="mi">52124</span><span class="p">:</span>  <span class="mf">0.0474</span><span class="p">,</span>
+    <span class="mi">52125</span><span class="p">:</span>  <span class="mf">0.0707</span><span class="p">,</span>
+    <span class="mi">52126</span><span class="p">:</span>  <span class="mf">0.1884</span><span class="p">,</span>
+    <span class="mi">52128</span><span class="p">:</span>  <span class="mf">0.3174</span><span class="p">,</span>
+    <span class="mi">52130</span><span class="p">:</span>  <span class="mf">0.3408</span><span class="p">,</span>
+
+   <span class="c">#I</span>
+    <span class="mi">53127</span><span class="p">:</span>   <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Xe</span>
+    <span class="mi">54124</span><span class="p">:</span>  <span class="mf">0.000952</span><span class="p">,</span>
+    <span class="mi">54126</span><span class="p">:</span>  <span class="mf">0.000890</span><span class="p">,</span>
+    <span class="mi">54128</span><span class="p">:</span>  <span class="mf">0.019102</span><span class="p">,</span>
+    <span class="mi">54129</span><span class="p">:</span>  <span class="mf">0.264006</span><span class="p">,</span>
+    <span class="mi">54130</span><span class="p">:</span>  <span class="mf">0.040710</span><span class="p">,</span>
+    <span class="mi">54131</span><span class="p">:</span>  <span class="mf">0.212324</span><span class="p">,</span>
+    <span class="mi">54132</span><span class="p">:</span>  <span class="mf">0.269086</span><span class="p">,</span>
+    <span class="mi">54134</span><span class="p">:</span>  <span class="mf">0.104357</span><span class="p">,</span>
+    <span class="mi">54136</span><span class="p">:</span>  <span class="mf">0.088573</span><span class="p">,</span>
+
+   <span class="c">#Cs</span>
+    <span class="mi">55133</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Ba</span>
+    <span class="mi">56130</span><span class="p">:</span>  <span class="mf">0.00106</span><span class="p">,</span>
+    <span class="mi">56132</span><span class="p">:</span>  <span class="mf">0.00101</span><span class="p">,</span>
+    <span class="mi">56134</span><span class="p">:</span>  <span class="mf">0.02417</span><span class="p">,</span>
+    <span class="mi">56135</span><span class="p">:</span>  <span class="mf">0.06592</span><span class="p">,</span>
+    <span class="mi">56136</span><span class="p">:</span>  <span class="mf">0.07854</span><span class="p">,</span>
+    <span class="mi">56137</span><span class="p">:</span>  <span class="mf">0.11232</span><span class="p">,</span>
+    <span class="mi">56138</span><span class="p">:</span>  <span class="mf">0.71698</span><span class="p">,</span>
+
+   <span class="c">#La</span>
+    <span class="mi">57138</span><span class="p">:</span>  <span class="mf">0.0008881</span><span class="p">,</span>
+    <span class="mi">57139</span><span class="p">:</span>  <span class="mf">0.9991119</span><span class="p">,</span>
+
+   <span class="c">#Ce</span>
+    <span class="mi">58136</span><span class="p">:</span>  <span class="mf">0.00185</span><span class="p">,</span>
+    <span class="mi">58138</span><span class="p">:</span>  <span class="mf">0.00251</span><span class="p">,</span>
+    <span class="mi">58140</span><span class="p">:</span>  <span class="mf">0.88450</span><span class="p">,</span>
+    <span class="mi">58142</span><span class="p">:</span>  <span class="mf">0.11114</span><span class="p">,</span>
+
+   <span class="c">#Pr</span>
+    <span class="mi">59141</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Nd</span>
+    <span class="mi">60142</span><span class="p">:</span>  <span class="mf">0.27152</span><span class="p">,</span>
+    <span class="mi">60143</span><span class="p">:</span>  <span class="mf">0.12174</span><span class="p">,</span>
+    <span class="mi">60144</span><span class="p">:</span>  <span class="mf">0.23798</span><span class="p">,</span>
+    <span class="mi">60145</span><span class="p">:</span>  <span class="mf">0.08293</span><span class="p">,</span>
+    <span class="mi">60146</span><span class="p">:</span>  <span class="mf">0.17189</span><span class="p">,</span>
+    <span class="mi">60148</span><span class="p">:</span>  <span class="mf">0.05756</span><span class="p">,</span>
+    <span class="mi">60150</span><span class="p">:</span>  <span class="mf">0.05638</span><span class="p">,</span>
+
+   <span class="c">#Sm</span>
+    <span class="mi">62144</span><span class="p">:</span>  <span class="mf">0.0307</span><span class="p">,</span>
+    <span class="mi">62147</span><span class="p">:</span>  <span class="mf">0.1499</span><span class="p">,</span>
+    <span class="mi">62148</span><span class="p">:</span>  <span class="mf">0.1124</span><span class="p">,</span>
+    <span class="mi">62149</span><span class="p">:</span>  <span class="mf">0.1382</span><span class="p">,</span>
+    <span class="mi">62150</span><span class="p">:</span>  <span class="mf">0.0738</span><span class="p">,</span>
+    <span class="mi">62152</span><span class="p">:</span>  <span class="mf">0.2675</span><span class="p">,</span>
+    <span class="mi">62154</span><span class="p">:</span>  <span class="mf">0.2275</span><span class="p">,</span>
+
+   <span class="c">#Eu</span>
+    <span class="mi">63151</span><span class="p">:</span>  <span class="mf">0.4781</span><span class="p">,</span>
+    <span class="mi">63153</span><span class="p">:</span>  <span class="mf">0.5219</span><span class="p">,</span>
+
+   <span class="c">#Gd</span>
+    <span class="mi">64152</span><span class="p">:</span>  <span class="mf">0.0020</span><span class="p">,</span>
+    <span class="mi">64154</span><span class="p">:</span>  <span class="mf">0.0218</span><span class="p">,</span>
+    <span class="mi">64155</span><span class="p">:</span>  <span class="mf">0.1480</span><span class="p">,</span>
+    <span class="mi">64156</span><span class="p">:</span>  <span class="mf">0.2047</span><span class="p">,</span>
+    <span class="mi">64157</span><span class="p">:</span>  <span class="mf">0.1565</span><span class="p">,</span>
+    <span class="mi">64158</span><span class="p">:</span>  <span class="mf">0.2484</span><span class="p">,</span>
+    <span class="mi">64160</span><span class="p">:</span>  <span class="mf">0.2186</span><span class="p">,</span>
+
+   <span class="c">#Tb</span>
+    <span class="mi">65159</span><span class="p">:</span>   <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Dy</span>
+    <span class="mi">66156</span><span class="p">:</span>  <span class="mf">0.00056</span><span class="p">,</span>
+    <span class="mi">66158</span><span class="p">:</span>  <span class="mf">0.00095</span><span class="p">,</span>
+    <span class="mi">66160</span><span class="p">:</span>  <span class="mf">0.02329</span><span class="p">,</span>
+    <span class="mi">66161</span><span class="p">:</span>  <span class="mf">0.18889</span><span class="p">,</span>
+    <span class="mi">66162</span><span class="p">:</span>  <span class="mf">0.25475</span><span class="p">,</span>
+    <span class="mi">66163</span><span class="p">:</span>  <span class="mf">0.24896</span><span class="p">,</span>
+    <span class="mi">66164</span><span class="p">:</span>  <span class="mf">0.28260</span><span class="p">,</span>
+
+   <span class="c">#Ho</span>
+    <span class="mi">67165</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Er</span>
+    <span class="mi">68162</span><span class="p">:</span>  <span class="mf">0.00139</span><span class="p">,</span>
+    <span class="mi">68164</span><span class="p">:</span>  <span class="mf">0.01601</span><span class="p">,</span>
+    <span class="mi">68166</span><span class="p">:</span>  <span class="mf">0.33503</span><span class="p">,</span>
+    <span class="mi">68167</span><span class="p">:</span>  <span class="mf">0.22869</span><span class="p">,</span>
+    <span class="mi">68168</span><span class="p">:</span>  <span class="mf">0.26978</span><span class="p">,</span>
+    <span class="mi">68170</span><span class="p">:</span>  <span class="mf">0.14910</span><span class="p">,</span>
+
+   <span class="c">#Tm</span>
+    <span class="mi">69169</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Yb</span>
+    <span class="mi">70168</span><span class="p">:</span>  <span class="mf">0.00123</span><span class="p">,</span>
+    <span class="mi">70170</span><span class="p">:</span>  <span class="mf">0.02982</span><span class="p">,</span>
+    <span class="mi">70171</span><span class="p">:</span>  <span class="mf">0.1409</span><span class="p">,</span>
+    <span class="mi">70172</span><span class="p">:</span>  <span class="mf">0.2168</span><span class="p">,</span>
+    <span class="mi">70173</span><span class="p">:</span>  <span class="mf">0.16103</span><span class="p">,</span>
+    <span class="mi">70174</span><span class="p">:</span>  <span class="mf">0.32026</span><span class="p">,</span>
+    <span class="mi">70176</span><span class="p">:</span>  <span class="mf">0.12996</span><span class="p">,</span>
+
+   <span class="c">#Lu</span>
+    <span class="mi">71175</span><span class="p">:</span>  <span class="mf">0.97401</span><span class="p">,</span>
+    <span class="mi">71176</span><span class="p">:</span>  <span class="mf">0.02599</span><span class="p">,</span>
+
+   <span class="c">#Hf</span>
+    <span class="mi">72174</span><span class="p">:</span>  <span class="mf">0.0016</span><span class="p">,</span>
+    <span class="mi">72176</span><span class="p">:</span>  <span class="mf">0.0526</span><span class="p">,</span>
+    <span class="mi">72177</span><span class="p">:</span>  <span class="mf">0.1860</span><span class="p">,</span>
+    <span class="mi">72178</span><span class="p">:</span>  <span class="mf">0.2728</span><span class="p">,</span>
+    <span class="mi">72179</span><span class="p">:</span>  <span class="mf">0.1362</span><span class="p">,</span>
+    <span class="mi">72180</span><span class="p">:</span>  <span class="mf">0.3508</span><span class="p">,</span>
+
+   <span class="c">#Ta</span>
+    <span class="mi">73180</span><span class="p">:</span>  <span class="mf">0.0001201</span><span class="p">,</span>
+    <span class="mi">73181</span><span class="p">:</span>  <span class="mf">0.9998799</span><span class="p">,</span>
+
+   <span class="c">#W</span>
+    <span class="mi">74180</span><span class="p">:</span>  <span class="mf">0.0012</span><span class="p">,</span>
+    <span class="mi">74182</span><span class="p">:</span>  <span class="mf">0.2650</span><span class="p">,</span>
+    <span class="mi">74183</span><span class="p">:</span>  <span class="mf">0.1431</span><span class="p">,</span>
+    <span class="mi">74184</span><span class="p">:</span>  <span class="mf">0.3064</span><span class="p">,</span>
+    <span class="mi">74186</span><span class="p">:</span>  <span class="mf">0.2843</span><span class="p">,</span>
+
+   <span class="c">#Re</span>
+    <span class="mi">75185</span><span class="p">:</span>  <span class="mf">0.3740</span><span class="p">,</span>
+    <span class="mi">75187</span><span class="p">:</span>  <span class="mf">0.6260</span><span class="p">,</span>
+
+   <span class="c">#Os</span>
+    <span class="mi">76184</span><span class="p">:</span>  <span class="mf">0.0002</span><span class="p">,</span>
+    <span class="mi">76186</span><span class="p">:</span>  <span class="mf">0.0159</span><span class="p">,</span>
+    <span class="mi">76187</span><span class="p">:</span>  <span class="mf">0.0196</span><span class="p">,</span>
+    <span class="mi">76188</span><span class="p">:</span>  <span class="mf">0.1324</span><span class="p">,</span>
+    <span class="mi">76189</span><span class="p">:</span>  <span class="mf">0.1615</span><span class="p">,</span>
+    <span class="mi">76190</span><span class="p">:</span>  <span class="mf">0.2626</span><span class="p">,</span>
+    <span class="mi">76192</span><span class="p">:</span>  <span class="mf">0.4078</span><span class="p">,</span>
+
+   <span class="c">#Ir</span>
+    <span class="mi">77191</span><span class="p">:</span>  <span class="mf">0.373</span><span class="p">,</span>
+    <span class="mi">77193</span><span class="p">:</span>  <span class="mf">0.627</span><span class="p">,</span>
+
+   <span class="c">#Pt</span>
+    <span class="mi">78190</span><span class="p">:</span>  <span class="mf">0.00012</span><span class="p">,</span>
+    <span class="mi">78192</span><span class="p">:</span>  <span class="mf">0.00782</span><span class="p">,</span>
+    <span class="mi">78194</span><span class="p">:</span>  <span class="mf">0.3286</span><span class="p">,</span>
+    <span class="mi">78195</span><span class="p">:</span>  <span class="mf">0.3378</span><span class="p">,</span>
+    <span class="mi">78196</span><span class="p">:</span>  <span class="mf">0.2521</span><span class="p">,</span>
+    <span class="mi">78198</span><span class="p">:</span>  <span class="mf">0.07356</span><span class="p">,</span>
+
+   <span class="c">#Au</span>
+    <span class="mi">79197</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Hg</span>
+    <span class="mi">80196</span><span class="p">:</span>  <span class="mf">0.0015</span><span class="p">,</span>
+    <span class="mi">80198</span><span class="p">:</span>  <span class="mf">0.0997</span><span class="p">,</span>
+    <span class="mi">80199</span><span class="p">:</span>  <span class="mf">0.1687</span><span class="p">,</span>
+    <span class="mi">80200</span><span class="p">:</span>  <span class="mf">0.2310</span><span class="p">,</span>
+    <span class="mi">80201</span><span class="p">:</span>  <span class="mf">0.1318</span><span class="p">,</span>
+    <span class="mi">80202</span><span class="p">:</span>  <span class="mf">0.2986</span><span class="p">,</span>
+    <span class="mi">80204</span><span class="p">:</span>  <span class="mf">0.0687</span><span class="p">,</span>
+
+   <span class="c">#Tl</span>
+    <span class="mi">81203</span><span class="p">:</span>  <span class="mf">0.2952</span><span class="p">,</span>
+    <span class="mi">81205</span><span class="p">:</span>  <span class="mf">0.7048</span><span class="p">,</span>
+
+   <span class="c">#Pb</span>
+    <span class="mi">82204</span><span class="p">:</span>  <span class="mf">0.014</span><span class="p">,</span>
+    <span class="mi">82206</span><span class="p">:</span>  <span class="mf">0.241</span><span class="p">,</span>
+    <span class="mi">82207</span><span class="p">:</span>  <span class="mf">0.221</span><span class="p">,</span>
+    <span class="mi">82208</span><span class="p">:</span>  <span class="mf">0.524</span><span class="p">,</span>
+
+   <span class="c">#Bi</span>
+    <span class="mi">83209</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Th</span>
+    <span class="mi">90232</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#Pa</span>
+    <span class="mi">91231</span><span class="p">:</span>  <span class="mf">1.</span><span class="p">,</span>
+
+   <span class="c">#U</span>
+    <span class="mi">92234</span><span class="p">:</span>  <span class="mf">0.000054</span><span class="p">,</span>
+    <span class="mi">92235</span><span class="p">:</span>  <span class="mf">0.007204</span><span class="p">,</span>
+    <span class="mi">92238</span><span class="p">:</span>  <span class="mf">0.992742</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">PIRS manual 1.1a documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../tramat.html" >pirs.core.tramat</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Anton Travleev.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
